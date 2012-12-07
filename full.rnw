@@ -407,7 +407,7 @@ de 26 sujets :
   bornes sont : 24.9–25.1, 25.2–25.4, 25.5–25.7, 25.8–26.0, afficher la
   distribution des effectifs par classe sous forme d'un tableau d'effectifs. 
 \item[(d)] Représenter la distribution de $X$ sous forme d'histogramme, sans
-  considération d'intervalles de classe \emph{a priori}. 
+  considération d'intervalles de classe \emph{a priori}.
 \end{description}
 \begin{sol}
 Une manière de représenter ce type de données consiste à utiliser saisir les
@@ -2155,7 +2155,7 @@ Une étude a porté sur une mesure de malnutrition chez 25 patients âgés de 7
 à 23 ans et souffrant de fibrose kystique. On disposait pour ces patients de
 différentes informations relatives aux caractéristiques antropométriques
 (taille, poids, etc.) et à la fonction pulmonaire. \autocite[p.~180]{everitt01}
-Les données sont disponibles dans le fichier \texttt{cystic.dat}
+Les données sont disponibles dans le fichier \texttt{cystic.dat}.
 \begin{description}
 \item[(a)] Calculer le coefficient de corrélation linéaire entre les
   variables \texttt{PEmax} et \texttt{Weight}, ainsi que son intervalle de
@@ -2216,9 +2216,16 @@ with(cystic, cor.test(PEmax, Weight))
 \cmd{with}\cmd{cor.test}
 
 Pour tester si ce coefficient de corrélation est significativement différent
-d'une autre valeur que 0
-% FIXME:
-% à compléter !
+d'une autre valeur que 0, il est nécessaire d'utiliser la commande
+\texttt{r.test} du package \texttt{psych}.
+Pour tester l'hypothèse $H_0:\, \rho=0.300$ au seuil 5~\%, on indiquera la
+taille de l'échantillon, la corrélation dans la population et la corrélation
+observée, soit :
+<<ex5-1e>>=
+library(psych)
+r.test(25, 0.300, 0.6363)
+@ 
+\cmd{r.test}
 
 Pour afficher l'ensemble des diagrammes de dispersion, on peut utiliser la
 commande de base \texttt{pairs} ou bien la solution suivante :
@@ -2651,8 +2658,7 @@ pentes représentent dans le premier cas les déviations entre
 \texttt{Black} et \texttt{Other} par rapport à \texttt{White}, et dans
 le second cas entre \texttt{White} et \texttt{Black} et la moyenne des
 trois groupes.
-% \url{http://bit.ly/LFkFBg}. 
-
+% \url{http://bit.ly/LFkFBg}.
 \end{sol}
 \end{exo}
 \Closesolutionfile{solutions}
@@ -3547,6 +3553,147 @@ témoins).
 \input{solutions6}
 
 \chapter{Données de survie}
+\Opensolutionfile{solutions}[solutions7]
+
+\section*{Énoncés}
+
+%
+% 
+%
+
+%
+% Everitt p. 348
+%
+\begin{exo}\label{exo:7.2}
+Dans un essai randomisé, on a cherché à comparer deux traitements pour le
+cancer de la prostate. Les patients prenaient chaque jour par voie orale
+soit 1 mg de diethylstilbestrol (DES, bras actif) soit un placebo, et le
+temps de survie est mesuré en mois.\autocite{collett94} La question
+d'intérêt est de savoir si la survie entre les deux groupes de patients, et
+on négligera les autres variables présentes dans le fichier de données
+\texttt{prostate.dat}. 
+\begin{description}
+\item[(a)] Calculer la médiane de survie pour l'ensemble des patients, et
+  par groupe de traitement.
+\item[(b)] Quelle est la différence entre les proportions de survie dans les
+  deux groupes à 50 mois ?
+\item[(c)] Afficher les courbes de survie pour les deux groupes de patients.
+\item[(d)] Effectuer un test du log-rank pour tester l'hypothèse selon
+  laquelle le traitement par DES a un effet positif sur la survie des
+  patients. 
+\end{description}
+\begin{sol}
+Pour importer les données, on utilisera la commande \texttt{read.table}. On
+profitera de l'inspection préalable des données pour recoder la variable
+\texttt{Treatment} en variable qualitative.
+<<ex7-2a>>=
+prostate <- read.table("prostate.dat", header=TRUE)
+str(prostate)
+head(prostate)
+prostate$Treatment <- factor(prostate$Treatment)
+table(prostate$Status)
+@ 
+Il n'est pas vraiment nécessaire de recoder \texttt{Status} en variable
+qualitative puisque l'on va utiliser cette variable conjointement avec
+\texttt{Time} pour l'analyse de survie. Dans un premier temps, pour
+transformer les données en données de survie, incluant la censure, il est
+nécessaire de passer par la commande \texttt{Surv} du package \texttt{survival}.
+<<ex7-2b>>=
+library(survival)
+with(prostate, Surv(time=Time, event=Status))
+@ 
+
+La médiane de survie s'obtient à l'aide de \texttt{survfit}, qui une
+commande générale permettant de manipuler les données de survie par la
+méthode de Kaplan-Meier ou le modèle de Cox. Si l'on ne tient pas compte des
+groupes de traitement (et plus généralement d'un quelconque co-facteur), on
+l'utilisera ainsi : 
+<<ex7-2c>>=
+survfit(Surv(Time, Status) ~ 1, data=prostate)
+@
+Pour stratifier l'analyse selon le traitement, on utilisera en revanche :
+<<ex7-2d>>=
+survfit(Surv(Time, Status) ~ Treatment, data=prostate)
+@ 
+
+Pour afficher les courbes de survie correspondant aux deux groupes de
+traitement, on procèdera comme suit :
+<<ex7-2e, fig=TRUE>>=
+plot(survfit(Surv(Time, Status) ~ Treatment, data=prostate))
+@ 
+
+Le test du log-rank peut être obtenu de deux manières différentes. La plus
+simple consiste à utiliser la commande \texttt{survdiff} pour comparer deux
+courbes de survie à partir de l'estimateur de Kaplan-Meier.
+<<ex7-2f>>=
+survdiff(Surv(time=Time, event=Status) ~ Treatment, data=prostate)
+@ 
+L'autre solution consiste à utiliser une régression de Cox
+<<ex7-2f>>=
+summary(coxph(Surv(time=Time, event=Status) ~ Treatment, data=prostate))
+@ 
+\end{sol}
+\end{exo}
+%
+% time 1/2 (interval data)
+%
+
+% 
+% Stata hip fracture
+%
+\begin{exo}\label{exo:7.4}
+% FIXME: reformuler énoncé
+Une étude a visé à évaluer le bénéfice d'un nouvel appareil de protection
+pneumatique pour prévenir les fractures de hanche occasionnées par la chute
+des personnes âgés. Ce dispositif doit être porté en permanence par la
+personne, mais on espère qu'à terme cela permettra de réduire l'incidence
+des fractures de hanche. Au total, 48 femmes âgées de plus de 60 ans ont
+participé à cette étude, parmi lesquelles 28 ont été sélectionnées par
+tirage aléatoire pour utiliser ce nouveau dispositif et 20 ont été choisies
+comme contrôles (pas de dispositif). Des dosages réguliers de calcium ont
+été effectués tous les 5 mois et la durée d'observation avant la première
+fracture a été enregistrée en mois.\autocite{cleves10} Les données sont
+disponibles au format Stata dans le fichier \texttt{hip.dta}. L'événement
+est défini dans la variable appelée \texttt{fracture}, et les variables
+\texttt{time0} et \texttt{time1} indiquent le début et la fin des
+intervalles de monitoring des sujets.
+\begin{description}
+\item[(a)] Vérifier la structure du tableau de données et remédier aux
+  problèmes des valeurs manquantes.
+\item[(b)] Afficher un tableau des principaux indicateurs de survie (nombre
+  d'individus à risque, nombre d'événements).
+\item[(c)] Calculer la médiane de survie et son intervalle de confiance à
+  95~\% pour chaque groupe de sujets et afficher les courbes de survie
+  correspondantes.
+\item[(d)] Effectuer un test du log-rank. Comparer avec un test de Wilcoxon.
+\item[(e)] Effectuer un test du log-rank sur le facteur d'intérêt
+  (\texttt{protect}) en stratifiant sur l'âge. On considèrera trois groupe
+  d'âge : 65 ans ou moins, entre 65 et 75 ans inclus, plus de 75 ans.
+\item[(f)] Construire un modèle de régression (Cox) en tenant compte du
+  groupe de traitement et donner la valeur du hazard ratio.
+\item[(g)] Vérifier les conditions d'applications du modèle.
+\end{description}
+
+\begin{sol}
+Le chargement des données
+<<ex7-4a>>=
+library(foreign)
+hip <- read.dta("hip.dta")
+summary(hip)
+subset(hip, id==34)
+tail(hip[do.call(order, hip),])
+@   
+\end{sol}
+\end{exo}
+%
+% Selvin
+%
+\begin{exo}
+données \texttt{lungcancer.txt}  
+\end{exo}
+\Closesolutionfile{solutions}
+\section*{Corrigés}
+\input{solutions7}
 
 \begin{footnotesize}
   \printindex
@@ -3792,7 +3939,7 @@ On notera qu'une commande telle que \texttt{cut} permettrait de générer des
 groupes approximativement équivalents en termes d'effectifs, mais cela ne
 correspond pas tout à fait au résultat souhaité.
 \begin{verbatim}
-. egen agedec = cut(age), group(3) label
+. egen ageter = cut(age), group(3) label
 \end{verbatim}
 
 Le croisement de cette nouvelle variable avec la variable indicatrice de
@@ -4191,6 +4338,7 @@ génotypes à l'aide de boites à moustaches.
 \begin{verbatim}
 . graph box age, over(genotype)
 \end{verbatim}
+
 \includegraphics{./figs/stata_polymsm}
 
 La commande \texttt{oneway} permet de réaliser une analyse de variance à un
@@ -4324,27 +4472,6 @@ concaténer (verticalement) des variables arrangées en colonnes.
   5. |  A   29.6 |
      +-----------+
 \end{verbatim}
-%% Pour cela il est plus commode de changer le nom des trois variables de
-%% façon à indiquer le \no\ de classe. Par exemple, on peut renommer les trois
-%% variables ainsi : \texttt{G1} (\texttt{A}), \texttt{G2} (\texttt{B}) et
-%% \texttt{G3} (\texttt{C}). Il est également nécessaire de générer un
-%% identifiant unique, disons \texttt{ID}, pour chaque ligne (en l'occurence,
-%% ceux-ci ne correspondent pas aux unités statistiques). Il est alors possible
-%% de transformer le tableau de données au format désiré à l'aide de la
-%% commande \texttt{reshape} :
-%% \begin{verbatim}
-%% . reshape long G, i(ID)
-%% (note: j = 1 2 3)
-
-%% Data                               wide   ->   long
-%% -----------------------------------------------------------------------------
-%% Number of obs.                        6   ->      18
-%% Number of variables                   4   ->       3
-%% j variable (3 values)                     ->   _j
-%% xij variables:
-%%                                G1 G2 G3   ->   G
-%% -----------------------------------------------------------------------------
-%% \end{verbatim}
 
 Concernant le résumé descriptif des données, on pourra procéder comme suit :
 \begin{verbatim}
@@ -4698,9 +4825,335 @@ Le test de tendance correspond au test associé à la pente de la droite de
 régression, ici le coefficient \texttt{PARITY2}.
 
 \chapter{Régression linéaire et logistique}
-%
-%
-%
+
+\soln{\ref{exo:5.1}}
+Les données tabulées sont disponibles dans un fichier texte que l'on peut
+importer à l'aide de la commande \texttt{insheet}. Toutefois, on peut
+également importer les données avec \texttt{infile} qui a l'avantage de
+fonctionner même dans le cas où les données ne sont pas issue d'un tableau
+de type Excel.
+\begin{verbatim}
+. infile int (Sub Age Sex) Height Weight BMP FEV RV FRC TLC PEmax using "cystic.dat" in 2/26, clear
+\end{verbatim}
+Dans l'instruction ci-dessus, on a explicitement demandé à Stata de coder
+les trois premières variables sous forme d'entiers et non de nombres réels,
+ce qui dans le présent ne change pas grand-chose mais permet d'économiser de
+l'espace mémoire pour les gros jeux de données.
+Comme on l'a fait avec R, on recodera d'emblée la variable \texttt{Sex} en
+variable qualitative pour éviter toute confusion.
+\begin{verbatim}
+. label define labsex 0 "M" 1 "F"
+. label values Sex labsex
+. tabulate Sex
+
+        Sex |      Freq.     Percent        Cum.
+------------+-----------------------------------
+          M |         14       56.00       56.00
+          F |         11       44.00      100.00
+------------+-----------------------------------
+      Total |         25      100.00
+\end{verbatim}
+
+L'estimation du coefficient de corrélation de Bravais-Pearson se fait avec
+la commande \texttt{correlate}, mais celle-ci ne fournit pas d'options pour
+l'intervalle de confiance. On peut utiliser des commandes externes comme
+\texttt{ci2} qui fonctionne sur le même principe que la commande interne
+\texttt{ci} (pour les moyennes et proportions) dans le cas paramétrique ou
+non-paramétrique (Spearman) ou bien \texttt{corrci}, uniquement pour le cas
+paramétrique. \label{cmd:corrci}
+\begin{verbatim}
+. correlate PEmax Weight
+(obs=25)
+
+             |    PEmax   Weight
+-------------+------------------
+       PEmax |   1.0000
+      Weight |   0.6363   1.0000
+. corrci PEmax Weight
+
+(obs=25)
+
+                correlation and 95% limits
+PEmax  Weight      0.636    0.322    0.824
+\end{verbatim}
+
+Pour tester ce coefficient de corrélation contre l'alternative $H_0:
+\rho=0.3$, il faut
+% FIXME:
+% change to compute test against H_0: \rho=0.3
+\begin{verbatim}
+. pwcorr PEmax Weight, sig
+
+             |    PEmax   Weight
+-------------+------------------
+       PEmax |   1.0000 
+             |
+             |
+      Weight |   0.6363   1.0000 
+             |   0.0006
+             |
+\end{verbatim}
+
+Pour afficher l'ensemble des diagrammes de dispersion, on utilise la
+commande \texttt{graph matrix} en sépcifiant la liste de variables que l'on
+souhaite voir figurer dans le graphique. Ici, on omettra la variable
+\texttt{Sex} : 
+\begin{verbatim}
+. graph matrix Age Height-PEmax
+\end{verbatim}
+
+\includegraphics{./figs/stata_splom}
+
+Les corrélations pour chaque paire de variables s'obtiennent avec la
+commande \texttt{pwcorr}, et on utilisera la même notation pour indiquer les
+variables qui nous intéressent.
+\begin{verbatim}
+. pwcorr Age Height-PEmax
+
+             |      Age   Height   Weight      BMP      FEV       RV      FRC      TLC      PEmax
+-------------+-----------------------------------------------------------------------------------
+         Age |   1.0000 
+      Height |   0.9261   1.0000 
+      Weight |   0.9065   0.9221   1.0000 
+         BMP |   0.3778   0.4408   0.6703   1.0000 
+         FEV |   0.2945   0.3167   0.4492   0.5455   1.0000 
+          RV |  -0.5519  -0.5695  -0.6234  -0.5824  -0.6659   1.0000 
+         FRC |  -0.6394  -0.6243  -0.6182  -0.4344  -0.6651   0.9106   1.0000 
+         TLC |  -0.4734  -0.4595  -0.4214  -0.3633  -0.4425   0.5899   0.7056    1.0000 
+       PEmax |   0.6135   0.5992   0.6363   0.2295   0.4534  -0.3156  -0.4172   -0.1805   1.0000
+\end{verbatim}
+Pour les corrélations de Spearman, on remplacera \texttt{pwcorr} par
+\texttt{spearman}.
+\begin{verbatim}
+. spearman Age Height-PEmax, stats(rho)
+(obs=25)
+
+             |      Age   Height   Weight      BMP      FEV       RV      FRC      TLC    PEmax
+-------------+---------------------------------------------------------------------------------
+         Age |   1.0000 
+      Height |   0.9335   1.0000 
+      Weight |   0.9013   0.9619   1.0000 
+         BMP |   0.5091   0.5734   0.7264   1.0000 
+         FEV |   0.2975   0.4256   0.4637   0.5623   1.0000 
+          RV |  -0.5815  -0.6221  -0.7005  -0.6917  -0.6830   1.0000 
+         FRC |  -0.7185  -0.6642  -0.6706  -0.5547  -0.6044   0.8547   1.0000 
+         TLC |  -0.4926  -0.4734  -0.4846  -0.4935  -0.4398   0.5895   0.6721   1.0000 
+       PEmax |   0.5198   0.5920   0.4881   0.2224   0.3140  -0.3089  -0.3835  -0.1482   1.0000
+\end{verbatim}
+
+% FIXME:
+% filtrage correlations elevees à faire.
+
+La corrélation partielle entre les variables \texttt{PEmax} et
+\texttt{Weight} en tenant compte de \texttt{Age} est obtenue à l'aide de la
+commande \texttt{pcorr} ; la variable d'intérêt doit être située en première
+position dans la liste des variables et par défaut Stata affiche l'ensemble
+des coefficients de corrélation partielle pour les autres variables.
+\begin{verbatim}
+. pcorr PEmax Weight Age
+(obs=25)
+
+Partial and semipartial correlations of PEmax with
+
+               Partial   Semipartial      Partial   Semipartial   Significance
+   Variable |    Corr.         Corr.      Corr.^2       Corr.^2          Value
+------------+-----------------------------------------------------------------
+     Weight |   0.2405        0.1899       0.0578        0.0361         0.2577
+        Age |   0.1126        0.0869       0.0127        0.0076         0.6002
+\end{verbatim}
+Pour réaliser un tercilage de la variable \texttt{Age}, on peut procéder comme à
+l'exercice~\ref{exo:2.4}, c'est-à-dire en créant une variable dérivée, avec
+\texttt{egen}, et en utilisant la fonction \texttt{cut}. Mais on peut
+directement utiliser la commande \texttt{xtile} qui est plus simple d'emploi :
+\begin{verbatim}
+. xtile Age3 = Age, nq(3)
+\end{verbatim}
+Enfin, pour le diagramme de dispersion, voici une première solution :
+\begin{verbatim}
+. scatter PEmax Weight if Age3 != 2, mlab(Age3)
+\end{verbatim}
+On pourrait également (2\ieme\ solution) enchaîner deux appels à la commande
+\texttt{scatter}, en restreignant à chaque fois l'échantillon aux seules
+classe de \texttt{Age3} qui nous intéressent (1 et 3, en l'occurence).
+\begin{verbatim}
+. scatter PEmax Weight if Age3 == 1, msymbol(circle) || scatter PEmax Weight if Age3 == 3, msymbol(square) 
+  legend(label(1 "1st tercile") label(2 "3rd tercile"))
+\end{verbatim}
+
+\includegraphics{./figs/stata_tercile}
+
+\soln{\ref{exo:5.2}}
+Le chargement des données ne pose pas de difficultés particulières car
+celles-ci ont été exportées depuis Excel et sont au format CSV. On veillera
+cependant à préciser le type de délimiteur de champ, ici un point-virgule/
+\begin{verbatim}
+. insheet using "/Users/chl/Documents/Tutors/cesam-r/tex/quetelet.csv", delim(";") clear
+(5 vars, 32 obs)
+. describe
+
+Contains data
+  obs:            32                          
+ vars:             5                          
+ size:           320                          
+-----------------------------------------------------------------------------------------
+              storage  display     value
+variable name   type   format      label      variable label
+-----------------------------------------------------------------------------------------
+id              byte   %8.0g                  ID
+pas             int    %8.0g                  PAS
+qtt             str5   %9s                    QTT
+age             byte   %8.0g                  AGE
+tab             byte   %8.0g                  TAB
+-----------------------------------------------------------------------------------------
+Sorted by:
+\end{verbatim}
+Après l'importation, on remarque que la variable \texttt{qtt} n'est pas
+reconnue en tant que nombre mais a été codée sous forme de chaîne de
+caractère. Ceci s'explique par le fait que la partie décimale est séparée de
+la partie entière par une virgule et non un point. Il faut donc convertir cette
+variable en nombre, ce que l'on peut réaliser avec la commande
+\texttt{destring} et l'option \texttt{dpcomma}.
+\begin{verbatim}
+. destring qtt, dpcomma replace
+qtt has all characters numeric; replaced as double
+\end{verbatim}
+Ensuite, on recode la variable \texttt{tab} en variable qualitative avec des
+étiquettes plus informatives. 
+\begin{verbatim}
+. label define ltab 0 "NF" 1 "F"
+. label values tab ltab
+. list in 1/5
+
+     +------------------------------+
+     | id   pas     qtt   age   tab |
+     |------------------------------|
+  1. |  1   135   2.876    45    NF |
+  2. |  2   122   3.251    41    NF |
+  3. |  3   130     3.1    49    NF |
+  4. |  4   148   3.768    52    NF |
+  5. |  5   146   2.979    54     F |
+     +------------------------------+
+\end{verbatim}
+Enfin, le résumé numérique des variable s'obtient avec la commande \texttt{summarize}.
+\begin{verbatim}
+. summarize pas-tab
+
+    Variable |       Obs        Mean    Std. Dev.       Min        Max
+-------------+--------------------------------------------------------
+         pas |        32    144.5313    14.39755        120        180
+         qtt |        32    3.441094    .4970781      2.368      4.637
+         age |        32       53.25    6.956083         41         65
+         tab |        32      .53125    .5070073          0          1
+\end{verbatim}
+Comme la variable \texttt{tab} est internellement codée en 0/1, la moyenne
+correspond à la fréquence relative des fumeurs, soit 53~\%.
+
+Le coefficeint de corrélation liénaire entre les variables \texttt{pas} et
+\texttt{qtt} peut être estimé, ainsi que son intervalle de confiance, avec
+la commande \texttt{corrci} (p.~\pageref{cmd:corrci}). L'option
+\texttt{level(90)} permet de spécifier le niveau de confiance.
+\begin{verbatim}
+. corrci pas qtt, level(90)
+
+(obs=32)
+
+          correlation and 90% limits
+pas qtt      0.742    0.571    0.851
+\end{verbatim}
+
+La commande \texttt{regress} permet d'effectuer une régression linéaire
+pour une variable réponse (placée en premier dans la liste des variables) et
+une ou plusieurs variables explicatives. On l'utilise comme suit :
+\begin{verbatim}
+. regress pas qtt
+
+      Source |       SS       df       MS              Number of obs =      32
+-------------+------------------------------           F(  1,    30) =   36.75
+       Model |  3537.94574     1  3537.94574           Prob > F      =  0.0000
+    Residual |  2888.02301    30  96.2674337           R-squared     =  0.5506
+-------------+------------------------------           Adj R-squared =  0.5356
+       Total |  6425.96875    31  207.289315           Root MSE      =  9.8116
+
+------------------------------------------------------------------------------
+         pas |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+         qtt |   21.49167   3.545147     6.06   0.000     14.25151    28.73182
+       _cons |    70.5764   12.32187     5.73   0.000     45.41179    95.74101
+------------------------------------------------------------------------------
+\end{verbatim}
+Par défaut, on obtient un tableau d'analyse de variance pour le modèle de
+régression et un tableau des coefficients du modèle, ici l'ordonnée à
+l'origine (70.58) et la pente de la droite de régression (21.49). Le test
+de Student associé à la pente permet d'évaluer sa significativité au vu des
+données. Si l'on souhaite manipuler les coefficients de régression, il est
+possible de les extraire du tableau de résultats comme indiqué ci-dessous :
+\begin{verbatim}
+. matrix b = e(b)
+. svmat b
+. di "pente = " b1 ", ordonnée origine = " b2
+pente = 21.491669, ordonnée origine = 70.576401
+\end{verbatim}
+
+En ce qui concerne l'affichage du diagramme de dispersion avec les deux
+droites de régression superposées, on utilise une combinaison de
+\texttt{lfit} (pour tracer la droite de régression) et \texttt{scatter}
+(pour afficher les observations). L'inconvénient est qu'il est nécessaire de
+construire manuellement la légende. On notera également que l'on impose que
+les droites de régression soient présentées sur toute l'étendue de la
+variable \texttt{qtt}, d'où l'option \texttt{range(2, 5)}.
+\begin{verbatim}
+. twoway lfit pas qtt if tab == 0, range(2 5) lpattern(dot) || 
+  scatter pas qtt if tab == 0, msymbol(square) || 
+  lfit pas qtt if tab == 1, range(2 5) ||
+  scatter pas qtt if tab == 1, msymbol(circle) 
+  legend(label(1 "") label(2 "NF") label(3 "") label(4 "F"))
+\end{verbatim}
+
+\includegraphics{./figs/stata_lfit}
+
+La régression de \texttt{qtt} sur \texttt{pas} en restreignant l'analyse aux
+seules observations du groupe fumeur (\texttt{tab == 1} ou \texttt{tab ==
+  "F"}) ne pose pas de problème car on vient de le voir dans l'application
+précdente, il suffit d'ajouter une option \texttt{if tab == 1} :
+\begin{verbatim}
+. regress pas qtt if tab == 1
+
+      Source |       SS       df       MS              Number of obs =      17
+-------------+------------------------------           F(  1,    15) =   19.40
+       Model |  2088.16977     1  2088.16977           Prob > F      =  0.0005
+    Residual |  1614.30082    15  107.620055           R-squared     =  0.5640
+-------------+------------------------------           Adj R-squared =  0.5349
+       Total |  3702.47059    16  231.404412           Root MSE      =  10.374
+
+------------------------------------------------------------------------------
+         pas |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+         qtt |   20.11804   4.567193     4.40   0.001      10.3833    29.85278
+       _cons |   79.25533   15.76837     5.03   0.000     45.64585    112.8648
+------------------------------------------------------------------------------
+\end{verbatim}
+
+\soln{\ref{exo:5.3}}
+
+\begin{verbatim}
+. insheet using "/Users/chl/Documents/Tutors/cesam-r/tex/Framingham.csv"
+(10 vars, 4699 obs)
+. describe, simple
+sex       sbp       dbp       scl       chdfate   followup  age       bmi   month     id
+. list in 1/5
+
+     +------------------------------------------------------------------------+
+     | sex   sbp   dbp   scl   chdfate   followup   age    bmi   month     id |
+     |------------------------------------------------------------------------|
+  1. |   1   120    80   267         1         18    55     25       8   2642 |
+  2. |   1   130    78   192         1         35    53   28.4      12   4627 |
+  3. |   1   144    90   207         1        109    61   25.1       8   2568 |
+  4. |   1    92    66   231         1        147    48   26.2      11   4192 |
+  5. |   1   162    98   271         1        169    39   28.4      11   3977 |
+     +------------------------------------------------------------------------+
+\end{verbatim}
+
+
 \soln{\ref{exo:6.1}}
 Dans un premier temps, il est nécessaire de construire le tableau
 d'effectifs donné dans l'énoncé. On s'inspirera de la méthode manuelle vue à
@@ -5190,9 +5643,177 @@ Log likelihood =  -453.2224                       Pseudo R2       =     0.0962
 
 \chapter{Analyse de données de survie}
 
+\soln{\ref{exo:7.4}}
+L'importation des données ne pose pas de problème particulier puisque
+celles-ci sont déjà stockées au format Stata.
+\begin{verbatim}
+. use hip, clear
+. describe
 
+Contains data from hip.dta
+  obs:           106                          hip fracture study
+ vars:             7                          30 Jan 2009 11:58
+ size:         1,060                          
+-----------------------------------------------------------------------------------------
+              storage  display     value
+variable name   type   format      label      variable label
+-----------------------------------------------------------------------------------------
+id              byte   %4.0g                  patient ID
+time0           byte   %5.0g                  begin of span
+time1           byte   %5.0g                  end of span
+fracture        byte   %8.0g                  fracture event
+protect         byte   %8.0g                  wears device
+age             byte   %4.0g                  age at enrollment
+calcium         float  %8.0g                  blood calcium level
+-----------------------------------------------------------------------------------------
+Sorted by:
+\end{verbatim}
+On peut vérifier les données de quelques individus.
+\begin{verbatim}
+. sort id time0
+. list if id == 1
+
+     +---------------------------------------------------------+
+     | id   time0   time1   fracture   protect   age   calcium |
+     |---------------------------------------------------------|
+  1. |  1       0       1          1         0    76      9.35 |
+     +---------------------------------------------------------+
+. list if id == 15
+
+     +---------------------------------------------------------+
+     | id   time0   time1   fracture   protect   age   calcium |
+     |---------------------------------------------------------|
+ 21. | 15       0       5          0         0    64     11.67 |
+ 22. | 15       5      12          1         .     .      11.4 |
+     +---------------------------------------------------------+
+. list if id == 48
+
+     +---------------------------------------------------------+
+     | id   time0   time1   fracture   protect   age   calcium |
+     |---------------------------------------------------------|
+104. | 48       0       5          0         1    67     11.21 |
+105. | 48       5      15          0         .     .     11.43 |
+106. | 48      15      39          0         .     .     11.29 |
+     +---------------------------------------------------------+
+\end{verbatim}
+ce qui permet de voir que pour les variables \texttt{protect} et
+\texttt{age} les données ne sont pas répétées après la première occasion, ce
+qui évidemment géénère un nombre important de valeurs manquantes pour ces variables.
+\begin{verbatim}
+. summarize
+
+    Variable |       Obs        Mean    Std. Dev.       Min        Max
+-------------+--------------------------------------------------------
+          id |       106    28.21698    13.09599          1         48
+       time0 |       106    4.792453    5.631065          0         15
+       time1 |       106     11.5283    8.481024          1         39
+    fracture |       106    .2924528    .4570502          0          1
+     protect |        48    .5833333    .4982238          0          1
+-------------+--------------------------------------------------------
+         age |        48      70.875    5.659205         62         82
+     calcium |       106    10.10849    1.407355       7.25      12.32
+\end{verbatim}
+
+Pour le codage des données brutes en données de survie, on utilisera la
+commande \texttt{stset} de la manière suivante :
+\begin{verbatim}
+. stset time1, id(id) time0(time0) failure(fracture)
+
+                id:  id
+     failure event:  fracture != 0 & fracture < .
+obs. time interval:  (time0, time1]
+ exit on or before:  failure
+
+------------------------------------------------------------------------------
+      106  total obs.
+        0  exclusions
+------------------------------------------------------------------------------
+      106  obs. remaining, representing
+       48  subjects
+       31  failures in single failure-per-subject data
+      714  total analysis time at risk, at risk from t =         0
+                             earliest observed entry t =         0
+                                  last observed exit t =        39
+\end{verbatim}
+
+\begin{verbatim}
+. stdescribe
+
+         failure _d:  fracture
+   analysis time _t:  time1
+                 id:  id
+
+                                   |-------------- per subject --------------|
+Category                   total        mean         min     median        max
+------------------------------------------------------------------------------
+no. of subjects               48   
+no. of records               106    2.208333           1          2          3
+
+(first) entry time                         0           0          0          0
+(final) exit time                       15.5           1       12.5         39
+
+subjects with gap              3   
+time on gap if gap            30          10          10         10         10
+time at risk                 714      14.875           1       11.5         39
+
+failures                      31    .6458333           0          1          1
+------------------------------------------------------------------------------
+\end{verbatim}
+
+\begin{verbatim}
+. stvary
+
+         failure _d:  fracture
+   analysis time _t:  time1
+                 id:  id
+
+               subjects for whom the variable is
+                                                 never    always   sometimes
+    variable |  constant    varying             missing   missing   missing
+-------------+--------------------------------------------------------------
+     protect |        48          0                   8         0        40
+         age |        48          0                   8         0        40
+     calcium |         8         40                  48         0         0
+
+. streset, past future
+-> stset time1, id(id) failure(fracture) time0(time0)
+-> streset, full past future
+
+                id:  id
+     failure event:  fracture != 0 & fracture < .
+obs. time interval:  (time0, time1]
+ exit on or before:  time .
+    t for analysis:  (time-origin)
+            origin:  min
+              ever:  _insmpl
+
+------------------------------------------------------------------------------
+      106  total obs.
+        0  exclusions
+------------------------------------------------------------------------------
+      106  obs. remaining, representing
+       48  subjects
+       31  failures in single failure-per-subject data
+      714  total analysis time at risk, at risk from t =         0
+                             earliest observed entry t =         0
+                                  last observed exit t =        39
+
+. stfill age protect, forward
+
+         failure _d:  fracture
+   analysis time _t:  (time1-origin)
+             origin:  min
+  exit on or before:  time .
+                 id:  id
+
+replace missing values with previously observed values:
+             age:  58 real changes made
+         protect:  58 real changes made
+
+. streset
+\end{verbatim}
 % Colophon
-%\vfill
+\vfill
 {\rm\textcolor{Scode}{\scriptsize Last updated: \today. \LaTeX\ +
     pdf\TeX\ and R~\Sexpr{paste(R.Version()$major,R.Version()$minor,sep=".")}}.}
 
