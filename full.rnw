@@ -1,4 +1,4 @@
-
+% Time-stamp: <2012-12-19 21:44:47 chl>
 \documentclass[11pt]{report}
 \usepackage[francais]{babel}
 \usepackage{amsmath,amsfonts,amsthm}
@@ -140,11 +140,31 @@ set.seed(101)
 \setcounter{page}{1} 
 \chapter*{Organisation}
 
-\section*{Introduction}
-
-\section*{Objectif}
+\section*{Objectifs}
+L'objectif du cours \textbf{Méthodologie Statistique avec R et Stata} est de
+fournir les bases de l'analyse statistique des données biomédicales à partir
+d'un logiciel statistique.
 
 \section*{Déroulement des séances}
+Chaque séance sera composée d'une brève présentation des commandes R ou
+Stata utiles pour le thème abordé, suivi d'une présentation interactive des
+solutions aux exercices d'entraînement proposés. Celles-ci ne se veulent pas
+exhaustives mais visent à orienter le practicien vers les idées maitresses
+de l'analyse statistique de données à l'aide d'un logiciel statistique. Il
+existe toujours plusieurs manières de résoudre un problème, et d'autres
+solutions sont possibles pour aborder les problèmes. Dans un souci de
+clarté, des solutions simples sont proposées. Le lecteur est invité à en
+chercher d'autres, plus économiques ou plus pratiques.
+
+Les premières séances sont généralement consacrées à la manipulation des
+données et aux statistiques descriptives. Ces dernières sont rarement
+présentées dans les séances suivantes (ANOVA, régression linéaire,
+régression logistique, analyse des données de survie) mais le lecteur est
+invité à appliquer les méthodes de description des données numériques et
+catégorielles vues dans les premières séances pour chaque nouveau
+problème. En effet, même pour les statistiques inférentielle une bonne
+analyse descriptive univariée reste indispensable !
+
 
 \section*{Conventions typographiques}
 Dans la suite de ce document, les extraits de sessions R ou Stata sont
@@ -269,7 +289,7 @@ d'utilisation est généralement fourni à la fin de l'aide en ligne.
 % Colophon
 \vfill
 \hfill{\rm\textcolor{Scode}{\scriptsize Version 1.0 (\today). \LaTeX\ +
-    pdf\TeX\, R~\Sexpr{paste(R.Version()$major,R.Version()$minor,sep=".")},
+    pdf\TeX, R~\Sexpr{paste(R.Version()$major,R.Version()$minor,sep=".")},
     Stata 12.1 MP}.}
 
 \blankpage
@@ -1339,13 +1359,13 @@ mean of x
 \end{description}
 \vskip1em
 
-\noindent Soit l'histogramme de fréquences suivant :\\
-<<exo1-1-6, echo=FALSE, fig=TRUE>>=
-histogram(~ bwt, data=birthwt, aspect=.6, type="percent", xlab="Poids des bébés (kg)")
-@ 
-
 \begin{description}
 \item[\bf 1.6]
+Soit l'histogramme de fréquences suivant :\\
+<<exo1-1-6, echo=FALSE, fig=TRUE>>=
+histogram(~ bwt, data=birthwt, aspect=.6, type="percent", xlab="Poids des bébés (kg)")
+@    
+
 Quelle commande permet de reproduire cette figure (indépendemment du rapport
 largeur/hauteur) ?
 \begin{description}
@@ -1659,10 +1679,13 @@ m[2] - m[1]
 Les commandes ci-dessus permettent de vérifier les moyennes de groupe et la
 différence de gain de sommeil entre les molécules L. hyoscyamine
 hydrobromide et D. hyoscyamine hydrobromide, en gardant à l'esprit que la
-commande \verb|with(sleep, tapply(extra, group, mean))| renvoit deux valeurs
-(les moyennes par type de molécule) et que la différence deux valeurs
-stockées dans la variable auxiliaire \texttt{m} renvoit bien la différence
-de moyennes entre les deux traitements.
+commande 
+\begin{verbatim}
+with(sleep, tapply(extra, group, mean)) 
+\end{verbatim}
+renvoit deux valeurs (les moyennes par type de molécule) et que la
+différence deux valeurs stockées dans la variable auxiliaire \texttt{m}
+renvoit bien la différence de moyennes entre les deux traitements.
 
 Pour calculer les scores de différences, on procèdera comme dans
 l'exercice~1.5 (p.~\pageref{exo:1.5}), soit
@@ -1677,6 +1700,7 @@ distribution sous forme d'histogramme.
 <<ex3-2c, fig=TRUE>>=
 histogram(~ sdif, breaks=seq(0, 5, by=0.5), xlab="LHH - DHH")
 @ 
+\cmd{histogram}
 
 Le résultat du test $t$ est obtenu à partir de la commande \texttt{t.test}
 en fournissant la variable réponse et le facteur de classification sous
@@ -1804,7 +1828,7 @@ regime
 chisq.test(regime)
 @ 
 \cmd{matrix}\cmd{dimnames}\cmd{list}\cmd{chisq.test}
-Si l'on ne souhaite pas appliquer de correction de continuit, il faut
+Si l'on ne souhaite pas appliquer de correction de continuité, il faut
 ajouter l'option \verb|correct=FALSE|.
 
 Les effectifs théoriques ne sont pas affichés avec le résultat du test, mais
@@ -1864,7 +1888,7 @@ dimnames(aspirine) <- list(c("Placebo","Aspirine"), c("Oui","Non"))
 aspirine
 @ 
 \cmd{matrix}\cmd{dimnames}\cmd{list}
-On retiendra que par défuat R organise les données en colonnes (sauf si l'on
+On retiendra que par défaut R organise les données en colonnes (sauf si l'on
 précise l'option \verb|byrow=TRUE|), d'où la saisie des effectifs selon la
 présence ou non d'un infarctus (cf. exercice~\ref{exo:3.4}). Les effectifs
 marginaux (totaux lignes et colonnes) s'obtiennent simplement en calculant
@@ -2053,7 +2077,285 @@ mcnemar.test(hc.tab, correct=FALSE)
 \chapter*{Devoir \no 2}
 \addcontentsline{toc}{chapter}{Devoir \no 2}
 
-%--------------------------------------------------------------- Chapter 04 --
+Les exercices sont indépendants. Une seule réponse est correcte pour chaque
+question. Lorsque vous ne savez pas répondre, cochez la case NSP.
+
+\section*{Exercice 1}
+Voici des données anthropométriques (poids, taille et périmètre crânien)
+recueillies sur deux groupes de bébés (119 garçons, 137 filles) à leur
+naissance. Un bref résumé des principaux indicateurs descriptifs pour ces
+trois variables est fourni ci-après.
+\vskip1em
+
+\begin{tabular}{llrr}
+\toprule
+& & Garçons & Filles \\
+\cmidrule(r){3-4}
+& & (N=119) & (N=137) \\
+\midrule
+Poids (kg) & Moyenne & 3.44 & 3.53 \\
+\texttt{BWEIGHT}           & Écart-type & 0.33 & 0.43 \\
+           & Étendue & 2.70–4.43 & 2.71–4.72 \\
+Taille (cm) & Moyenne & 50.33 & 50.28 \\
+\texttt{BLENGTH}            & Écart-type & 0.78 & 0.85 \\
+            & Étendue & 49.0–51.5 & 49.0–52.0 \\
+PC (cm) & Moyenne & 34.94 & 34.25 \\
+\texttt{BHEADCIR}        & Écart-type & 1.31 & 1.38 \\
+        & Étendue & 31.5–38.0 & 29.5–38.0 \\
+\bottomrule
+\end{tabular}
+\vskip1em
+
+Les données ont été enregistrés dans un fichier texte nommé
+\texttt{babies.dat} dont un aperçu est fourni ci-dessous :
+\begin{verbatim}
+ID BWEIGHT BLENGTH BHEADCIR GENDER
+L002     3.09 50 33.5 1
+L003     3.94 50 35 2
+L006     3.2 49 36 1
+L007     2.93 51 31.5 2
+L017     3.16 49 34 1
+L025     3.36 51 33 2
+L034     4.24 50 33.5 2
+\end{verbatim}
+
+Veuillez indiquer les commandes permettant de répondre aux questions suivantes :
+\begin{description}
+\item[\bf 1.1] On souhaite importer les données sous R en utilisant la
+  commande \texttt{read.table}. Quelles options faut-il renseigner ? \\[1em]
+  \begin{minipage}{.6\linewidth}
+    \begin{description}
+    \item[A.] \verb|babies <- read.table("babies.dat")|
+    \item[B.] \verb|babies <- read.table("babies.dat", row.names=FALSE)|
+    \item[C.] \verb|babies <- read.table(header=TRUE, "babies.dat")|
+    \item[D.] \verb|babies <- read.table("babies.dat", header=TRUE)|
+    \end{description}
+  \end{minipage}\hfill
+  \begin{minipage}{.35\linewidth}
+    Vous répondez :\\ \Square{A}\quad \Square{B}\quad \Square{C}\quad
+    \Square{D}\quad \Square{NSP}
+  \end{minipage}
+\item[\bf 1.2] Comment recoder la variable \texttt{GENDER} en variable
+  qualitative avec les modalités \texttt{G} (=1) et \texttt{F} (=2) ?
+  \\[1em] 
+  \begin{minipage}{.6\linewidth}
+    \begin{description}
+    \item[A.] \verb|babies$GENDER <- factor(babies$GENDER, levels=0:1, labels=c("G","F"))||
+    \item[B.] \verb|babies$GENDER <- factor(babies$GENDER, levels=c("G","F"))|
+    \item[C.] \verb|babies$GENDER <- factor(babies$GENDER, labels=c("G","F"))|
+    \item[D.] \verb|babies$GENDER <- as.factor(babies$GENDER, labels=c("G","F"))|
+    \end{description}
+  \end{minipage}\hfill
+  \begin{minipage}{.2\linewidth}
+    Vous répondez :\\ \Square{A}\quad \Square{B}\quad \Square{C}\quad
+    \Square{D}\quad \Square{NSP}
+  \end{minipage}
+\item[\bf 1.3] La distribution des effectifs selon le sexe peut être obtenue
+  de la manière suivante \\[1em]
+  \begin{minipage}{.6\linewidth}
+    \begin{description}
+    \item[A.] \verb|table(GENDER, data=babies)|
+    \item[B.] \verb|with(babies, table(~ GENDER))|
+    \item[C.] \verb|margin.table(babies$GENDER)|
+    \item[D.] \verb|table(babies$GENDER)|
+    \end{description}  
+  \end{minipage}\hfill
+  \begin{minipage}{.35\linewidth}    
+    Vous répondez :\\ \Square{A}\quad \Square{B}\quad \Square{C}\quad
+    \Square{D}\quad \Square{NSP}
+  \end{minipage}
+\item[\bf 1.4] Le poids moyen des bébés à la naissance, exprimé en grammes, 
+  chez les sujets des deux sexes peut être obtenu de la manière suivante
+  \\[1em] 
+  \begin{minipage}{.6\linewidth}
+    \begin{description}
+    \item[A.] \verb|tapply(BWEIGHT ~ GENDER, data=babies, FUN=mean)|
+    \item[B.] \verb|with(babies, tapply(BWEIGHT, GENDER, mean))|
+    \item[C.] \verb|with(babies, tapply(GENDER, BWEIGHT, mean))|
+    \item[D.] \verb|by(babies$GENDER, mean(babies$BWEIGHT)|
+    \end{description}  
+  \end{minipage}\hfill
+  \begin{minipage}{.35\linewidth}    
+    Vous répondez :\\ \Square{A}\quad \Square{B}\quad \Square{C}\quad
+    \Square{D}\quad \Square{NSP}
+  \end{minipage}
+\end{description}
+\vskip1em
+
+\begin{description}
+\item[\bf 1.5]
+Quelle commande permet de reproduire la figure suivante (indépendemment du
+rapport largeur/hauteur et de la couleur) ?
+\begin{center}
+  \includegraphics{./figs/dev2_histo}
+\end{center}
+\begin{description}
+\item[A.] \verb|histogram(BHEADCIR ~ GENDER, data=babies)|
+\item[B.] \verb|histogram(~ BHEADCIR, data=babies, groups=GENDER)|
+\item[C.] \verb+histogram(~ BHEADCIR | GENDER, data=babies)+
+\item[D.] \verb+histogram(~ BHEADCIR | GENDER, data=babies, type="count")+
+\end{description}  
+
+\noindent Vous répondez :\\ \Square{A}\quad \Square{B}\quad \Square{C}\quad  \Square{D}\quad \Square{NSP}
+\item[\bf 1.6]
+Quelle commande permet de reproduire la figure suivante (indépendemment du
+rapport largeur/hauteur et de la couleur) ?
+\begin{center}
+  \includegraphics{./figs/dev2_bwplot}
+\end{center}
+\begin{description}
+\item[A.] \verb|bwplot(GENDER ~ BWEIGHT, data=babies)|
+\item[B.] \verb|bwplot(~ BWEIGHT, data=babies, groups=GENDER)|
+\item[C.] \verb+bwplot(~ BWEIGHT | GENDER, data=babies)+
+\item[D.] \verb|bwplot(BWEIGHT ~ GENDER, data=babies, horizontal=TRUE)|
+\end{description}  
+
+\noindent Vous répondez :\\ \Square{A}\quad \Square{B}\quad \Square{C}\quad  \Square{D}\quad \Square{NSP}
+
+\end{description}
+
+
+\begin{description}
+\item[\bf 1.7] 
+Voici les résultats d'un test de Student comparant les tailles moyennes des
+bébés des deux sexes à la naissance.
+\begin{verbatim}
+data:  BWEIGHT by GENDER 
+t = -1.9108, df = 249.659, p-value = 0.9714
+alternative hypothesis: true difference in means is greater than 0 
+95 percent confidence interval:
+ -0.1681625        Inf 
+sample estimates:
+  mean in group Male mean in group Female 
+            3.441429             3.531642 
+\end{verbatim}
+De quel type de test s'agit-il exactement ?
+\begin{description}
+\item[A.] C'est un test unilatéral supposant l'homogénéité des variances.
+\item[B.] C'est un test bilatéral supposant l'homogénéité des variances.
+\item[C.] C'est un test unilatéral ne supposant pas l'homogénéité des variances.
+\item[D.] C'est un test bilatéral ne supposant pas l'homogénéité des variances.
+\end{description}  
+
+\noindent Vous répondez :\\ \Square{A}\quad \Square{B}\quad \Square{C}\quad  \Square{D}\quad \Square{NSP}
+
+\item[\bf 1.8] 
+Le statisticien décide de réaliser un test non-paramétrique à l'aide de la commande
+\begin{verbatim}
+wilcox.test(BWEIGHT ~ GENDER, data=babies, paired=TRUE)
+\end{verbatim}
+Ce test est-t-il correctement spécifié dans le contexte de cette étude ?
+  \begin{description}
+  \item[A.] Oui.
+  \item[B.] Non.
+  \end{description}
+  Vous répondez :\\ \Square{A}\quad \Square{B}\quad \Square{NSP}  
+\end{description}
+
+\section*{Exercice 2}
+La distribution des fumeurs (F) et non-fumeurs (NF) dans un ensemble de 177
+personnes vivant en couple est indiquée dans le tableau suivant :
+\vskip1em
+
+\begin{tabular}{llrrr}
+\toprule
+& & \multicolumn{2}{c}{Mari} & \\
+\cmidrule(r){3-4}
+& & F & NF & Total \\
+\midrule
+Femme & F & 42 & 22 & 64 \\
+& NF & 32 & 81 & 113 \\
+& Total & 74 & 103 & 177 \\
+\bottomrule
+\end{tabular}
+\vskip1em
+
+Veuillez indiquer les commandes permettant de répondre aux questions suivantes :
+\begin{description}
+\item[\bf 2.1] Pour saisir ces données tabulaires sous R, on peut utiliser
+  la commande \\[1em]
+  \begin{minipage}{.6\linewidth}
+    \begin{description}
+    \item[A.] \verb|smoke <- matrix(c(42,22,32,81))|
+    \item[B.] \verb|smoke <- matrix(c(42,32,22,81), nrow=2, byrow=TRUE)|
+    \item[C.] \verb|smoke <- matrix(c(42,22,32,81), nrow=2, byrow=TRUE)|
+    \end{description}
+  \end{minipage}\hfill
+  \begin{minipage}{.35\linewidth}
+    Vous répondez :\\ \Square{A}\quad \Square{B}\quad \Square{C}\quad
+    \Square{NSP}
+  \end{minipage}
+\item[\bf 2.2] Quelle commande permet d'obtenir la distribution marginale
+  chez les femmes (totaux lignes) ? \\[1em]
+  \begin{minipage}{.6\linewidth}
+    \begin{description}
+    \item[A.] \verb|table(smoke)|
+    \item[B.] \verb|margin.table(smoke, 1)|
+    \item[C.] \verb|margin.table(smoke, 2)|
+    \item[D.] \verb|prop.table(smoke)|
+    \end{description}
+  \end{minipage}\hfill
+  \begin{minipage}{.35\linewidth}
+    Vous répondez :\\ \Square{A}\quad \Square{B}\quad \Square{C}\quad
+    \Square{D}\quad \Square{NSP}
+  \end{minipage}
+\item[\bf 2.3] Le nombre total d'individus peut être obtenu à l'aide de la
+  commande \\[1em]
+  \begin{minipage}{.6\linewidth}
+    \begin{description}
+    \item[A.] \verb|sum(table(smoke))|
+    \item[B.] \verb|length(table(smoke))|
+    \item[C.] \verb|dim(table(smoke))|
+    \end{description}
+  \end{minipage}\hfill
+  \begin{minipage}{.35\linewidth}
+    Vous répondez :\\ \Square{A}\quad \Square{B}\quad \Square{C}\quad
+    \Square{NSP}
+  \end{minipage}
+\end{description}
+
+\begin{description}
+\item[\bf 2.4]
+La commande
+\begin{verbatim}
+(smoke[1,1]/smoke[1,2]) / (smoke[2,1]/smoke[2,2])
+\end{verbatim}
+fournit une estimation
+\begin{description}
+\item[A.] du risque relatif,
+\item[B.] de l'odds-ratio,
+\item[C.] de la statistique $\chi^2$ ?
+\end{description}  
+\noindent Vous répondez :\\ \Square{A}\quad \Square{B}\quad \Square{C}\quad \Square{NSP}
+\end{description}
+
+\begin{description}
+\item[\bf 2.5]
+Voici le résultat d'un test statistique :
+\begin{verbatim}
+data:  smoke 
+p-value = 1.669e-06
+alternative hypothesis: true odds ratio is not equal to 1 
+95 percent confidence interval:
+ 2.381413 9.864192 
+sample estimates:
+odds ratio 
+  4.784393
+\end{verbatim}
+De quel test s'agit-il ?
+\begin{description}
+\item[A.] Il s'agit d'un test du $\chi^2$.
+\item[B.] Il s'agit d'un test binomial pour la proportion de maris fumeurs
+  versus non-fumeurs.
+\item[C.] Il s'agit d'un test exact de Fisher.
+\end{description}  
+\noindent Vous répondez :\\ \Square{A}\quad \Square{B}\quad \Square{C}\quad \Square{NSP}
+\end{description}
+
+\section*{Exercice 3}
+
+
+% --------------------------------------------------------------- Chapter 04 --
 \chapter{Analyse de variance et plans d'expérience}\label{chap:anova}
 \Opensolutionfile{solutions}[solutions4]
 
@@ -2116,6 +2418,8 @@ Nombre de patients & 14 & 29 & 16 & 59 \\
   l'intervalle de confiance à 95~\% associé et un test paramétrique
   permettant d'évaluer le degré de significativité de la différence
   observée.
+\item[(d)] Représenter graphiquement les moyennes de groupe avec des
+  intervalles de confiance à 95~\%.
 \end{description}
 \begin{sol}
 Pour charger les données, il est nécessaire d'importer la librairie
@@ -2175,12 +2479,55 @@ Soit, une estimation de la racine de la variance commune de
 confiance à 95~\% pour chaque moyenne de groupe comme suit :
 <<ex4-1g>>=
 ni <- table(polymsm$genotype)
+n <- sum(ni)
 m <- with(polymsm, tapply(age, genotype, mean))
 lci <- m - qt(0.975, n-3) * se / sqrt(ni)
 uci <- m + qt(0.975, n-3) * se / sqrt(ni)
 rbind(lci, uci) 
 @ %$ 
 \cmd{table}\cmd{mean}\cmd{qt}\cmd{sqrt}\cmd{rbind}
+
+Dans le cas plus général, pour l'estimation de l'intervalle de confiance
+d'une moyenne (ou d'une proportion) on pourra se référer à la commande
+\texttt{epi.conf} du package \texttt{epiR}, par exemple :
+<<ex4-1h>>=
+library(epiR)
+epi.conf(polymsm$age[polymsm$genotype=="1.6/1.6"], ctype = "mean.single")
+@ 
+
+Pour représenter graphiquement les moyennes de groupe, on peut utiliser deux
+approches. La première consiste à constuire le graphique manuellement, en
+affichant les moyennes sous forme de points et les intervalles de confiance
+sous forme de segments.
+<<ex4-1i, fig=TRUE>>=
+mm <- as.data.frame(cbind(m, lci, uci))
+mm$g <- levels(polymsm$genotype)
+rownames(mm) <- NULL
+dotplot(m ~ g, data=mm, ylim=c(40,75),
+        panel=function(x, y, ...) {
+          panel.dotplot(x, y, ...)
+          panel.segments(x, mm$lci, x, mm$uci)
+        })
+@       
+
+On a donc regroupé les moyennes de groupe, ainsi que les bornes inférieures
+et supérieures des intervalles de confiance et les niveaux du facteur de
+classification dans un même \texttt{data.frame}. La commande graphique
+consiste à enchaîner un appel à \texttt{panel.dotplot} pour afficher les
+moyennes, puis \texttt{panel.segments} pour tracer les intervalles de
+confiance associés.
+
+L'autre solution consiste la commande \texttt{xYplot} (à ne pas confondre
+avec \texttt{xyplot}) du package \texttt{Hmisc}. La seule subtilité est que
+la variable explicative (reportée sur l'axe des abscisses) doit être traitée
+en tant que variable numérique. Il faut adapter légèrement la syntaxe pour
+parvenir à l'effet désiré, en particulier afficher correctement les
+étiquettes correspondant aux différents génotypes.
+<<ex4-1j, eval=FALSE>>=
+library(Hmisc)
+xYplot(Cbind(m,lci,uci) ~ 1:3, data=mm, scales=list(x=list(at=1:3, labels=mm$g)), 
+       xlab="", ylim=c(40,75))
+@
 \end{sol}
 \end{exo}
 %
@@ -2279,6 +2626,11 @@ ou bien
 <<ex4-2h>>=
 with(dfrm, wilcox.test(pb[tx=="A"], pb[tx=="B"]))
 @ 
+L'option \texttt{subset} est disponible dans la plupart des tests que l'on
+rencontrera (ANOVA, régression, tests sur deux échantillons), ainsi que dans
+les commandes graphiques : elle permet de restreindre l'analyse à un
+sous-ensemble de l'échantillon remplissant certaines conditions (ici, les
+individus ne figurant pas dans le groupe C).
 \end{sol}
 \end{exo}
 %
@@ -2565,6 +2917,190 @@ summary(lm(WEIGHT ~ as.ordered(PARITY2), data=weights))
 
 \chapter*{Devoir \no 3}
 \addcontentsline{toc}{chapter}{Devoir \no 3}
+
+Les exercices sont indépendants. Une seule réponse est correcte pour chaque
+question. Lorsque vous ne savez pas répondre, cochez la case NSP.
+
+\section*{Exercice 1}
+Dans une étude d'obstétrique, on s'est intéressé à la relation entre le
+poids d'un bébé à la naissance et le gain de poids de la mère durant sa
+grossesse. Les mères ont été regroupées en quatre classes selon leur gain de
+poids : faible (< 11 kg), normal (11-16 kg), modéré (16-22 kg) et extrême (>
+22 kg). Les bornes inférieures des intervalles sont exclues, les bornes
+supérieures sont inclues. Le poids du bébé à la naissance est mesuré en
+kilogrammes. Au total, on dispose des données de 59 dyades. Voici un aperçu
+des données du \texttt{data.frame} appelé \texttt{bt} :
+\begin{verbatim}
+      bwt              wt              gain      
+ Min.   :1.400   Min.   : 45.00   Min.   : 1.20  
+ 1st Qu.:3.095   1st Qu.: 52.15   1st Qu.:12.30  
+ Median :3.480   Median : 54.50   Median :14.80  
+ Mean   :3.434   Mean   : 57.93   Mean   :15.36  
+ 3rd Qu.:3.860   3rd Qu.: 59.00   3rd Qu.:18.05  
+ Max.   :4.780   Max.   :104.00   Max.   :32.60
+\end{verbatim}
+On cherche à démontrer qu'il existe une relation entre le poids du bébé
+(\texttt{bwt}) et le gain de poids (\texttt{gain}) des mères durant
+leur grossesse, en considérant un risque de première espèce de 5~\%. La
+variable \texttt{wt} représente le poids de la mère avant le début de la
+grossesse.  
+
+\begin{description}
+\item[\bf 1.1] Quelle commande a permis de produire le résultat présenté ci-dessus ? \\[1em]
+  \begin{minipage}{.6\linewidth}
+    \begin{description}
+    \item[A.] \verb|describe|
+    \item[B.] \verb|summary|
+    \item[C.] \verb|str|
+    \end{description}
+  \end{minipage}\hfill
+  \begin{minipage}{.35\linewidth}
+    Vous répondez :\\ \Square{A}\quad \Square{B}\quad \Square{C}\quad
+    \Square{NSP}
+  \end{minipage}
+\item[\bf 1.2] Les données comportent-elles des valeurs manquantes ? \\[1em] 
+  \begin{minipage}{.6\linewidth}
+    \begin{description}
+    \item[A.] Oui.
+    \item[B.] Non.
+    \end{description}
+  \end{minipage}\hfill
+  \begin{minipage}{.35\linewidth}
+    Vous répondez :\\ \Square{A}\quad \Square{B}\quad \Square{NSP}
+  \end{minipage}
+\item[\bf 1.3] On désire recoder la variable \texttt{gain} en variable
+  qualitative à quatre classes telles que décrites dans l'énoncé. Quelle
+  commande est la plus appropriée ? \\[1em]
+    \begin{description}
+    \item[A.] \verb|cut(bt$gain, c(1,11,16,22,33), levels=c("faible","normal","modéré","extrême"))|
+    \item[B.] \verb|cut(bt$gain, c(1,11,16,22,33), labels=c("faible","normal","modéré","extrême"))|
+    \item[C.] \verb|cut(bt$gain, c(11,16,22), labels=c("faible","normal","modéré","extrême"))|
+    \item[D.] \verb|factor(bt$gain, levels=c(11,16,22), labels=c("faible","normal","modéré","extrême"))|
+    \end{description}  
+    \vskip1em
+    Vous répondez :\\ \Square{A}\quad \Square{B}\quad \Square{C}\quad
+    \Square{D}\quad \Square{NSP}
+  \item[\bf 1.4] Quelle commande a permis de fournir les résultats suivants :
+\begin{verbatim}
+  faible   normal   modéré  extrême 
+3.126667 3.402400 3.641250 3.320000
+\end{verbatim}
+    \begin{description}
+    \item[A.] \verb|with(bt, tapply(bwt, gain, mean))|
+    \item[B.] \verb|with(bt, tapply(wt, gain, mean))|
+    \item[C.] \verb|with(bt, tapply(bwt, gain, var))|
+    \item[D.] \verb|with(bt, tapply(wt, gain, var))|
+    \end{description}  
+    \vskip1em
+    Vous répondez :\\ \Square{A}\quad \Square{B}\quad \Square{C}\quad
+    \Square{D}\quad \Square{NSP}
+\end{description}
+
+\begin{description}
+  \item[\bf 1.5] Voici le tableau d'analyse de variance où l'on considère
+    \texttt{bwt} comme variable réponse et \texttt{gain} (4 classes) comme
+    facteur d'étude :
+\begin{verbatim}
+            Df Sum Sq Mean Sq F value Pr(>F)
+gain         3  1.799  0.5997   1.572  0.207
+Residuals   55 20.980  0.3815
+\end{verbatim}
+Quelle est la part de variance expliquée par ce modèle ?    
+    \begin{description}
+    \item[A.] 8.6~\%.  % SSG/SSE
+    \item[B.] 21.8~\%. % MSG-MSE
+    \item[C.] 0.5~\%.  % (SSG*3)/(SSE*55)
+    \end{description}  
+    \vskip1em
+    Vous répondez :\\ \Square{A}\quad \Square{B}\quad \Square{C}\quad
+    \Square{NSP}
+  \item[\bf 1.6]
+Les données individuelles sont représentées dans le graphique suivant.
+\begin{center}
+  \includegraphics{./figs/dev3_bt}
+\end{center}
+On décide d'exclure toutes les observations pour lesquelles le poids du
+bébé à la naissance est inférieur à 2.5 kg (représenté par le trait
+horizontal), toujours en considérant la variable \texttt{gain} comme
+facteur de classification à 4 niveaux. Comment peut-on procéder pour refaire
+l'ANOVA dans ces conditions ?
+\begin{description}
+\item[A.] \verb|aov(bwt, gain, data=bt, select = bwt >= 2.5)|
+\item[B.] \verb|aov(bwt ~ gain, data=bt, select = bwt >= 2.5)|
+\item[C.] \verb|aov(bwt ~ gain, data=bt, subset = bwt >= 2.5)|
+\end{description}  
+\vskip1em
+Vous répondez :\\ \Square{A}\quad \Square{B}\quad \Square{C}\quad
+\Square{NSP}
+\end{description}
+
+\section*{Exercice 2}\label{dev3:exo2}
+Considérons certains des résultats d'un essai clinique sur la thérapie
+hormonale \citep{hulley98}. Les variables d'intérêt sont l'ethnicité
+(\texttt{raceth}) des participants et la pression systolique
+(\texttt{sbp}). Au total, il y a 2763 sujets et, une fois importées sous R,
+les données (appelée \texttt{d}) apparaissent comme reporté ci-dessous :
+\begin{verbatim}
+     raceth           SBP       
+ Min.   :1.000   Min.   : 83.0  
+ 1st Qu.:1.000   1st Qu.:122.0  
+ Median :1.000   Median :134.0  
+ Mean   :1.147   Mean   :135.1  
+ 3rd Qu.:1.000   3rd Qu.:147.0  
+ Max.   :3.000   Max.   :224.0  
+\end{verbatim}
+La variable \texttt{raceth} code pour l'ethnicité des participants, avec les
+conventions suivantes : 1 = \texttt{White}, 2 = \texttt{Afr Amer} et 3 =
+\texttt{Other}. La variable \texttt{SBP} représente la pression
+systolique. On souhaite vérifier si celle-ci varie selon le facteur de
+groupe. Voici un résumé numérique descriptif (effectif, moyenne, écart-type,
+minimum et maximum) de la variable réponse selon les niveaux de
+\texttt{raceth} : 
+\begin{verbatim}
+  raceth    n     mean       sd min max
+1      1 2451 134.7838 18.83169  83 224
+2      2  218 138.2339 19.99252  98 194
+3      3   94 135.1809 21.25977  95 187
+\end{verbatim}
+\begin{description}
+  \item[\bf 2.1] Pour calculer le rapport entre la variance du groupe 3 et
+    celle du groupe 1, on peut utiliser la commande
+    \begin{description}
+    \item[A.] \verb|var(d$SBP[d$raceth=3]/var(d$SBP[d$raceth=1]|
+    \item[B.] \verb|var(d$SBP[d$raceth==3]/var(d$SBP[d$raceth==1]|
+    \item[C.] \verb|var(d$SBP[d$raceth=="3"]/var(d$SBP[d$raceth=="1"]|
+    \end{description}  
+    \vskip1em
+    Vous répondez :\\ \Square{A}\quad \Square{B}\quad \Square{C}\quad
+    \Square{NSP}
+  \item[\bf 2.2] On souhaite représenter la distribution de la pression
+    systolique à l'aide d'un histogramme pour chacun des trois
+    groupes. Quelle commande est la plus appropriée ?
+    \begin{description}
+    \item[A.] \verb|histogram(SBP, raceth, data=d)|
+    \item[B.] \verb+histogram(~ SBP | raceth, data=d)+
+    \item[C.] \verb|histogram(SBP ~ raceth, data=d)|
+    \end{description}  
+    \vskip1em
+    Vous répondez :\\ \Square{A}\quad \Square{B}\quad \Square{C}\quad
+    \Square{NSP}
+  \item[\bf 2.3] On réalise une ANOVA à l'aide de la commande suivante :
+\begin{verbatim}
+> summary(aov(SBP ~ raceth, data=d))
+              Df Sum Sq Mean Sq F value Pr(>F)
+raceth         1    945   945.5   2.613  0.106
+Residuals   2761 999057   361.8
+\end{verbatim}
+    Est-ce la commande appropriée ?
+    \begin{description}
+    \item[A.] Oui.
+    \item[B.] Non.
+    \end{description}  
+    \vskip1em
+    Vous répondez :\\ \Square{A}\quad \Square{B}\quad \Square{NSP}
+  \end{description}
+
+\section*{Exercice 3}
 
 \chapter{Corrélation et régression linéaire}\label{chap:reg}
 \Opensolutionfile{solutions}[solutions5]
@@ -3012,6 +3548,9 @@ ethnique (\texttt{race}).
   restant le poids des bébés. Comparer la significativité du modèle dans son
   ensemble avec les résultats obtenus à partir d'une ANOVA à un facteur
   (ethnicité). 
+\item[(d)] Quelle est le poids prédit pour un bébé dont la mère pèse 60 kg ?
+  Donner un intervalle de confiance à 95~\% pour une prédiction ponctuelle
+  en moyenne.
 %% \item[(d)] Refaire l'analyse de régression décrite en (c) après avoir
 %%   modifié la manière dont \R génère les contrastes pour les variables
 %%   qualitatives en tapant ceci à l'invite de commande \R :
@@ -3130,6 +3669,34 @@ grp.means[2:3] - grp.means[1]     # 1er modèle de régression (reg.res2)
 %% le second cas entre \texttt{White} et \texttt{Black} et la moyenne des
 %% trois groupes.
 % \url{http://bit.ly/LFkFBg}.
+
+Pour prédire le poids d'un individu dont la mère pèse 60 kg, on utilisera la
+commande \texttt{predict}, sachant que cette même commande permet également
+de faire une estimation par intervalle (en moyenne ou pour une observation
+future) grâce à l'option \texttt{interval}.
+<<ex5-4i>>=
+m <- lm(bwt ~ lwt, data=birthwt)
+d <- data.frame(lwt=60)
+predict(m, newdata=d, interval="confidence") 
+@ 
+Les colonnes \texttt{lwr} et \texttt{upr} correspondent respectivement aux
+bornes inférieure et supérieure de l'IC à 95~\%.
+On notera qu'il est nécessaire de fournir la valeur des cofacteurs
+d'intérêt dans un \texttt{data.frame} séparé (ici, \texttt{d}). Si l'on
+souhaitait obtenir plusieurs prédictions, ou utuliser plusieurs cofacteurs,
+on procèderait excatement de la même manière en construisant un tableau des
+valeurs d'intérêt. À titre d'illustration, voici comment on procèderait si
+l'on s'intéressait à la prédiction du poids d'un bébé dont la mère pèse 55
+ou 60 kg et dont la classe d'appartenance pour l'ethnicité (\texttt{race})
+est \texttt{Other} :
+<<ex5-4j>>=
+m <- lm(bwt ~ lwt + race, data=birthwt)
+d <- data.frame(lwt=c(55, 60), race=rep("Other", 2))
+predict(m, d, interval="confidence")
+@ 
+Si l'on ne précise aucune valeur pour l'option \texttt{newdata}, R produira
+une estimation de la valeur prédite pour chaque unité statistique avec les
+valeurs observées pour le ou les cofacteurs présents dans le modèle.
 \end{sol}
 \end{exo}
 \Closesolutionfile{solutions}
@@ -3138,6 +3705,184 @@ grp.means[2:3] - grp.means[1]     # 1er modèle de régression (reg.res2)
 
 \chapter*{Devoir \no 4}
 \addcontentsline{toc}{chapter}{Devoir \no 4}
+
+Les exercices sont indépendants. Une seule réponse est correcte pour chaque
+question. Lorsque vous ne savez pas répondre, cochez la case NSP.
+
+\section*{Exercice 1}
+Dans la même étude sur la thérapie hormonale (cf. exercice~2 du devoir \no
+3, p.~\pageref{dev3:exo2}), on disposait de l'âge des participants dont la
+distribution est reportée ci-dessous :
+\begin{verbatim}
+      age            raceth           SBP       
+ Min.   :44.00   Min.   :1.000   Min.   : 83.0  
+ 1st Qu.:62.00   1st Qu.:1.000   1st Qu.:122.0  
+ Median :67.00   Median :1.000   Median :134.0  
+ Mean   :66.65   Mean   :1.147   Mean   :135.1  
+ 3rd Qu.:72.00   3rd Qu.:1.000   3rd Qu.:147.0  
+ Max.   :79.00   Max.   :3.000   Max.   :224.0  
+\end{verbatim}
+Les données sont toujours contenue dans un \texttt{data.frame} nommé
+\texttt{d} sous R. La question d'intérêt porte sur la relation entre les
+variables \texttt{age} et \texttt{SBP}.
+\begin{description}
+\item[\bf 1.1] On souhaite afficher un diagramme de dispersion où l'âge
+  figure sur l'axe horizontal (abscisses) et la pression systolique sur
+  l'axe vertical (ordonnées). Quelle commande peut-on utiliser ? \\[1em]
+  \begin{minipage}{.6\linewidth}
+    \begin{description}
+    \item[A.] \verb|xyplot(age, SBP, data=d)|
+    \item[B.] \verb|xyplot(age ~ SBP, data=d)|
+    \item[C.] \verb|xyplot(SBP ~ age, data=d)|
+    \item[D.] \verb|xyplot(SBP ~ age + raceth, data=d)|
+    \end{description}
+  \end{minipage}\hfill
+  \begin{minipage}{.35\linewidth}
+    Vous répondez :\\ \Square{A}\quad \Square{B}\quad \Square{C}\quad
+    \Square{D}\quad \Square{NSP}
+  \end{minipage}
+\item[\bf 1.2] On souhaite vérifier l'étendue des âges (minimum et maximum)
+  par groupe d'ethnicité (variable \texttt{raceth}). Quelle commande permet
+  de répondre à cette question ? \\[1em] 
+  \begin{minipage}{.6\linewidth}
+    \begin{description}
+    \item[A.] \verb|with(d, tapply(age, raceth, c(mean, sd)))|
+    \item[B.] \verb|with(d, tapply(age, raceth, function(x) min(x), max(x)))|
+    \item[C.] \verb|with(d, tapply(age, raceth, range))|
+    \item[D.] \verb|with(d, tapply(age, raceth, diff))|
+    \end{description}
+  \end{minipage}\hfill
+  \begin{minipage}{.35\linewidth}
+    Vous répondez :\\ \Square{A}\quad \Square{B}\quad \Square{C}\quad
+    \Square{D}\quad \Square{NSP}
+  \end{minipage}
+\item[\bf 1.3] On souhaite calculer les déciles pour la variable
+  \texttt{age}. Quelle commande faut-il utiliser ? \\[1em]
+    \begin{description}
+    \item[A.] \verb|cut(d$age, 1:10)|
+    \item[B.] \verb|factor(d$age, 1:10)|
+    \item[C.] \verb|quantile(d$age, breaks=seq(0,1,.1))|
+    \item[D.] \verb|quantile(d$age, probs=seq(0,1,.1))|
+    \end{description}  
+    \vskip1em
+    Vous répondez :\\ \Square{A}\quad \Square{B}\quad \Square{C}\quad
+    \Square{D}\quad \Square{NSP}
+\item[\bf 1.4] On souhaite à présent recoder la variable numérique
+  \texttt{age} en une variable qualitative \texttt{aged} définie de sorte
+  que chaque valeur numérique observée est remplacée par la valeur du décile
+  dans laquelle elle se situe. Supposons que le résultat calculé à
+  l'exercice~1.3 ait été stocké dans une variable appelée
+  \texttt{ageq}. La commande suivante fournit-elle le résultat escompté ?
+\begin{verbatim}
+aged <- cut(d$age, ageq)
+\end{verbatim}
+  \begin{minipage}{.6\linewidth}
+    \begin{description}
+    \item[A.] Oui.
+    \item[B.] Non.
+    \end{description}
+  \end{minipage}\hfill
+  \begin{minipage}{.35\linewidth}
+    Vous répondez :\\ \Square{A}\quad \Square{B}\quad \Square{NSP}
+  \end{minipage}
+\item[\bf 1.5] On souhaite calculer la différence moyenne de pression
+  systolique entre les deux déciles les plus extrêmes (10~\% d'âges les plus
+  bas et 10~\% d'âge les plus hauts). En supposant que la variable
+  \texttt{aged} (âges individuels recodés sous forme de déciles) ait été
+  correctement créée (voir aperçu ci-après, quelle solution peut-on utiliser ?
+\begin{verbatim}
+> summary(d$aged)
+[44,58] (58,61] (61,63] (63,65] (65,67] (67,69] (69,71] (71,73] (73,75] (75,79] 
+    346     304     231     264     276     323     290     289     202     238
+\end{verbatim}
+    \begin{description}
+    \item[A.] \verb|with(d, mean(SBP[aged==10]) - mean(SBP[aged==2]))|
+    \item[B.] \verb|with(d, mean(SBP[aged=="10"]) - mean(SBP[aged=="2"]))|
+    \item[C.] \verb|diff(with(d, tapply(SBP, aged, mean))[c(2,10)])|
+    \item[D.] \verb|diff(mean(d$SBP[d$aged %in% c("[44,58]","(75,79]")]))|
+    \end{description}  
+    \vskip1em
+    Vous répondez :\\ \Square{A}\quad \Square{B}\quad \Square{C}\quad
+    \Square{D}\quad \Square{NSP}
+\item[\bf 1.6] Quel résultat produit cette commande :
+\begin{verbatim}
+xyplot(SBP ~ age | factor(raceth), data=d, layout=c(3,1), type="r")
+\end{verbatim}
+    \begin{description}
+    \item[A.] Trois diagrammes de dispersion de la pression systolique en
+      fonction de l'âge pour chaque sous-groupe de participants défini selon
+      le facteur ethnicité (\texttt{raceth}).
+    \item[B.] Un diagramme de dispersion de la pression systolique en
+      fonction de l'âge de l'ensemble des participants avec des symboles
+      graphiques variables selon le facteur ethnicité (\texttt{raceth}).
+    \item[C.] Trois graphiques montrant la droite de régression de la
+      variable \texttt{age} sur la variable réponse \texttt{SBP} pour pour
+      chaque sous-groupe de participants défini selon le facteur ethnicité
+      (\texttt{raceth}).
+    \end{description}  
+    \vskip1em
+    Vous répondez :\\ \Square{A}\quad \Square{B}\quad \Square{C}\quad
+    \Square{NSP}
+\end{description} 
+
+\begin{description}
+  \item[\bf 1.7]
+Voici un diagramme de dispersion résumant la distribution conjointe des
+mesures de pression systolique et d'âge. Les déciles d'âge apparaissent sous
+forme de disques noirs.
+\begin{center}
+\includegraphics{./figs/dev4_sbp}  
+\end{center}
+Quelle commande doit-on utiliser pour estimer le coefficient de corrélation
+linéaire de Bravais-Pearson et un intervalle de confiance à 90~\% ? \\[1em]
+\begin{minipage}{.6\linewidth}
+  \begin{description}
+    \item[A.] \verb|confint(cor(d$age, d$SBP))|
+    \item[B.] \verb|cor.test(d$age, d$SBP)|
+    \item[C.] \verb|with(d, cor.test(age, SBP, conf.level=0.90))|
+    \item[D.] \verb|with(d, cor.test(age, SBP, conf.level=90))|
+    \end{description}  
+  \end{minipage}\hfill
+  \begin{minipage}{.35\linewidth}
+    Vous répondez :\\ \Square{A}\quad \Square{B}\quad \Square{C}\quad
+    \Square{D}\quad \Square{NSP}
+  \end{minipage}
+\end{description}
+
+\section*{Exercice 2}
+Cet exercice est basé sur les mêmes données que celles présentées à
+l'exercice précédent.
+
+\begin{description}
+\item[\bf 2.1] On souhaite à présent réaliser une régression linéaire en
+    considérant la variable \texttt{SBP} comme variable réponse et l'âge
+    comme variable prédictrice. On souhaite restreindre l'analyse à la
+    classe ethnique majoritaire. Quelle commande faut-il utiliser ? \\[1em]
+\begin{minipage}{.6\linewidth}
+  \begin{description}
+    \item[A.] \verb|lm(SBP ~ age, data=d[raceth==1,])|
+    \item[B.] \verb|lm(SBP ~ age, data=subset(d, raceth=1))|
+    \item[C.] \verb|lm(SBP ~ age, data=d, subset=raceth==1)|
+    \end{description}  
+  \end{minipage}\hfill
+  \begin{minipage}{.35\linewidth}
+    Vous répondez :\\ \Square{A}\quad \Square{B}\quad \Square{C}\quad \Square{NSP}
+  \end{minipage}
+\item[\bf 2.2] En considérant que le modèle décrit en 1.8 a été stocké dans
+  une variable appelée \texttt{mod}, que renverrait la commande \verb|anova(mod)| ?     
+    \begin{description}
+    \item[A.] Le tableau des coefficients de régression avec leur
+      intervalles de confiance.
+    \item[B.] Le tableau des coefficients de régression sans leur
+      intervalles de confiance.
+    \item[C.] Le tableau d'analyse de variance correspondant au modèle de
+      régression. 
+    \end{description}  
+    \vskip1em
+    Vous répondez :\\ \Square{A}\quad \Square{B}\quad \Square{C}\quad
+    \Square{NSP}
+\end{description}
+  
 
 \chapter{Mesures d'association en épidémiologie et régression logistique}\label{chap:logistic}
 % FIXME:
@@ -3316,7 +4061,16 @@ confint(oddsratio(macrolid.bis, log=FALSE))
 On concluerait donc de la même manière qu'avec le test $\chi^2$ puisque
 l'intervalle de confiance à 95~\% pour l'odds-ratio ne contient pas la
 valeur 1 (signifiant l'absence d'association entre les deux variables
-étudiées). 
+étudiées). On notera qu'il existe également une commande relativement
+pratique pour les analyses épidémiologiques dans le package \texttt{epiR} ;
+en ce qui concerne le calcul de l'odds-ratio, il faudra tout de même prendre
+garde à la manière dont le tableau de contingence est arrangé. Pour utiliser
+la commande \texttt{epi.2by2} de ce package, il faudra échanger les colonnes
+du tableau \texttt{macrolid}, soit
+<<ex6-1g2>>=
+library(epiR)
+epi.2by2(macrolid[,c(2,1)])
+@ 
 
 Pour vérifier une éventuelle disparité entre les centres, il nous faut dans
 un premier temps calculer les pourcentages d'épisodes infectieux dans chaque
@@ -4038,6 +4792,116 @@ témoins).
 \chapter*{Devoir \no 5}
 \addcontentsline{toc}{chapter}{Devoir \no 5}
 
+Les exercices sont indépendants. Une seule réponse est correcte pour chaque
+question. Lorsque vous ne savez pas répondre, cochez la case NSP.
+
+\section*{Exercice 1}
+Les analyses proposées se basent sur une étude sur les facteurs de risque
+d'accidents coronariens \citep{rosenman64}. Les données cas-témoin sont
+résumées dans le tableau de contingence suivant : les cas sont définis comme
+les personnes ayant eu un accident coronarien durant les 10 années de suivi,
+tandis que le facteur d'exposition est l'opacisation de la cornée qui est
+supposée être reliée au taux de cholestérol ; sa présence conduit à
+considérer la personne comme exposée.
+\vskip1em
+
+\begin{tabular}{l|cc|r}
+& Exposé & Non-exposé & total \\
+\hline
+Cas & 102 & 153 & 255 \\
+Témoin & 839 & 2058 & 2897 \\
+\hline
+total & 941 & 2211 & 3152
+\end{tabular}
+\vskip1em
+
+L'objet de l'analyse de vérifier si l'obscurcissement de la cornée constitue
+effectivement un facteur prédictif du risque de développer un infarctus.
+
+\begin{description}
+\item[\bf 1.1] Quelle solution peut-on proposer pour stocker ce type de
+  données sous R ? \\[1em]
+    \begin{description}
+    \item[A.] \verb|matrix(c(102,153,839,2058), nr=2, byrow=TRUE, dimnames=list(c("M-","M+"),c("E-","E+")))|
+    \item[B.] \verb|matrix(c(102,153,839,2058), nr=2, byrow=TRUE, dimnames=list(c("M+","M-"),c("E+","E-")))|
+    \item[C.] \verb|matrix(c(102,153,839,2058), nr=2, dimnames=list(c("M+","M-"),c("E+","E-")))|
+    \item[C.] \verb|matrix(c(102,153,839,2058), nr=2, dimnames=list(c("M-","M+"),c("E-","E+")))|
+    \end{description}
+    Vous répondez :\\ \Square{A}\quad \Square{B}\quad \Square{C}\quad
+    \Square{D}\quad \Square{NSP}
+\item[\bf 1.2] Supposons que le tableau de données ait été appelé
+  \texttt{tab} sous R. On souhaite calculer l'odds-ratio à l'aide de la
+  commande \texttt{oddsratio} du package \texttt{vcd}. Quelle est la
+  commande à utiliser ?\\[1em] 
+  \begin{minipage}{.6\linewidth}
+    \begin{description}
+    \item[A.] \verb|oddsratio(tab, log=FALSE)|
+    \item[B.] \verb|oddsratio(tab)|
+    \item[C.] \verb|oddsratio(tab[c(2,1),c(2,1)], log=FALSE)|
+    \item[D.] \verb|oddsratio(tab[c(2,1),c(2,1)])|
+    \end{description}
+  \end{minipage}\hfill
+  \begin{minipage}{.35\linewidth}
+    Vous répondez :\\ \Square{A}\quad \Square{B}\quad \Square{C}\quad
+    \Square{D}\quad \Square{NSP}
+  \end{minipage}
+\item[\bf 1.3] Pour calculer l'intervalle de confiance à 95~\% associé à
+  l'odds-ratio estimé en 1.2 et que l'on enregistré dans la variable
+  \texttt{tab.or}, on utilise la commande \\[1em] 
+  \begin{minipage}{.6\linewidth}
+    \begin{description}
+    \item[A.] \verb|confint(tab.or)|
+    \item[B.] \verb|summary(tab.or, conf.level=0.95)|
+    \item[C.] \verb|confint(tab.or, log=FALSE)|
+    \end{description}  
+  \end{minipage}\hfill
+  \begin{minipage}{.35\linewidth}
+    Vous répondez :\\ \Square{A}\quad \Square{B}\quad \Square{C}\quad \Square{NSP}
+  \end{minipage}
+\item[\bf 1.4] Peut-on retrouver la valeur de l'odds-ratio à partir d'une
+  autre commande ? Si oui, laquelle ? \\[1em]
+  \begin{minipage}{.6\linewidth}
+    \begin{description}
+    \item[A.] \verb|fisher.test|
+    \item[B.] \verb|binom.test|
+    \item[C.] \verb|glm|
+    \item[D.] \verb|tabstat|
+    \end{description}  
+  \end{minipage}\hfill
+  \begin{minipage}{.35\linewidth}
+    Vous répondez :\\ \Square{A}\quad \Square{B}\quad \Square{C}\quad
+    \Square{D}\quad \Square{NSP}
+  \end{minipage}
+\item[\bf 1.5] Quelle commande utiliserait-on pour représenter graphiquement
+  la fréquence relative des cas (uniquement) selon le facteur d'exposition ?
+  \\[1em]
+  \begin{minipage}{.6\linewidth}
+    \begin{description}
+    \item[A.] \verb|barchart(table(tab["M+",])/sum(tab))|
+    \item[B.] \verb|barchart(table(tab[2,])/sum(tab))|
+    \item[C.] \verb|barchart(prop.table(tab[2,]))|
+    \item[D.] \verb|barchart(prop.table(tab["M+",]))|
+    \end{description}  
+  \end{minipage}\hfill
+  \begin{minipage}{.35\linewidth}
+    Vous répondez :\\ \Square{A}\quad \Square{B}\quad \Square{C}\quad
+    \Square{D}\quad \Square{NSP}
+  \end{minipage}
+\item[\bf 1.6] Que renvoit la commande suivante ?
+\begin{verbatim}
+(tab[1,1]/sum(tab[1,])) / (tab[2,1]/sum(tab[2,]))
+\end{verbatim}
+    \begin{description}
+    \item[A.] Le risque absolu chez les exposés.
+    \item[B.] Le risque absolu chez les non-exposés.      
+    \item[C.] Le risque relatif.
+    \end{description}
+    Vous répondez :\\ \Square{A}\quad \Square{B}\quad \Square{C}\quad
+    \Square{NSP}
+\end{description}
+
+\section*{Exercice 2}
+
 \chapter{Données de survie}\label{chap:survival}
 \Opensolutionfile{solutions}[solutions7]
 
@@ -4046,14 +4910,14 @@ témoins).
 \textbf{\large Objectifs :} 
 
 \noindent
-
+Table de survie • Estimateur de Kaplan-Meier • Courbe de survie • Test du
+ log-rank • Modèle de Cox
 \end{minipage}} 
 \end{center}
 
 \vspace*{3ex}
 
 \section*{Énoncés}
-
 %
 % 
 %
@@ -4088,6 +4952,16 @@ depuis la date de diagnostic.
   risque en fonction du temps, avec la valeur de survie associée.
 \item[(e)] Afficher la courbe de Kaplan-Meier avec un intervalle de
   confiance à 95~\%, sans considérer le type de traitement.
+\item[(f)] Calculer la médiane de survie et son intervalle de confiance à
+  95~\% pour chaque groupe de sujets et afficher les courbes de survie
+  correspondantes.
+\item[(g)] Effectuer un test du log-rank en considérant comme prédicteur le
+  facteur \texttt{rx}. Comparer avec un test de Wilcoxon.
+\item[(h)] Effectuer un test du log-rank sur le facteur d'intérêt
+  (\texttt{rx}) en stratifiant sur l'âge. On considèrera trois groupe
+  d'âge : 40 ans ou moins, entre 40 et 55 ans inclus, plus de 55 ans.
+\item[(i)] Retrouver les résultats de l'exercice 1.g avec une régression de
+  Cox. 
 \end{description}
 \begin{sol}
 Le chargement des données ne pose pas de difficultés :
@@ -4187,6 +5061,48 @@ d'afficher l'estimateur de la survie sous la forme d'une courbe de
 Kaplan-Meier à l'aide de la commande \texttt{plot}.
 <<ex7-1m, fig=TRUE>>=
 plot(s)
+@
+
+La médiane de survie pour chaque bras de traitement peut être obtenue à
+l'aide de la commande \texttt{survdiff}. Redéfinissons dans un premier temps
+le modèle de survie pour inclure le prédicteur d'intérêt :
+<<ex7-1n>>=
+s <- survfit(Surv(years, status) ~ rx, data=pb)
+@ 
+Pour obtenir la médiane de survie, il suffit d'afficher le résultat
+précédent :
+<<ex7-1o>>=
+s
+@
+
+Le test du log-rank se réalise à partir de la commande \texttt{survdiff},
+avec les mêmes notations que dans le cas du calcul de la médiane de survie.
+<<ex7-1p>>=
+survdiff(Surv(years, status) ~ rx, data=pb)
+@ 
+L'option \texttt{rho} permet de contrôler le type de test réalisé. En
+ajoutant \texttt{rho=1} on réalise un test de Wilcoxon au lieu du log-rank
+classique :
+<<ex7-1q>>=
+survdiff(Surv(years, status) ~ rx, data=pb, rho=1)
+@ 
+
+Pour réaliser une analyse stratifiée sur l'âge, il est nécessaire de recoder
+cette variable numérique en variable qualitative, ce que l'on peut réaliser
+à l'aide de la commande \texttt{cut}.
+<<ex7-1r>>=
+agec <- cut(pb$age, c(26, 40, 55, 79))
+@ 
+On peut effectuer de nouveau le test du log-rank en incluant ce facteur de
+stratification additionnel en adaptatnt légèrement le modèle précédent :
+<<ex7-1s>>=
+survdiff(Surv(years, status) ~ rx + strata(agec), data=pb)
+@ 
+
+Enfin, concernant le modèle de Cox, c'est la commande \texttt{coxph} qu'il
+faut utiliser.
+<<ex7-1t>>=
+summary(coxph(Surv(years, status) ~ rx, data=pb))
 @ 
 \end{sol}
 \end{exo}
@@ -4270,54 +5186,56 @@ summary(coxph(Surv(time=Time, event=Status) ~ Treatment, data=prostate))
 % 
 % Stata hip fracture
 %
-\begin{exo}\label{exo:7.3}
-% FIXME: reformuler énoncé
-Une étude a visé à évaluer le bénéfice d'un nouvel appareil de protection
-pneumatique pour prévenir les fractures de hanche occasionnées par la chute
-des personnes âgés. Ce dispositif doit être porté en permanence par la
-personne, mais on espère qu'à terme cela permettra de réduire l'incidence
-des fractures de hanche. Au total, 48 femmes âgées de plus de 60 ans ont
-participé à cette étude, parmi lesquelles 28 ont été sélectionnées par
-tirage aléatoire pour utiliser ce nouveau dispositif et 20 ont été choisies
-comme contrôles (pas de dispositif). Des dosages réguliers de calcium ont
-été effectués tous les 5 mois et la durée d'observation avant la première
-fracture a été enregistrée en mois.\autocite{cleves10} Les données sont
-disponibles au format Stata dans le fichier \texttt{hip.dta}. L'événement
-est défini dans la variable appelée \texttt{fracture}, et les variables
-\texttt{time0} et \texttt{time1} indiquent le début et la fin des
-intervalles de monitoring des sujets.
-\begin{description}
-\item[(a)] Vérifier la structure du tableau de données et remédier aux
-  problèmes des valeurs manquantes.
-\item[(b)] Afficher un tableau des principaux indicateurs de survie (nombre
-  d'individus à risque, nombre d'événements).
-\item[(c)] Calculer la médiane de survie et son intervalle de confiance à
-  95~\% pour chaque groupe de sujets et afficher les courbes de survie
-  correspondantes.
-\item[(d)] Effectuer un test du log-rank. Comparer avec un test de Wilcoxon.
-\item[(e)] Effectuer un test du log-rank sur le facteur d'intérêt
-  (\texttt{protect}) en stratifiant sur l'âge. On considèrera trois groupe
-  d'âge : 65 ans ou moins, entre 65 et 75 ans inclus, plus de 75 ans.
-\item[(f)] Construire un modèle de régression (Cox) en tenant compte du
-  groupe de traitement et donner la valeur du hazard ratio.
-\item[(g)] Vérifier les conditions d'applications du modèle.
-\end{description}
+%% \begin{exo}\label{exo:7.3}
+%% % FIXME: reformuler énoncé
+%% Une étude a visé à évaluer le bénéfice d'un nouvel appareil de protection
+%% pneumatique pour prévenir les fractures de hanche occasionnées par la chute
+%% des personnes âgés. Ce dispositif doit être porté en permanence par la
+%% personne, mais on espère qu'à terme cela permettra de réduire l'incidence
+%% des fractures de hanche. Au total, 48 femmes âgées de plus de 60 ans ont
+%% participé à cette étude, parmi lesquelles 28 ont été sélectionnées par
+%% tirage aléatoire pour utiliser ce nouveau dispositif et 20 ont été choisies
+%% comme contrôles (pas de dispositif). Des dosages réguliers de calcium ont
+%% été effectués tous les 5 mois et la durée d'observation avant la première
+%% fracture a été enregistrée en mois.\autocite{cleves10} Les données sont
+%% disponibles au format Stata dans le fichier \texttt{hip.dta}. L'événement
+%% est défini dans la variable appelée \texttt{fracture}, et les variables
+%% \texttt{time0} et \texttt{time1} indiquent le début et la fin des
+%% intervalles de monitoring des sujets.
+%% \begin{description}
+%% \item[(a)] Vérifier la structure du tableau de données et remédier aux
+%%   problèmes des valeurs manquantes.
+%% \item[(b)] Afficher un tableau des principaux indicateurs de survie (nombre
+%%   d'individus à risque, nombre d'événements).
+%% \item[(c)] Calculer la médiane de survie et son intervalle de confiance à
+%%   95~\% pour chaque groupe de sujets et afficher les courbes de survie
+%%   correspondantes.
+%% \item[(d)] Effectuer un test du log-rank. Comparer avec un test de Wilcoxon.
+%% \item[(e)] Effectuer un test du log-rank sur le facteur d'intérêt
+%%   (\texttt{protect}) en stratifiant sur l'âge. On considèrera trois groupe
+%%   d'âge : 65 ans ou moins, entre 65 et 75 ans inclus, plus de 75 ans.
+%% \item[(f)] Construire un modèle de régression (Cox) en tenant compte du
+%%   groupe de traitement et donner la valeur du hazard ratio.
+%% \end{description}
 
-\begin{sol}
-Le chargement des données
-<<ex7-3a>>=
-library(foreign)
-hip <- read.dta("hip.dta")
-summary(hip)
-subset(hip, id==34)
-tail(hip[do.call(order, hip),])
-@   
-\end{sol}
-\end{exo}
+%% %% \begin{sol}
+%% Le chargement des données
+%% <<ex7-3a>>=
+%% library(foreign)
+%% hip <- read.dta("hip.dta")
+%% summary(hip)
+%% subset(hip, id==34)
+%% tail(hip[do.call(order, hip),])
+%% @   
+%% \end{sol}
+%% \end{exo}
 
 \Closesolutionfile{solutions}
 \section*{Corrigés}
 \input{solutions7}
+
+\chapter*{Devoir \no 6}
+\addcontentsline{toc}{chapter}{Devoir \no 6}
 
 \begin{footnotesize}
   \printindex
@@ -4968,9 +5886,6 @@ Puis, on procède de même avec les variables qualitatives :
 . by low, sort: tab1 race smoke ht ui
 \end{verbatim}
 
-\chapter*{Devoir \no 6}
-\addcontentsline{toc}{chapter}{Devoir \no 6}
-
 \chapter{Mesures d'association, comparaison de moyennes et de proportions
   pour deux échantillons ou plus}  
 
@@ -5438,13 +6353,38 @@ que l'on peut obtenir comme ceci sous Stata (ici pour le premier génotype,
 2.2009852
 \end{verbatim}
 
-Les différences de moyennes peuvent être obtenues en formant des contrastes
-spécifiques à partir d'un modèle de régression qui donne des résultats
-équivalents au modèle d'ANOVA, sous réserve de coder la variable qualitative
-\texttt{genotype} sous forme d'une matrice d'indicatrices à l'aide de
-l'opérateur \verb|i.*|. On ne présente pas les résultats de l'appel à la
-commande \texttt{regress} puisque ce qui nous intéresse est simplement
-d'exploiter les résultats qu'elle sauvegarde (cf. \verb|e()|).
+Plus généralement, on pourrait générer les bornes inférieures et supérieures
+des intervalles de confiance à 95~\% des trois moyennes de groupe à partir
+des données aggrégées, comme le montre l'exemple suivant (on ne tient plus
+compte de l'estimé de la variance commune dans ce cas) :
+\begin{verbatim}
+. collapse (mean) agem=age (sd) ages=age (count) n=age, by(genotype)
+. generate agelci = agem - invttail(n-1, 0.025)*(ages/sqrt(n))
+. generate ageuci = agem + invttail(n-1, 0.025)*(ages/sqrt(n))
+\end{verbatim}
+et une commande telle que \verb|twoway (bar agem genotype) (rcap ageuci agelci genotype)|
+permettrait d'afficher les résultats sous forme graphique. Une solution
+alternative et plus commode est d'utiliser la commande \texttt{serrbar}  qui
+permet d'afficher une série de moyennes associées à leur erreurs
+standard. Comme on souhaite utiliser les intervalles de confiance plutôt que
+les erreurs standard, il suffit juste d'ajouter une petite modification à
+l'usage standard. En utilisant les calculs précédents, on calcule la
+demi-largeur de l'IC (sachant que celui-ci est symétrique autour de la moyenne)
+\begin{verbatim}
+. gen ageb = agem-agelci
+. serrbar agem ageb genotype, xlabel(1 "1.6/1.6" 2 "1.6/0.7" 3 "0.7/0.7")
+\end{verbatim}
+
+\includegraphics{./figs/stata_sebar}
+
+
+On notera que les différences de moyennes peuvent être obtenues en formant
+des contrastes spécifiques à partir d'un modèle de régression qui donne des
+résultats équivalents au modèle d'ANOVA, sous réserve de coder la variable
+qualitative \texttt{genotype} sous forme d'une matrice d'indicatrices à
+l'aide de l'opérateur \verb|i.*|. On ne présente pas les résultats de
+l'appel à la commande \texttt{regress} puisque ce qui nous intéresse est
+simplement d'exploiter les résultats qu'elle sauvegarde (cf. \verb|e()|).
 \begin{verbatim}
 . regress age i.genotype
 \end{verbatim}
@@ -7241,176 +8181,178 @@ Total     |         6           6.00
 %
 %
 %
-\soln{\ref{exo:7.3}}
-L'importation des données ne pose pas de problème particulier puisque
-celles-ci sont déjà stockées au format Stata.
-\begin{verbatim}
-. use hip, clear
-. describe
+%% \soln{\ref{exo:7.3}}
+%% L'importation des données ne pose pas de problème particulier puisque
+%% celles-ci sont déjà stockées au format Stata.
+%% \begin{verbatim}
+%% . use hip, clear
+%% . describe
 
-Contains data from hip.dta
-  obs:           106                          hip fracture study
- vars:             7                          30 Jan 2009 11:58
- size:         1,060                          
------------------------------------------------------------------------------------------
-              storage  display     value
-variable name   type   format      label      variable label
------------------------------------------------------------------------------------------
-id              byte   %4.0g                  patient ID
-time0           byte   %5.0g                  begin of span
-time1           byte   %5.0g                  end of span
-fracture        byte   %8.0g                  fracture event
-protect         byte   %8.0g                  wears device
-age             byte   %4.0g                  age at enrollment
-calcium         float  %8.0g                  blood calcium level
------------------------------------------------------------------------------------------
-Sorted by:
-\end{verbatim}
-On peut vérifier les données de quelques individus.
-\begin{verbatim}
-. sort id time0
-. list if id == 1
+%% Contains data from hip.dta
+%%   obs:           106                          hip fracture study
+%%  vars:             7                          30 Jan 2009 11:58
+%%  size:         1,060                          
+%% -----------------------------------------------------------------------------------------
+%%               storage  display     value
+%% variable name   type   format      label      variable label
+%% -----------------------------------------------------------------------------------------
+%% id              byte   %4.0g                  patient ID
+%% time0           byte   %5.0g                  begin of span
+%% time1           byte   %5.0g                  end of span
+%% fracture        byte   %8.0g                  fracture event
+%% protect         byte   %8.0g                  wears device
+%% age             byte   %4.0g                  age at enrollment
+%% calcium         float  %8.0g                  blood calcium level
+%% -----------------------------------------------------------------------------------------
+%% Sorted by:
+%% \end{verbatim}
+%% On peut vérifier les données de quelques individus.
+%% \begin{verbatim}
+%% . sort id time0
+%% . list if id == 1
 
-     +---------------------------------------------------------+
-     | id   time0   time1   fracture   protect   age   calcium |
-     |---------------------------------------------------------|
-  1. |  1       0       1          1         0    76      9.35 |
-     +---------------------------------------------------------+
-. list if id == 15
+%%      +---------------------------------------------------------+
+%%      | id   time0   time1   fracture   protect   age   calcium |
+%%      |---------------------------------------------------------|
+%%   1. |  1       0       1          1         0    76      9.35 |
+%%      +---------------------------------------------------------+
+%% . list if id == 15
 
-     +---------------------------------------------------------+
-     | id   time0   time1   fracture   protect   age   calcium |
-     |---------------------------------------------------------|
- 21. | 15       0       5          0         0    64     11.67 |
- 22. | 15       5      12          1         .     .      11.4 |
-     +---------------------------------------------------------+
-. list if id == 48
+%%      +---------------------------------------------------------+
+%%      | id   time0   time1   fracture   protect   age   calcium |
+%%      |---------------------------------------------------------|
+%%  21. | 15       0       5          0         0    64     11.67 |
+%%  22. | 15       5      12          1         .     .      11.4 |
+%%      +---------------------------------------------------------+
+%% . list if id == 48
 
-     +---------------------------------------------------------+
-     | id   time0   time1   fracture   protect   age   calcium |
-     |---------------------------------------------------------|
-104. | 48       0       5          0         1    67     11.21 |
-105. | 48       5      15          0         .     .     11.43 |
-106. | 48      15      39          0         .     .     11.29 |
-     +---------------------------------------------------------+
-\end{verbatim}
-ce qui permet de voir que pour les variables \texttt{protect} et
-\texttt{age} les données ne sont pas répétées après la première occasion, ce
-qui évidemment géénère un nombre important de valeurs manquantes pour ces variables.
-\begin{verbatim}
-. summarize
+%%      +---------------------------------------------------------+
+%%      | id   time0   time1   fracture   protect   age   calcium |
+%%      |---------------------------------------------------------|
+%% 104. | 48       0       5          0         1    67     11.21 |
+%% 105. | 48       5      15          0         .     .     11.43 |
+%% 106. | 48      15      39          0         .     .     11.29 |
+%%      +---------------------------------------------------------+
+%% \end{verbatim}
+%% ce qui permet de voir que pour les variables \texttt{protect} et
+%% \texttt{age} les données ne sont pas répétées après la première occasion, ce
+%% qui évidemment géénère un nombre important de valeurs manquantes pour ces variables.
+%% \begin{verbatim}
+%% . summarize
 
-    Variable |       Obs        Mean    Std. Dev.       Min        Max
--------------+--------------------------------------------------------
-          id |       106    28.21698    13.09599          1         48
-       time0 |       106    4.792453    5.631065          0         15
-       time1 |       106     11.5283    8.481024          1         39
-    fracture |       106    .2924528    .4570502          0          1
-     protect |        48    .5833333    .4982238          0          1
--------------+--------------------------------------------------------
-         age |        48      70.875    5.659205         62         82
-     calcium |       106    10.10849    1.407355       7.25      12.32
-\end{verbatim}
+%%     Variable |       Obs        Mean    Std. Dev.       Min        Max
+%% -------------+--------------------------------------------------------
+%%           id |       106    28.21698    13.09599          1         48
+%%        time0 |       106    4.792453    5.631065          0         15
+%%        time1 |       106     11.5283    8.481024          1         39
+%%     fracture |       106    .2924528    .4570502          0          1
+%%      protect |        48    .5833333    .4982238          0          1
+%% -------------+--------------------------------------------------------
+%%          age |        48      70.875    5.659205         62         82
+%%      calcium |       106    10.10849    1.407355       7.25      12.32
+%% \end{verbatim}
 
-Pour le codage des données brutes en données de survie, on utilisera la
-commande \texttt{stset} de la manière suivante :
-\begin{verbatim}
-. stset time1, id(id) time0(time0) failure(fracture)
+%% Pour le codage des données brutes en données de survie, on utilisera la
+%% commande \texttt{stset} de la manière suivante :
+%% \begin{verbatim}
+%% . stset time1, id(id) time0(time0) failure(fracture)
 
-                id:  id
-     failure event:  fracture != 0 & fracture < .
-obs. time interval:  (time0, time1]
- exit on or before:  failure
+%%                 id:  id
+%%      failure event:  fracture != 0 & fracture < .
+%% obs. time interval:  (time0, time1]
+%%  exit on or before:  failure
 
-------------------------------------------------------------------------------
-      106  total obs.
-        0  exclusions
-------------------------------------------------------------------------------
-      106  obs. remaining, representing
-       48  subjects
-       31  failures in single failure-per-subject data
-      714  total analysis time at risk, at risk from t =         0
-                             earliest observed entry t =         0
-                                  last observed exit t =        39
-\end{verbatim}
+%% ------------------------------------------------------------------------------
+%%       106  total obs.
+%%         0  exclusions
+%% ------------------------------------------------------------------------------
+%%       106  obs. remaining, representing
+%%        48  subjects
+%%        31  failures in single failure-per-subject data
+%%       714  total analysis time at risk, at risk from t =         0
+%%                              earliest observed entry t =         0
+%%                                   last observed exit t =        39
+%% \end{verbatim}
 
-\begin{verbatim}
-. stdescribe
+%% \begin{verbatim}
+%% . stdescribe
 
-         failure _d:  fracture
-   analysis time _t:  time1
-                 id:  id
+%%          failure _d:  fracture
+%%    analysis time _t:  time1
+%%                  id:  id
 
-                                   |-------------- per subject --------------|
-Category                   total        mean         min     median        max
-------------------------------------------------------------------------------
-no. of subjects               48   
-no. of records               106    2.208333           1          2          3
+%%                                    |-------------- per subject --------------|
+%% Category                   total        mean         min     median        max
+%% ------------------------------------------------------------------------------
+%% no. of subjects               48   
+%% no. of records               106    2.208333           1          2          3
 
-(first) entry time                         0           0          0          0
-(final) exit time                       15.5           1       12.5         39
+%% (first) entry time                         0           0          0          0
+%% (final) exit time                       15.5           1       12.5         39
 
-subjects with gap              3   
-time on gap if gap            30          10          10         10         10
-time at risk                 714      14.875           1       11.5         39
+%% subjects with gap              3   
+%% time on gap if gap            30          10          10         10         10
+%% time at risk                 714      14.875           1       11.5         39
 
-failures                      31    .6458333           0          1          1
-------------------------------------------------------------------------------
-\end{verbatim}
+%% failures                      31    .6458333           0          1          1
+%% ------------------------------------------------------------------------------
+%% \end{verbatim}
 
-\begin{verbatim}
-. stvary
+%% \begin{verbatim}
+%% . stvary
 
-         failure _d:  fracture
-   analysis time _t:  time1
-                 id:  id
+%%          failure _d:  fracture
+%%    analysis time _t:  time1
+%%                  id:  id
 
-               subjects for whom the variable is
-                                                 never    always   sometimes
-    variable |  constant    varying             missing   missing   missing
--------------+--------------------------------------------------------------
-     protect |        48          0                   8         0        40
-         age |        48          0                   8         0        40
-     calcium |         8         40                  48         0         0
+%%                subjects for whom the variable is
+%%                                                  never    always   sometimes
+%%     variable |  constant    varying             missing   missing   missing
+%% -------------+--------------------------------------------------------------
+%%      protect |        48          0                   8         0        40
+%%          age |        48          0                   8         0        40
+%%      calcium |         8         40                  48         0         0
 
-. streset, past future
--> stset time1, id(id) failure(fracture) time0(time0)
--> streset, full past future
+%% . streset, past future
+%% -> stset time1, id(id) failure(fracture) time0(time0)
+%% -> streset, full past future
 
-                id:  id
-     failure event:  fracture != 0 & fracture < .
-obs. time interval:  (time0, time1]
- exit on or before:  time .
-    t for analysis:  (time-origin)
-            origin:  min
-              ever:  _insmpl
+%%                 id:  id
+%%      failure event:  fracture != 0 & fracture < .
+%% obs. time interval:  (time0, time1]
+%%  exit on or before:  time .
+%%     t for analysis:  (time-origin)
+%%             origin:  min
+%%               ever:  _insmpl
 
-------------------------------------------------------------------------------
-      106  total obs.
-        0  exclusions
-------------------------------------------------------------------------------
-      106  obs. remaining, representing
-       48  subjects
-       31  failures in single failure-per-subject data
-      714  total analysis time at risk, at risk from t =         0
-                             earliest observed entry t =         0
-                                  last observed exit t =        39
+%% ------------------------------------------------------------------------------
+%%       106  total obs.
+%%         0  exclusions
+%% ------------------------------------------------------------------------------
+%%       106  obs. remaining, representing
+%%        48  subjects
+%%        31  failures in single failure-per-subject data
+%%       714  total analysis time at risk, at risk from t =         0
+%%                              earliest observed entry t =         0
+%%                                   last observed exit t =        39
 
-. stfill age protect, forward
+%% . stfill age protect, forward
 
-         failure _d:  fracture
-   analysis time _t:  (time1-origin)
-             origin:  min
-  exit on or before:  time .
-                 id:  id
+%%          failure _d:  fracture
+%%    analysis time _t:  (time1-origin)
+%%              origin:  min
+%%   exit on or before:  time .
+%%                  id:  id
 
-replace missing values with previously observed values:
-             age:  58 real changes made
-         protect:  58 real changes made
+%% replace missing values with previously observed values:
+%%              age:  58 real changes made
+%%          protect:  58 real changes made
 
-. streset
-\end{verbatim}
+%% . streset
+%% \end{verbatim}
 
+\chapter*{Devoir \no 9}
+\addcontentsline{toc}{chapter}{Devoir \no 9}
 
 \end{document}
 
