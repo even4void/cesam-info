@@ -1,0 +1,1000 @@
+\part{Module R}
+
+\chapter{Éléments du langage}\label{chap:langage}
+
+\begin{exo}\label{exo:1.1}
+Un chercheur a recueilli les mesures biologiques suivantes (unités
+arbitraires) :
+\begin{verbatim}
+3.68  2.21  2.45  8.64  4.32  3.43  5.11  3.87
+\end{verbatim}
+\begin{description}
+\item[(a)] Stocker la séquence de mesures dans une variable appelée
+  \texttt{x}.  
+\item[(b)] Indiquer le nombre d'observations (à l'aide de \R), les valeurs
+  minimale et maximale, ainsi que l'étendue.  
+\item[(c)] En fait, le chercheur réalise que la valeur 8.64 correspond à une
+  erreur de saisie et doit être changée en 3.64. De même, il a un doute sur
+  la 7\ieme mesure et décide de la considérer comme une valeur manquante :
+  effectuer les transformations correspondantes. 
+\end{description}
+\end{exo}
+
+\begin{exo}\label{exo:1.2}
+La charge virale plasmatique permet de décrire la quantité de virus (p.~ex.,
+VIH) dans un échantillon de sang. Ce marqueur virologique qui permet de
+suivre la progression de l’infection et de mesurer l’efficacité des
+traitements est rapporté en nombre de copies par millilitre, et la plupart
+des instruments de mesure ont un seuil de détectabilité de 50
+copies/ml. Voici une série de mesures, $X$, exprimées en logarithmes (base 10)
+collectées sur 20 patients :
+\begin{verbatim}
+3.64 2.27 1.43 1.77 4.62 3.04 1.01 2.14 3.02 5.62 5.51 5.51 1.01 1.05 4.19
+2.63 4.34 4.85 4.02 5.92
+\end{verbatim}
+Pour rappel, une charge virale de 100 000 copies/ml équivaut à 5 log.
+\begin{description}
+\item[(a)] Indiquer combien de patients ont une charge virale considérée
+  comme non-détectable. 
+\item[(b)] Quelle est le niveau de charge virale médian, en copies/ml, pour
+  les données considérées comme valides ?
+\end{description}
+\end{exo}
+
+\begin{exo}\label{exo:1.3}
+Le fichier \texttt{dosage.txt} contient une série de 15 dosages biologiques,
+stockés au format numérique avec 3 décimales, comme suit
+\begin{verbatim}
+6.379 6.683 5.120 ...
+\end{verbatim}
+\begin{description}
+\item[(a)] Utiliser \verb|scan| pour lire ces données (bien lire l'aide en
+  ligne concernant l'usage de cette commande, en particulier l'option
+  \texttt{what=}). 
+\item[(b)] Corriger la série de mesures afin de pouvoir calculer la moyenne
+  arithmétique.   
+\item[(c)] Enregistrer les données corrigées dans fichier texte appelé
+  \texttt{data.txt}. 
+\end{description}
+\end{exo}
+
+\begin{exo}\label{exo:1.4}
+Lors d'une enquête épidémiologique, les données suivantes ont été collectées
+(à partir d'un questionnaire retourné par voie postale) : l'âge (en années),
+le sexe (M, masculin, F, féminin, ou T, transgenre), le niveau de QI (score
+numérique, positif), le statut socio-économique (variable qualitative à
+trois modalités, A, B et C), et un score de qualité de vie (exprimé sur une
+échelle allant de 0 à 100 points). Un aperçu des données pour les 10
+premiers individus est fourni ci-dessous :
+\vskip1em
+
+\begin{tabular}{cccccc}
+\toprule
+id & age & sexe & qi & sse & qdv \\
+\midrule
+1 &  26  &  M & 126 &  B & 72 \\
+2 &  31  &  F & 123 &  A & 73 \\
+3 &  28  &  M & 114 &  B & 72 \\
+4 &  28  &  M & 125 &  B & 72 \\
+5 &  29  &  F & 134 &  A & 76 \\
+6 &  33  &  F & 141 &  B & 74 \\
+7 &  32  &  F & 123 &  B & 72 \\
+8 &  21  &  M & 114 &  A & 71 \\
+9 &  36  &  M & 122 &  C & 71 \\
+10 & 30  &  M & 127 &  A & 66 \\
+\bottomrule
+\end{tabular}
+\vskip1em
+
+\begin{description}
+  \item[(a)] Créer un \verb|data.frame|, nommé \texttt{dfrm}, pour stocker les données de
+ces 10 individus.
+  \item[(b)] L'ensemble de la base de données a été enregistré dans
+un fichier Excel, puis exportée au format \textsf{CSV} (c'est-à-dire un
+fichier texte dans lequel les données de chaque individu sont écrites sur
+une même ligne, avec des virgules séparant les valeurs de chaque variable,
+encore appelé "champs") sous le nom \texttt{enquete.csv} : charger le
+fichier sous \R, et vérifier la concordance des données avec celles créées
+au préalable.
+\item[(c)] Indiquer la proportion d'hommes et de femmes dans cet échantillon.
+\item[(d)] La variable qdv contient-elle des valeurs manquantes ? Si oui,
+  combien et pour quels numéros d'observations (lignes du tableau de
+  données) ?
+\end{description}
+\end{exo}
+
+\begin{exo}\label{exo:1.5}
+Le fichier \texttt{anorexia.dat} contient les données d'une étude clinique
+chez des patientes anorexiques ayant reçu l'une des trois thérapies
+suivantes : thérapie comportementale, thérapie familiale, thérapie
+contrôle.\autocite{hand93} 
+\begin{description}
+\item[(a)] Combien y'a-t-il de patientes au total ? Combien y'a-t-il de
+  patientes par groupe de traitement ?
+\item[(b)] Les mesures de poids sont en livres. Les convertir en
+  kilogrammes.    
+\item[(c)] Créer une nouvelle variable contenant les scores de différences
+  (\texttt{After} - \texttt{Before}).
+\item[(d)] Indiquer la moyenne et l'étendue (min/max) des scores de
+  différences par groupe de traitement.
+\end{description}
+\end{exo}
+
+\begin{exo}\label{exo:1.6}
+Soient les mesures de bioluminescence recueillies dans une étude sur
+l'antagonisme Na/An. Les données sont présentées dans le tableau suivant et
+elles ont été enregistrées dans le fichier \texttt{bioluminescence.dat} où
+les mesures recueillies pour chaque traitement sont arrangées en colonnes
+(comme dans le tableau).
+\vskip1em
+
+\begin{tabular}{cccc}
+\toprule
+Sans Na & Avec Na & Sans Na & Avec Na \\
+Sans An & Sans An & Avec An & Avec An \\
+\midrule
+6.5 & 26.5 & 12.0 & 12.6 \\
+6.2 & 22.7 & 8.2 & 13.4 \\
+6.8 & 17.0 & 12.3 & 12.0 \\
+5.7 & 18.0 & 11.3 & 6.0 \\
+7.2 & 14.9 & 7.0 & – \\
+5.9 & 24.0 & 10.5 & – \\
+8.2 & 19.9 & – & – \\
+8.0 & 24.0 & – & – \\
+10.5 & – & – & – \\
+7.4 & – & – & – \\
+8.9 & – & – & – \\
+11.5 & – & – & – \\
+\bottomrule
+\end{tabular}
+\vskip1em
+
+\begin{description}
+\item[(a)] Importer les données sous R et reformater le tableau de données
+  de manière à ce que la variable réponse soit dans une seule colonne, et
+  les facteurs d'étude (\texttt{Na} et \texttt{An}) dans deux colonnes
+  séparées (\texttt{data.frame}).
+\item[(b)] Vérifier le nombre d'observations disponible pour chacun des
+  quatre traitements, un traitement correspondant au croisement des niveaux
+  de chacun des facteurs d'étude.
+\item[(c)] Enregistrer le tableau de données ainsi constitué au format
+  \texttt{RData}. Il sera exploité lors de la séance~4 (\pageref{chap:anova}).
+\end{description}
+\end{exo}
+
+\chapter{Statistiques descriptives et estimation}\label{chap:descriptive}
+
+\begin{exo}\label{exo:2.1}
+Une variable quantitative $X$ prend les valeurs suivantes sur un échantillon
+de 26 sujets :
+\begin{verbatim}
+24.9,25.0,25.0,25.1,25.2,25.2,25.3,25.3,25.3,25.4,25.4,25.4,25.4,
+25.5,25.5,25.5,25.5,25.6,25.6,25.6,25.7,25.7,25.8,25.8,25.9,26.0
+\end{verbatim}
+\begin{description}
+\item[(a)] Calculer la moyenne, la médiane ainsi que le mode de $X$. 
+\item[(b)]  Quelle est la valeur de la variance estimée à partir de ces données ? 
+\item[(c)] En supposant que les données sont regroupées en 4 classes dont les
+  bornes sont : 24.9–25.1, 25.2–25.4, 25.5–25.7, 25.8–26.0, afficher la
+  distribution des effectifs par classe sous forme d'un tableau d'effectifs. 
+\item[(d)] Représenter la distribution de $X$ sous forme d'histogramme, sans
+  considération d'intervalles de classe \emph{a priori}.
+\end{description}
+\end{exo}
+
+\begin{exo}\label{exo:2.2}
+On dispose des temps de survie de 43 patients souffrant de leucémie
+granulocytaire chronique, mesurés en jours depuis le diagnostique :
+\autocite[p.~38]{everitt01} 
+\begin{verbatim}
+7,47,58,74,177,232,273,285,317,429,440,445,455,468,495,497,532,571,
+579,581,650,702,715,779,881,900,930,968,1077,1109,1314,1334,1367,
+1534,1712,1784,1877,1886,2045,2056,2260,2429,2509
+\end{verbatim}
+\begin{description}
+\item[(a)] Calculer le temps de survie médian. 
+\item[(b)] Combien de patients ont une survie inférieure (strictement) à 900
+  jours au moment de l'étude ? 
+\item[(c)] Quelle la durée de survie associée au 90\ieme\ percentile ?
+\end{description}
+\end{exo}
+
+\begin{exo}\label{exo:2.3}
+Le fichier \texttt{elderly.dat} contient la taille mesurée en cm de 351
+personnes âgées de sexe féminin, sélectionnées aléatoirement dans la
+population lors d'une étude sur l'ostéoporose. Quelques observations sont
+cependant manquantes.
+\begin{description}
+\item[(a)] Combien y'a t-il d'observations manquantes au total ?
+\item[(b)] Donner un intervalle de confiance à 95~\% pour la taille moyenne
+  dans cet échantillon, en utilisant une approximation normale.
+\item[(c)] Représenter la distribution des tailles observées sous forme
+  d'une courbe de densité.  
+\end{description}
+\end{exo}
+
+\begin{exo}\label{exo:2.4}
+Le fichier \texttt{birthwt} est un des jeux de données fournis avec \R. Il
+comprend les résultats d'une étude prospective visant à identifier les
+facteurs de risque associés à la naissance de bébés dont le poids est
+inférieur à la norme (2,5 kg). Les données proviennent de 189 femmes, dont
+59 ont accouché d'un enfant en sous-poids. Parmi les variables d'intérêt
+figurent l'âge de la mère, le poids de la mère lors des dernières
+menstruations, l'ethnicité de la mère et le nombre de visites médicales
+durant le premier trimestre de grossesse.\autocite{hosmer89}
+Les variables disponibles sont décrites comme suit : \texttt{low} (= 1 si
+poids $<2.5$ kg, 0 sinon), \texttt{age} (années), \texttt{lwt} (poids de la
+mère en livres), \texttt{race} (ethnicité codée en trois classes, 1 = white,
+2 = black, 3 = other), \texttt{smoke} (= 1 si consommation de tabac durant
+la grossesse, 0 sinon), \texttt{ptl} (nombre d'accouchements pré-terme
+antérieurs), \texttt{ht} (= 1 si antécédent d'hypertension, 0 sinon),
+\texttt{ui} (= 1 si manifestation d'irritabilité utérine, 0 sinon),
+\texttt{ftv} (nombre de consultations chez le gynécologue durant le premier
+trimestre de grossesse), \texttt{bwt} (poids des bébés à la naissance, en
+\emph{g}).
+\begin{description}
+\item[(a)] Recoder les variables \texttt{low}, \texttt{race},
+  \texttt{smoke}, \texttt{ui} et \texttt{ht} en variables
+  qualitatives, avec des étiquettes ("labels") plus informatives.
+\item[(b)] Convertir le poids des mères en \emph{kg}. Indiquer la moyenne, la
+  médiane et l'intervalle inter-quartile. Représenter la distribution des
+  poids sous forme d'histogramme.
+\item[(c)] Indiquer la proportion de mères consommant du tabac durant la
+  grossesse, avec un intervalle de confiance à 95~\%. Représenter les
+  proportions (en \%) fumeur/non-fumeur sous forme d'un diagramme en
+  barres.
+\item[(d)] Recoder l'âge des mères en trois classes équilibrées (tercilage)
+  et indiquer la proportion d'enfants dont le poids est $<2500$ \emph{g}
+  pour chacune des trois classes.
+\item[(e)] Construire un tableau d'effectifs ($n$ et \%) pour la variable
+  ethnicité (\texttt{race}).  
+\item[(f)] Décrire la distribution des variables \texttt{race},
+  \texttt{smoke}, \texttt{ui}, \texttt{ht} et \texttt{age} après
+  stratification sur la variable \texttt{low}.  
+\end{description}
+\end{exo}
+
+\chapter{Comparaisons de deux variables}\label{chap:comparaisons}
+
+\begin{exo}\label{exo:3.1}
+On dispose des poids à la naissance d'un échantillon de 50 enfants
+présentant un syndrôme de détresse respiratoire idiopathique aïgue. Ce type
+de maladie peut entraîner la mort et on a observé 27 décès chez ces
+enfants. Les données sont résumées dans le tableau ci-dessous et sont
+disponibles dans le fichier \texttt{sirds.dat}, où les 27 premières
+observations correspondent au groupe des enfants décédés au moment de
+l'étude. \autocite[p.~64]{everitt01}
+\begin{verbatim}
+Enfants décédés :
+1.050 1.175 1.230 1.310 1.500 1.600 1.720 1.750 1.770 2.275
+2.500 1.030 1.100 1.185 1.225 1.262 1.295 1.300 1.550 1.820
+1.890 1.940 2.200 2.270 2.440 2.560 2.730 
+Enfants vivants :
+1.130 1.575 1.680 1.760 1.930 2.015 2.090 2.600 2.700 2.950 
+3.160 3.400 3.640 2.830 1.410 1.715 1.720 2.040 2.200 2.400 
+2.550 2.570 3.005
+\end{verbatim}
+Un chercheur s'intéresse à l'existence éventuelle d'une différence entre le
+poids moyen des enfants ayant survécu et celui des enfants décédés des
+suites de la maladie. 
+\begin{description}
+\item[(a)] Réaliser un test $t$ de Student. Peut-on rejeter l'hypothèse nulle
+  d'absence de différences entre les deux groupes d'enfants ? 
+\item[(b)] Vérifier graphiquement que les conditions d'applications du test
+(normalité et homogénéité des variances) sont vérifiées. 
+\item[(c)] Quel est l'intervalle de confiance à 95~\% pour la différence de
+  moyenne observée ?
+\end{description}
+\end{exo}
+
+\begin{exo}\label{exo:3.2}
+La qualité de sommeil de 10 patients a été mesurée avant (contrôle) et après
+traitement par un des deux hypnotiques suivants : (1) D. hyoscyamine
+hydrobromide et (2) L. hyoscyamine hydrobromide. Le critère de jugement
+retenu par les chercheurs était le gain moyen de sommeil (en heures) par
+rapport à la durée de sommeil de base
+(contrôle). \autocite[p.~20]{student08} Les données sont reportées
+ci-dessous et figurent également parmi les jeux de données de base de R
+(\verb|data(sleep)|).  
+\begin{verbatim}
+D. hyoscyamine hydrobromide :
+0.7 -1.6 -0.2 -1.2 -0.1  3.4  3.7  0.8  0.0  2.0
+L. hyoscyamine hydrobromide :
+1.9  0.8  1.1  0.1 -0.1  4.4  5.5  1.6  4.6  3.4
+\end{verbatim}
+
+Les chercheurs ont conclu que seule la deuxième molécule avait réellement un
+effet soporifique. 
+\begin{description}
+\item[(a)] Estimer le temps moyen de sommeil pour chacune des deux
+  molécules, ainsi que la différence entre ces deux moyennes.
+\item[(b)] Afficher la distribution des scores de différence (LHH - DHH)
+  sous forme d'un histogramme, en considérant des intervalles de classe
+  d'une demi-heure, et indiquer la moyenne et l'écart-type de ces scores de
+  différence.
+\item[(c)] Vérifier l'exactitude des conclusions à l'aide d'un test de Student.
+\end{description}
+\end{exo}
+
+\begin{exo}\label{exo:3.3}
+Dans une étude clinique, des chercheurs se sont intéressés à l'effet d'une
+certaine forme de thérapie (par administration de tranquilisants) sur
+l'évolution de 9 patients souffrant d'un trouble mixte combinant anxiété et
+dépression. Le niveau de dépression était mesuré à partir de l'échelle de
+dépression de Hamilton à l'inclusion (première visite) et lors d'une seconde
+visite (après traitement). Il s'agit d'une échelle composé de 21 items à
+plusieurs modalités de réponse ordonnées à partir de laquelle on peut
+calculer un score total ou moyen. Les données recueillies sont indiquées
+ci-dessous :\autocite[p.~29]{hollander99}
+\begin{verbatim}
+1.83 0.50 1.62 2.48 1.68 1.88 1.55 3.06 1.30
+0.878 0.647 0.598 2.050 1.060 1.290 1.060 3.140 1.290
+\end{verbatim}
+On cherche à démontrer que le traitement a bien un effet se traduisant par
+une diminution des scores moyens individuels. Pour cela, on se propose de
+réaliser un test non-paramétrique.
+\begin{description}
+\item[(a)] Représenter la distribution des scores sous forme
+  d'un diagramme de dispersion (en abscisses, données à la 1\iere\ visite ; en
+  ordonnées, données à la 2\ieme\ visite).
+\item[(b)] Effectuer un test de Wilcoxon.
+\end{description}
+\end{exo}
+
+\begin{exo}\label{exo:3.4}
+Dans un essai clinique, on a cherché à évaluer un régime supposé réduire le
+nombre de symptômes associé à une maladie bénigne du sein. Un groupe de 229
+femmes ayant cette maladie ont été alétoirement réparties en deux
+groupes. Le premier groupe a reçu les soins courants, tandis que les
+patientes du second groupe suivaient un régime spécial (variable B =
+traitement). Après un an, les individus ont été évalués et ont été classés
+dans l'une des deux catégories : amélioration ou pas d'amélioration
+(variable A = réponse). Les résultats sont résumés dans le tableau suivant,
+pour une partie de l'échantillon :\autocite[p.~323]{selvin98}
+\vskip1em
+
+\begin{tabular}{l|cc|r}
+& régime & pas de régime & total \\
+\hline
+amélioration & 26 & 21 & 47 \\
+pas d'amélioration & 38 & 44 & 82 \\
+\hline
+total & 64 & 65 & 129
+\end{tabular}
+\vskip1em
+
+\begin{description}
+\item[(a)] Réaliser un test du chi-deux.  
+\item[(b)] Quels sont les effectifs théoriques attendus sous une hypothèse
+  d'indépendance ?
+\item[(c)] Comparer les résultats obtenus en (a) avec ceux d'un test de
+  Fisher.
+\item[(d)] Donner un intervalle de confiance pour la différence de
+  proportion d'amélioration entre les deux groupes de patientes.
+\end{description}
+\end{exo}
+
+\begin{exo}\label{exo:3.5}
+Dans un essai clinique, 1360 patients ayant déjà eu un infarctus dy myocarde
+ont été assignés à l'un des deux groupes de traitement suivants : prise en
+charge par aspirine à faible dose en une seule prise \emph{versus}
+placebo. La table ci-après indique le nombre de décès par infarctus lors de
+la période de suivi de trois ans :\autocite[p.~72]{agresti02} 
+\vskip1em
+
+\begin{tabular}{lccc}
+\toprule
+& \multicolumn{2}{c}{Infarctus} & \\
+\cmidrule(r){2-3}
+& Oui & Non & Total \\
+\midrule
+Placebo & 28 & 656 & 684 \\
+Aspirine & 18 & 658 & 676 \\
+\bottomrule
+\end{tabular}
+\vskip1em
+
+\begin{description}
+\item[(a)] Calculer la proportion d'infarctus du myocarde dans les deux
+  groupes de patients.
+\item[(b)] Représenter graphiquement le tableau précédent sous forme d'un
+  diagramme en barres ou d'un diagramme en points ("dotplot" de Cleveland).
+\item[(c)] Indiquer la valeur de l'odds-ratio ainsi que du risque relatif.
+\item[(d)] À partir de l'intervalle de confiance à 95~\% pour l'odds, quelle
+  conclusion peut-on tirer sur l'effet de l'aspirine dans la prévention d'un
+  infarctus du myocarde ?
+\end{description}
+\end{exo}
+
+\begin{exo}\label{exo:3.6}
+Une étude a porté sur 86 enfants suivis dans un centre pour apprendre à
+gérer leur maladie. Lors de leur arrivée, on a demandé aux enfants s'ils
+savaient gérer leur maladie dans les conditions optimales (non détaillées),
+c'est-à-dire s'ils savaient à quel moment il leur fallait recourir au
+traitement prescrit. La même question a été posée à ces enfants à la fin de
+leur suivi dans le centre. La variable mesurée est la réponse (affirmative
+ou non) à cette question à l'entrée et à la sortie de l'étude. Les données,
+disponibles au format SPSS dans le fichier \texttt{health-camp.sav}, sont
+résumées dans le tableau ci-après :\autocite[p.~235]{peat05}  
+\vskip1em
+
+\begin{tabular}{lll...}
+\toprule
+& & & \multicolumn{2}{c}{Gestion maladie (sortie)} &  \\
+\cmidrule(r){4-5}
+& & & Non & Oui & Total \\
+\midrule
+Gestion maladie (entrée) & Non & Effectif & 27 & 29 & 56 \\
+& & Fréquence & 31.4~\% & 33.7~\% & 65.1~\% \\
+& Oui & Effectif & 6 & 24 & 30 \\
+& & Fréquence & 7.0~\% & 27.9~\% & 34.9~\% \\
+Total & & Effectif & 33 & 53 & 86 \\
+& & Fréquence & 38.4~\% & 61.6~\% & 100.0~\% \\
+\bottomrule
+\end{tabular}
+\vskip1em
+
+On se demande si le fait d'avoir suivi le programme de formation proposé
+dans le centre a augmenté le nombre d'enfants ayant une bonne connaissance
+de leur maladie et de sa gestion quotidienne.
+\begin{description}
+\item[(a)] Reproduire le tableau d'effectifs et de fréquences relatives
+  précédent à partir des données brutes.
+\item[(b)] Indiquer le résultat d'un test de McNemar.
+\item[(c)] Comparer le résultat du test réalisé en (b) mais sans continuité
+  de correction avec le résultat obtenu à partir d'un test binomial.
+\end{description}
+\end{exo}
+
+\chapter{Analyse de variance et plans d'expérience}\label{chap:anova}
+
+\begin{exo}\label{exo:4.1}
+Dans une étude sur le gène du récepteur à \oe strogènes, des généticiens se
+sont intéressés à la relation entre le génotype et l'âge de diagnostic du
+cancer du sein. Le génotype était déterminé à partir des deux allèles d'un
+polymorphisme de restriction de séquence (1.6 et 0.7 kb), soit trois groupes
+de sujets : patients homozygotes pour l'allèle 0.7 kb (0.7/0.7), patients
+homozygotes pour l'allèle 1.6 kb (1.6/1.6), et patients hétérozygotes
+(1.6/0.7). Les données ont été recueillies sur 59 patientes atteintes d'un
+cancer du sein, et sont disponibles dans le fichier
+\texttt{polymorphism.dta} (fichier Stata). Les données moyennes sont
+indiquées ci-dessous :\autocite[p.~327]{dupont09}
+\vskip1em
+
+\begin{tabular}{lrrrr}
+\toprule
+& \multicolumn{3}{c}{Génotype} & \\
+\cmidrule(r){2-4}
+& 1.6/1.6 & 1.6/0.7 & 0.7/0.7 & Total \\
+\midrule
+Nombre de patients & 14 & 29 & 16 & 59 \\
+\emph{Âge lors du diagnostic} & & & & \\
+\quad Moyenne & 64.64 & 64.38 & 50.38 & 60.64 \\
+\quad Écart-type & 11.18 & 13.26 & 10.64 & 13.49 \\
+\quad IC 95~\% & (58.1–71.1) & (59.9–68.9) & (44.3–56.5) & \\
+\bottomrule
+\end{tabular}
+\vskip1em
+
+\begin{description}
+\item[(a)] Tester l'hypothèse nulle selon laquelle l'âge de diagnostic ne varie
+  pas selon le génotype à l'aide d'une ANOVA. Représenter sous forme
+  graphique la distribution des âges pour chaque génotype.
+\item[(b)] Les intervalles de confiance présentés dans le tableau ci-dessus ont
+  été estimés en supposant l'homogénéité des variances, c'est-à-dire en
+  utilisant l'estimé de la variance commune ; donner la valeur de ces
+  intervalles de confiance sans supposer l'homoscédasticité. 
+\item[(c)] Estimer les différences de moyenne correspondant à l'ensemble des
+  combinaisons possibles des trois génotypes, avec une estimation de
+  l'intervalle de confiance à 95~\% associé et un test paramétrique
+  permettant d'évaluer le degré de significativité de la différence
+  observée.
+\item[(d)] Représenter graphiquement les moyennes de groupe avec des
+  intervalles de confiance à 95~\%.
+\end{description}
+\end{exo}
+
+\begin{exo}\label{exo:4.2}
+On a mesuré en fin de traitement chez 18 patients répartis par tirage au
+sort en trois groupes de traitement A, B, et C, un paramètre biologique dont
+on sait que la distribution est normale. Les résultats sont les suivants :
+\vskip1em
+
+\begin{tabular}{ccc}
+\toprule
+A & B & C \\
+\midrule
+19.8 & 15.9 & 15.4 \\
+20.5 & 19.7 & 17.1 \\
+23.7 & 20.8 & 18.2 \\
+27.1 & 21.7 & 18.5 \\
+29.6 & 22.5 & 19.3 \\
+29.9 & 24.0 & 21.2 \\
+\bottomrule
+\end{tabular}
+\vskip1em
+
+\begin{description}
+\item[(a)] Réaliser une ANOVA à un facteur.
+\item[(b)] Selon le résultat du test, procéder aux comparaisons par paire de
+  traitement des moyennes, en appliquant une correction simple de Bonferroni
+  (c'est-à-dire où les degrés de significativité estimé sont multipliés par
+  le nombre de comparaisons effectuées). Comparer avec de simples tests de
+  Student non corrigés pour les comparaisons multiples. 
+\item[(c)] D'après des études plus récentes, il s'avère que la normalité des
+  distributions parentes peut-être remise en question. Effectuer la
+  comparaison des trois groupes par une approche non-paramétrique.
+\end{description}
+\end{exo}
+
+\begin{exo}\label{exo:4.3}
+Un service d'obstétrique s'intéresse au poids de nouveaux-nés nés à terme et
+âgés de 1 mois. Pour cet échantillon de 550 bébés, on dispose également
+d'une information concernant la parité (nombre de frères et soeurs), mais on
+sait qu'il n'y aucune relation de gemellité parmi les enfants ayant des
+frères et soeurs. L'objet de l'étude est de déterminer si la parité (4
+classes) influence le poids des nouveaux-nés à 1 mois. Les données sont
+résumées dans le tableau suivant, et elles sont disponibles dans un fichier
+SPSS, \texttt{weights.sav}.\autocite[p.~113]{peat05}
+\vskip1em
+
+\begin{tabular}{lrrrrr}
+\toprule
+& \multicolumn{4}{c}{Nombre de frères et soeurs} & Total \\
+& 0 & 1 & 2 & $\ge 3$ & \\
+\midrule
+\emph{Échantillon} & & & & \\ 
+Effectif & 180 & 192 & 116 & 62 & 550 \\
+Fréquence & 32.7 & 34.9 & 21.1 & 11.3 & 100.0 \\
+\emph{Poids (kg)} & & & & \\
+Moyenne & 4.26 & 4.39 & 4.46 & 4.43 & \\
+Écart-type & 0.62 & 0.59 & 0.61 & 0.54 & \\
+(Min–Max) & (2.92–5.75) & (3.17–6.33) & (3.09–6.49) & (3.20–5.48) & \\
+\bottomrule
+\end{tabular}
+\vskip1em
+
+\begin{description}
+\item[(a)] Vérifier les données reportées dans le tableau précédent.
+\item[(b)] Procéder à une analyse de variance à un facteur. Conclure sur la
+  significativité globale et indiquer la part de variance expliquée par le
+  modèle.
+\item[(c)] Afficher la distribution des poids selon la parité. Procéder à un
+  test d'homogénéité des variances (rechercher dans l'aide en ligne le test
+  de Levenne). 
+\item[(d)] On décide de regrouper les deux dernières catégories (2 et $\ge
+  3$). Refaire l'analyse et comparer aux résultats obtenus en (b).
+\item[(e)] Réaliser un test de tendance linéaire (par ANOVA) sur les données
+  recodées en trois niveaux pour la parité.
+\end{description}
+\end{exo}
+
+
+\begin{exo}\label{exo:4.4}
+On souhaite analyser les données traitées à l'exercice~\ref{exo:1.6}
+(p.~\pageref{exo:1.6}) par un modèle d'analyse de variance.
+
+\begin{description}
+\item[(a)] Calculer moyenne et variance des mesures pour chaque traitement.
+\item[(b)] Représenter graphiquement les moyennes par traitement dans un
+  graphique d'interaction.
+\item[(c)] Effectuer une ANOVA à deux facteurs, sans interaction.
+\item[(d)] Refaire une ANOVA en incluant l'interaction entre les facteurs
+  \texttt{Na} et \texttt{An}.
+\end{description}
+
+\end{exo}
+
+\chapter{Corrélation et régression linéaire}\label{chap:reg}
+
+\begin{exo}\label{exo:5.1}
+Une étude a porté sur une mesure de malnutrition chez 25 patients âgés de 7
+à 23 ans et souffrant de fibrose kystique. On disposait pour ces patients de
+différentes informations relatives aux caractéristiques antropométriques
+(taille, poids, etc.) et à la fonction pulmonaire. \autocite[p.~180]{everitt01}
+Les données sont disponibles dans le fichier \texttt{cystic.dat}.
+\begin{description}
+\item[(a)] Calculer le coefficient de corrélation linéaire entre les
+  variables \texttt{PEmax} et \texttt{Weight}, ainsi que son intervalle de
+  confiance à 95~\%.
+\item[(b)] Tester si le coefficient de régression calculé en (a) peut être
+  considéré comme significativement différent de 0.3 au seuil 5~\%.
+\item[(c)] Afficher l'ensemble des données numériques sous forme de
+  diagrammes de dispersion, soit 45 graphiques arrangés sous forme d'une
+  "matrice de dispersion".
+\item[(d)] Calculer l'ensemble des corrélations de Pearson et de Spearman
+  entre les variables numériques. Reporter les coefficients de
+  Bravais-Pearson supérieurs à 0.7 en valeur absolue.
+\item[(e)] Calculer la corrélation entre \texttt{PEmax} et \texttt{Weight},
+  en contrôlant l'âge (\texttt{Age}) (corrélation partielle). Représenter
+  graphiquement la covariation entre \texttt{PEmax} et \texttt{Weight} en
+  mettant en évidence les deux terciles les plus extrêmes pour la variable
+  \texttt{Age}. 
+\end{description}
+\end{exo}
+
+\begin{exo}\label{exo:5.2}
+Les données disponibles dans le fichier \texttt{quetelet.csv} renseignent
+sur la pression artérielle systolique (\texttt{PAS}), l'indice de Quetelet
+(\texttt{QTT}), l'âge (\texttt{AGE}) et la consommation de tabac
+(\texttt{TAB}=1 si fumeur, 0 sinon) pour un échantillon de 32 hommes de plus
+de 40 ans. 
+\begin{description}
+\item[(a)] Indiquer la valeur du coefficient de corrélation linéaire entre
+  la pression artérielle systolique et l'indice de Quetelet, avec un
+  intervalle de confiance à 90~\%.
+\item[(b)] Donner les estimations des paramètres de la droite de régression
+  linéaire de la pression artérielle sur l'indice de Quetelet.
+\item[(c)] Tester si la pente de la droite de régression est différente de 0
+  (au seuil 5~\%).
+\item[(d)] Représenter graphiquement les variations de pression artérielle
+  en fonction de l'indice de Quetelet, en faisant apparaître distinctement
+  les fumeurs et les non-fumeurs avec des symboles ou des couleurs
+  différentes, et tracer la droite de régression dont les paramètres ont été
+  estimés en (b). 
+\item[(e)] Refaire l'analyse (b-c) en restreignant l'échantillon aux
+  fumeurs.
+\end{description}
+\end{exo}
+
+\begin{exo}\label{exo:5.3}
+Dans l'étude Framingham, on dispose de donnée sur la pression artérielle
+systolique (\texttt{sbp}) et l'indice de masse corporelle (\texttt{bmi}) de
+2047 hommes et 2643 femmes.\autocite[p.~63]{dupont09} On s'intéresse à la
+relation entre ces deux variables (après transformation logarithmique) chez
+les hommes et chez les femmes séparément.
+Les données sont disponibles dans le fichier \texttt{Framingham.csv}.
+\begin{description}
+\item[(a)] Représenter graphiquement les variations entre pression
+  artérielle et IMC chez les hommes et chez les femmes.
+\item[(b)] Les coefficients de corrélation linéaire estimés chez les hommes
+  et chez les femmes sont-ils significativement différents à 5~\% ?
+\item[(c)] Estimer les paramètres du modèle de régression linéaire
+  considérant la pression artérielle comme variable réponse et l'IMC comme
+  variable explicative, pour ces deux sous-échantillons. Donner un
+  intervalle de confiance à 95~\% pour l'estimé des pentes respectives.
+\item[(d)] Tester l'égalité des deux coefficients de régression associés à
+  la pente (au seuil 5~\%).
+\end{description}
+\end{exo}
+
+\begin{exo}
+À partir des données sur les poids à la naissance décrites dans
+l'exercice~\ref{exo:2.4}, on cherche à étudier la relation entre le poids des
+bébés (traité en tant que variable numérique, \texttt{bwt}) et deux
+caractéristiques de la mère : son poids (\texttt{lwt}) et son origine
+ethnique (\texttt{race}).
+\begin{description}
+\item[(a)] Représenter graphiquement la relation entre poids des bébés et
+  poids des mères, en fonction de l'ethnicité des mères.
+\item[(b)] Estimer les paramètres de la régression linéaire en considérant
+  les poids des bébés comme variable réponse et les poids des mères centrés
+  sur leur moyenne comme variable explicative. La pente estimée est-elle
+  significative au seuil usuel de 5~\% ?
+\item[(c)] Estimer les paramètres de la régression linéaire où cette fois la
+  variable explicative est l'ethnicité des mères, la variable réponse
+  restant le poids des bébés. Comparer la significativité du modèle dans son
+  ensemble avec les résultats obtenus à partir d'une ANOVA à un facteur
+  (ethnicité). 
+\item[(d)] Quelle est le poids prédit pour un bébé dont la mère pèse 60 kg ?
+  Donner un intervalle de confiance à 95~\% pour une prédiction ponctuelle
+  en moyenne.
+\end{description}
+\end{exo}
+
+
+\chapter{Mesures d'association en épidémiologie et régression
+  logistique}\label{chap:logistic}
+
+\begin{exo}\label{exo:6.1}
+On étudie l'effet d'un traitement prophylactique d'un macrolide à faibles
+doses (Traitement A) sur les épisodes infectieux chez des patients atteints
+de mucoviscidose dans un essai randomisé multicentrique contre placebo
+(B). Les résultats sont les suivants :
+\vskip1em
+
+\begin{tabular}{lccc}
+\toprule
+& \multicolumn{2}{c}{Infection} & \\
+\cmidrule(r){2-3}
+& Non & Oui & Total \\
+\midrule
+Traitement (A) & 157 & 52 & 209 \\
+Placebo (B) & 119 & 103 & 222 \\
+Total & 276 & 155 & 431 \\
+\bottomrule
+\end{tabular}
+\vskip1em
+
+\begin{description}
+\item[(a)] À partir d'un test du $\chi^2$, que peut-on répondre à la
+  question : le traitement permet-il de prévenir la survenue d'épisodes
+  infectieux (au seuil $\alpha=0.05$) ? Vérifier que les effectifs
+  théoriques sont bien tous supérieurs à 5.
+\item[(b)] Conclut-on de la même manière à partir de l'intervalle de
+  confiance de l'odds-ratio associé à l'effet traitement ?
+\item[(c)] On souhaite vérifier s'il existe une disparité du point de vue
+  des pourcentages d'épisodes infectieux en fonction du centre. Les données
+  par centre sont indiquées dans le tableau ci-après. Conclure à partir d'un
+  test du $\chi^2$.
+
+  \begin{table}[!htb] \hskip40pt
+  \begin{minipage}[b]{0.33\linewidth}
+  \scalebox{0.65}{\begin{tabular}{|l|r|r|r|}
+    \multicolumn{1}{c}{} & \multicolumn{2}{c}{Infection} &  \multicolumn{1}{c}{} \\
+    \cline{2-4}
+    \multicolumn{1}{c|}{} & Non & Oui & Total \\
+    \hline
+    Traitement (A) & 51 & 8 & 59 \\
+    \hline
+    Placebo (B) & 47 & 19 & 66 \\
+    \hline
+    Total & 98 & 27 & 125 \\
+    \hline
+    \multicolumn{4}{c}{Centre 1}
+  \end{tabular}} 
+  \end{minipage} \hspace{0.1cm}
+  \begin{minipage}[b]{0.3\linewidth}
+  \scalebox{0.65}{\begin{tabular}{|l|r|r|r|}
+    \multicolumn{1}{c}{} & \multicolumn{2}{c}{Infection} &  \multicolumn{1}{c}{} \\
+    \cline{2-4}
+    \multicolumn{1}{c|}{} & Non & Oui & Total \\
+    \hline
+    Traitement (A) & 91 & 35 & 126 \\
+    \hline
+    Placebo (B) & 61 & 71 & 132 \\
+    \hline
+    Total & 152 & 106 & 258 \\
+    \hline
+    \multicolumn{4}{c}{Centre 2}
+  \end{tabular}} 
+  \end{minipage} \hspace{0.1cm}
+  \begin{minipage}[b]{0.3\linewidth}
+  \scalebox{0.65}{\begin{tabular}{|l|r|r|r|}
+    \multicolumn{1}{c}{} & \multicolumn{2}{c}{Infection} &  \multicolumn{1}{c}{} \\
+    \cline{2-4}
+    \multicolumn{1}{c|}{} & Non & Oui & Total \\
+    \hline
+    Traitement (A) & 15 & 9 & 24 \\
+    \hline
+    Placebo (B) & 11 & 13 & 24 \\
+    \hline
+    Total & 26 & 22 & 48 \\
+    \hline
+    \multicolumn{4}{c}{Centre 3}
+  \end{tabular}}
+  \end{minipage}
+  \end{table}
+\item[(d)] À partir du tableau précédent, on cherche à vérifier si l'effet
+  traitement est indépendent du centre ou non. On se propose de réaliser un
+  test de comparaison entre les deux traitements ajustés sur le centre (test
+  de Mantel-Haenszel). Indiquer le résultat du test ainsi que la valeur de
+  l'odds-ratio ajusté.
+\end{description}
+\end{exo}
+
+\begin{exo}\label{exo:6.2}
+Voici les résultats d'une étude de cohorte visant à déterminer, entre
+autres, l'intérêt d'utliser comme outil de screening une mesure de test
+d'effort physique (EST), pour lequel un résultat de type réussite/échec peut
+être dérivé, lors du diagnostic d'une maladie coronarienne
+(CAD).\autocite{pepe04}  
+\vskip1em
+
+\begin{tabular}{l|l|c|c|c}
+\multicolumn{2}{c}{}&\multicolumn{2}{c}{CAD}&\\
+\cline{3-4}
+\multicolumn{2}{c|}{}&Non-malade&Malade&\multicolumn{1}{c}{Total}\\
+\cline{2-4}
+\multirow{2}{*}{EST}& Négatif & 327 & 208 & 535\\
+\cline{2-4}
+& Positif & 115 & 815 & 930\\
+\cline{2-4}
+\multicolumn{1}{c}{} & \multicolumn{1}{c}{Total} & \multicolumn{1}{c}{442} & 
+\multicolumn{1}{c}{1023} & \multicolumn{1}{c}{1465}\\
+\end{tabular}
+\vskip1em
+On fera l'hypothèse qu'il n'y a pas de biais de vérification.
+
+\begin{description}
+\item[(a)] À partir de cette matrice de confusion, indiquer les valeurs
+  suivantes (avec intervalles de confiance à 95~\%) : sensibilité et
+  spécificité, valeur prédictive positive et négative. 
+\item[(b)] Quelle est la valeur de l'aire sous la courbe pour les données
+  reportées ?
+\end{description}
+\end{exo}
+
+\begin{exo}\label{exo:6.3}
+On dispose de données issues d'une étude cherchant à établir la validité
+pronostique de la concentration en créatine kinase dans l'organisme sur la
+prévention de la survenue d'un infarctus du myocarde.\autocite[p.~115]{rabe-hesketh04}
+
+Les données sont disponibles dans le fichier \texttt{sck.dat} : la première
+colonne correspond à la variable créatine kinase (\texttt{ck}), la deuxième
+à la variable présence de la maladie (\texttt{pres}) et la dernière à la
+variable absence de maladie (\texttt{abs}).
+\begin{description}
+\item[(a)] Quel est le nombre total de sujets ?
+\item[(b)] Calculer les fréquences relatives malades/non-malades, et
+  représenter leur évolution en fonction des valeurs de créatine kinase à
+  l'aide d'un diagramme de dispersion (points + segments reliant les points).
+\item[(c)] À partir d'un modèle de régression logistique dans lequel on
+  cherche à prédire la probabilité d'être malade, calculer la valeur de
+  \texttt{ck} à partir de laquelle ce modèle prédit que les personnes
+  présentent la maladie en considérant une valeur seuil de 0.5
+  (si $P(\text{malade})\ge 0.5$ alors \texttt{malade=1}).
+\item[(d)] Représenter graphiquement les probabilités d'être malade prédites
+  par ce modèle ainsi que les proportions empiriques en fonction des valeurs
+  \texttt{ck}. 
+\item[(e)] Établir la courbe ROC correspondant au seuil 0.5, et reporter la
+  valeur de l'aire sous la courbe. Quelle est le taux de classification
+  correcte pour le seuil de probabilité choisi en (c).
+\item[(f)] Quelle est la valeur de seuil optimisant le compromis
+  sensibilité/spécificité ?
+\end{description}
+\end{exo}
+
+\begin{exo}\label{exo:6.4}
+Le tableau suivant résume la proportion d'infarctus du myocarde observée
+chez des hommes âgés de 40 à 59 ans et pour lesquels on a relevé le niveau
+de tension artérielle et le taux de cholesterol, considérées sous forme de
+classes ordonnées.
+\vskip1em
+
+\begin{tabular}{l///////}
+\toprule
+& \multicolumn{7}{c}{Cholesterol (mg/100 ml)} \\
+\cmidrule(r){2-8}
+TA & \multicolumn{1}{c}{$<200$} & \multicolumn{1}{c}{$200-209$} & \multicolumn{1}{c}{$210-219$} & \multicolumn{1}{c}{$220-244$} & \multicolumn{1}{c}{$245-259$} & \multicolumn{1}{c}{$260-284$} & \multicolumn{1}{c}{$>284$} \\
+$<117$ & 2/53 & 0/21 & 0/15 & 0/20 & 0/14 & 1/22 & 0/11 \\
+$117-126$ & 0/66 & 2/27 & 1/25 & 8/69 & 0/24 & 5/22 & 1/19 \\
+$127-136$ & 2/59 & 0/34 & 2/21 & 2/83 & 0/33 & 2/26 & 4/28 \\
+$137-146$ & 1/65 & 0/19 & 0/26 & 6/81 & 3/23 & 2/34 & 4/23 \\
+$147-156$ & 2/37 & 0/16 & 0/6 & 3/29 & 2/19 & 4/16 & 1/16 \\
+$157-166$ & 1/13 & 0/10 & 0/11 & 1/15 & 0/11 & 2/13 & 4/12 \\
+$167-186$ & 3/21 & 0/5 & 0/11 & 2/27 & 2/5 & 6/16 & 3/14 \\
+$>186$ & 1/5 & 0/1 & 3/6 & 1/10 & 1/7 & 1/7 & 1/7 \\
+\bottomrule
+\end{tabular}
+\vskip1em
+
+Les données sont disponibles dans le fichier \texttt{hdis.dat} sous forme
+d'un tableau comprenant 4 colonnes indiquant, respectivement, la pression
+artérielle (8 catégories, notées 1 à 8), le taux de cholesterol (7
+catégories, notées 1 à 7), le nombre d'infarctus et le nombre total
+d'individus. On s'intéresse à l'association entre la pression artérielle et
+la probabilité d'avoir un infarctus du myocarde.
+\begin{description}
+\item[(a)] Calculer les proportions d'infarctus pour chaque niveau de
+  pression artérielle et les représenter dans un tableau et sous forme
+  graphique.
+\item[(b)] Exprimer les proportions calculées en (a) sous forme de
+  \emph{logit}. 
+\item[(c)] À partir d'un modèle de régression logistique, déterminer s'il
+  existe une association significative au seuil $\alpha=0.05$ entre la
+  pression artérielle, traitée en tant que variable quantitative en
+  considérant les centres de classe, et la probabilité d'avoir un
+  infarctus.
+\item[(d)] Exprimer en unités \emph{logit} les probabilités d'infarctus
+  prédites par le modèle pour chacun des niveaux de pression artérielle.
+\item[(e)] Afficher sur un même graphique les proportions empiriques et la
+  courbe de régression logistique en fonction des valeurs de pression
+  artérielle (centres de classe).
+\end{description}
+\end{exo}
+
+\begin{exo}\label{exo:6.5}
+Une enquête cas-témoin a porté sur la relation entre la consommation
+d'alcool et de tabac et le cancer de l'oesophage chez l'homme (étude "Ille
+et Villaine"). Le groupe des cas était composé de 200 patients atteints d'un
+cancer de l'oesophage et diagnostiqué entre janvier 1972 et avril 1974. Au
+total, 775 témoins de sexe masculin ont été sélectionnés à partir des listes
+électorales. Le tableau suivant indique la répartition de l'ensemble des
+sujets selon leur consommation journalière d'alcool, en considérant qu'une
+consommation supérieure à 80 g est considérée comme un facteur de
+risque.\autocite{breslow80} 
+\vskip1em
+
+\begin{tabular}{lccc}
+\toprule
+& \multicolumn{2}{c}{Consommation d'alcool (g/jour)} & \\
+\cmidrule(r){2-3}
+& $\ge 80$ & $<80$ & Total \\
+\midrule
+Cas & 96 & 104 & 200 \\
+Témoins & 109 & 666 & 775 \\
+Total & 205 & 770 & 975 \\
+\bottomrule
+\end{tabular}
+\vskip1em
+
+\begin{description}
+\item[(a)] Quelle est la proportion de personnes considérées à risque dans
+  cet échantillon ?
+\item[(b)] Quelle est la valeur de l'odds-ratio et son intervalle de
+  confiance à 95~\% (méthode de Woolf) ? Est-ce une bonne estimation du
+  risque relatif ? 
+\item[(c)] Est-ce que la proportion de consommateurs à risque est la même
+  chez les cas et chez les témoins (considérer $\alpha=0.05$) ?
+\item[(d)] Construire le modèle de régression logistique permettant de
+  tester l'association entre la consommation d'alcool et le statut des
+  sujets. Le coefficient de régression est-il significatif ?
+\item[(e)] Retrouvez la valeur de l'odds-ratio observé, calculé en (b), et
+  son intervalle de confiance à partir des résultats de l'analyse de
+  régression.
+\end{description}
+\end{exo}
+
+
+\chapter{Données de survie}\label{chap:survival}
+
+\begin{exo}\label{exo:7.1}
+
+% FIXME: à rédiger !
+
+\end{exo}
+
+\begin{exo}\label{exo:7.2}
+Dans un essai randomisé, on a cherché à comparer deux traitements pour le
+cancer de la prostate. Les patients prenaient chaque jour par voie orale
+soit 1 mg de diethylstilbestrol (DES, bras actif) soit un placebo, et le
+temps de survie est mesuré en mois.\autocite{collett94} La question
+d'intérêt est de savoir si la survie diffère entre les deux groupes de
+patients, et on négligera les autres variables présentes dans le fichier de
+données \texttt{prostate.dat}. 
+\begin{description}
+\item[(a)] Calculer la médiane de survie pour l'ensemble des patients, et
+  par groupe de traitement.
+\item[(b)] Quelle est la différence entre les proportions de survie dans les
+  deux groupes à 50 mois ?
+\item[(c)] Afficher les courbes de survie pour les deux groupes de patients.
+\item[(d)] Effectuer un test du log-rank pour tester l'hypothèse selon
+  laquelle le traitement par DES a un effet positif sur la survie des
+  patients. 
+\end{description}
+\end{exo}
+
+\begin{exo}\label{exo:7.3}
+Dans un essai contre placebo sur la cirrhose biliaire, la D-penicillamine
+(DPCA) a été introduite dans le bras actif sur une cohorte de 312
+patients. Au total, 154 patients ont été randomisés dans le bras actif
+(variable traitement, \texttt{rx}, 1=Placebo, 2=DPCA). Un ensemble de
+données telles que l'âge, des données biologiques et signes cliniques variés
+incluant le niveau de bilirubine sérique (\texttt{bilirub}) sont disponibles
+dans le fichier \texttt{pbc.txt}.\autocite{vittinghoff05} Le status du
+patient est enregistré dans la variable \texttt{status} (0=vivant, 1=décédé)
+et la durée de suivi (\texttt{years}) représente le temps écoulé en années
+depuis la date de diagnostic.
+\begin{description}
+\item[(a)] Combien dénombre-t-on d'individus décédés? Quelle proportion de
+  ces décès retrouve-t-on dans le bras actif ?  
+\item[(b)] Afficher la distribution des durées de suivi des 312 patients, en
+  faisant apparaître distinctement les individus décédés. Calculer le temps
+  médian (en années) de suivi pour chacun des deux groupes de
+  traitement. Combien y'a-t-il d'événements positifs au-delà de 10.5 années
+  et quel est le sexe de ces patients ?
+\item[(c)] Les 19 patients dont le numéro (\texttt{number}) figure parmi la
+  liste suivante ont subi une transplantation durant la période de suivi.
+\begin{verbatim}  
+5 105 111 120 125 158 183 241 246 247 254 263 264 265 274 288 291
+295 297 345 361 362 375 380 383
+\end{verbatim}   
+  Indiquer leur âge moyen, la distribution selon le sexe et la durée médiane
+  de suivi en jours jusqu'à la transplantation.
+\item[(d)] Afficher un tableau résumant la distribution des événements à
+  risque en fonction du temps, avec la valeur de survie associée.
+\item[(e)] Afficher la courbe de Kaplan-Meier avec un intervalle de
+  confiance à 95~\%, sans considérer le type de traitement.
+\item[(f)] Calculer la médiane de survie et son intervalle de confiance à
+  95~\% pour chaque groupe de sujets et afficher les courbes de survie
+  correspondantes.
+\item[(g)] Effectuer un test du log-rank en considérant comme prédicteur le
+  facteur \texttt{rx}. Comparer avec un test de Wilcoxon.
+\item[(h)] Effectuer un test du log-rank sur le facteur d'intérêt
+  (\texttt{rx}) en stratifiant sur l'âge. On considèrera trois groupe
+  d'âge : 40 ans ou moins, entre 40 et 55 ans inclus, plus de 55 ans.
+\item[(i)] Retrouver les résultats de l'exercice 1.g avec une régression de
+  Cox. 
+\end{description}
+\end{exo}

@@ -1,0 +1,107 @@
+\documentclass[11pt]{report}
+\usepackage[francais]{babel}
+\usepackage{amsmath,amsfonts,amsthm}
+\usepackage{fancyhdr}
+\usepackage{url}
+\usepackage{calc}
+\usepackage{titlesec}
+\usepackage{booktabs}
+\usepackage{parskip}
+\usepackage{hyperref,wasysym}
+\usepackage{multirow}
+\usepackage{dcolumn}
+\newcolumntype{.}{D{.}{.}{-1}}
+\newcolumntype{/}{D{/}{/}{-1}}
+\usepackage{xspace}
+\usepackage{wasysym}
+\usepackage{enumitem}  % iterable item list
+\usepackage{fancyvrb}
+
+\usepackage[style=verbose-trad2,natbib=true,backend=bibtex]{biblatex}
+\bibliography{refs}
+
+% Xelatex setup
+\usepackage{fontspec,xltxtra,xunicode}
+\usepackage[math-style=ISO,bold-style=ISO]{unicode-math}
+\defaultfontfeatures{Scale=MatchLowercase}
+\setmainfont{Myriad Pro}
+%\setsansfont{Myriad Pro}
+%\setmathfont[Numbers=OldStyle]{Asana Math}
+%\setmonofont[Scale=0.86]{Inconsolata}
+\setmonofont[Scale=0.71]{Menlo}
+
+% page layout
+\usepackage[left=2cm,top=2cm,bottom=2cm,right=2cm,nohead]{geometry}
+
+\usepackage[french=guillemets*]{csquotes} 
+\MakeOuterQuote{"} 
+
+
+% add line break when using paragraph sectioning
+\makeatletter
+\renewcommand\paragraph{\@startsection{paragraph}{4}{\z@}%
+  {-3.25ex\@plus -1ex \@minus -.2ex}%
+  {1.5ex \@plus .2ex}%
+  {\normalfont\normalsize\bfseries}}
+\makeatother
+
+\addto\captionsfrancais{%
+  \renewcommand\chaptername{Séance}}
+\titleformat{\chapter}
+  {\normalfont\huge\bfseries}{\chaptertitlename\ \thechapter.}{20pt}{\huge}
+
+\setlist[enumerate]{label=\fbox{\textbf{\arabic{chapter}.\arabic*}}}
+
+
+\theoremstyle{definition}
+\newtheorem{exo}{Exercice}[chapter]
+\newcommand{\R}{\textsf{R}\xspace}
+\SetLabelAlign{parright}{\parbox[t]{\labelwidth}{\raggedleft#1}}
+
+\setlist[description]{style=multiline,topsep=10pt,leftmargin=35pt,font=\normalfont,%
+    align=parright}
+
+
+\begin{document}
+\title{Initiation aux logiciels R et Stata\\
+  Programme de travail\\ \vskip5em\centerline{\includegraphics[scale=.5]{cesam}}}
+\author{}
+\date{2012–2013}
+\maketitle
+
+
+\chapter*{Calendrier}
+\vskip3em
+
+\begin{center}
+\begin{tabular}{|l|p{12cm}|}
+\hline
+  \multicolumn{2}{|c|}{Module R} \\
+\hline
+  Sem. 05/02 & Éléments du langage, gestion de données \\
+  Sem. 12/02 & Statistiques descriptives et estimation \\
+  Sem. 19/02 & Comparaisons de deux variables \\
+  Sem. 26/02 & Analyse de variance et plans d'expérience \\
+  Sem. 12/03 & Corrélation et régression linéaire \\
+  Sem. 19/03 & Mesures d'association en épidémiologie et régression
+  logistique \\
+  Sem. 26/03 & Données de survie \\
+\hline
+  \multicolumn{2}{|c|}{Module Stata} \\
+\hline
+  Sem. 02/04 & Élements du langage et statistiques descriptives \\
+  Sem. 09/04 & Mesures d'association et comparaison de deux variables \\
+  Sem. 16/04 & Régression linéaire et logistique \\
+  Sem. 23/04 & Données de survie \\
+\hline
+\end{tabular}
+\end{center}
+
+\chapter*{Organisation}
+
+% FIXME: à rédiger !
+
+\include{exos_r}
+\include{exos_stata}
+
+\end{document}
