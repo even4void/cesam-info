@@ -1,4 +1,4 @@
-% Time-stamp: <2012-12-19 21:44:47 chl>
+% Time-stamp: <2012-12-26 20:21:06 chl>
 \documentclass[11pt]{report}
 \usepackage[francais]{babel}
 \usepackage{amsmath,amsfonts,amsthm}
@@ -66,7 +66,7 @@
 \setlist[enumerate]{label=\fbox{\textbf{\arabic{chapter}.\arabic*}}}
 
 % Manage solutions
-\usepackage{answers}   % [nosolutionfiles]
+\usepackage{answers}   %[nosolutionfiles]
 \Newassociation{sol}{Solution}{solutions}
 \renewcommand{\Solutionlabel}[1]{\fbox{#1}}
 \newcommand{\soln}[1]{\vskip1ex\par\noindent\fbox{#1}\quad}
@@ -750,6 +750,88 @@ with(anorex, tapply(poids.diff, Group, mean))
 @ 
 \end{sol}
 \end{exo}
+%
+% STAB TD 3
+%
+\begin{exo}\label{exo:1.6}
+Soient les mesures de bioluminescence recueillies dans une étude sur
+l'antagonisme Na/An. Les données sont présentées dans le tableau suivant et
+elles ont été enregistrées dans le fichier \texttt{bioluminescence.dat} où
+les mesures recueillies pour chaque traitement sont arrangées en colonnes
+(comme dans le tableau).
+\vskip1em
+
+\begin{tabular}{cccc}
+\toprule
+Sans Na & Avec Na & Sans Na & Avec Na \\
+Sans An & Sans An & Avec An & Avec An \\
+\midrule
+6.5 & 26.5 & 12.0 & 12.6 \\
+6.2 & 22.7 & 8.2 & 13.4 \\
+6.8 & 17.0 & 12.3 & 12.0 \\
+5.7 & 18.0 & 11.3 & 6.0 \\
+7.2 & 14.9 & 7.0 & – \\
+5.9 & 24.0 & 10.5 & – \\
+8.2 & 19.9 & – & – \\
+8.0 & 24.0 & – & – \\
+10.5 & – & – & – \\
+7.4 & – & – & – \\
+8.9 & – & – & – \\
+11.5 & – & – & – \\
+\bottomrule
+\end{tabular}
+\vskip1em
+
+\begin{description}
+\item[(a)] Importer les données sous R et reformater le tableau de données
+  de manière à ce que la variable réponse soit dans une seule colonne, et
+  les facteurs d'étude (\texttt{Na} et \texttt{An}) dans deux colonnes
+  séparées (\texttt{data.frame}).
+\item[(b)] Vérifier le nombre d'observations disponible pour chacun des
+  quatre traitements, un traitement correspondant au croisement des niveaux
+  de chacun des facteurs d'étude.
+\item[(c)] Enregistrer le tableau de données ainsi constitué au format
+  \texttt{RData}. Il sera exploité lors de la séance~4 (p.~\pageref{chap:anova}).
+\end{description}
+\begin{sol}
+Pour importer les données, on prendra garde au fait que le fichier texte
+\texttt{bioluminescence.dat} ne comprend pas de ligne d'en-tête.  
+<<ex1-6a>>=
+biolum <- read.table("bioluminescence.dat", header=FALSE)
+biolum
+@   
+
+On crée ensuite les deux facteurs d'étude, \texttt{An} et \texttt{Na}, en
+indiquant le nombre de répétitions des niveaux à partir du nombre
+d'observations non manquantes dans chaque colonne du tableau d'origine. Pour
+le premier traitement (\texttt{An-/Na-}) on sait qu'il y a 12 observations,
+sachant qu'au total \texttt{An-} totalise 20 observations (1\iere\ et
+2\ieme\ colonnes).
+<<ex1-6b>>=
+An <- rep(c("-","+"), c(20,10))
+Na <- rep(c("-","+","-","+"), c(12,8,6,4))
+biolum <- with(biolum, data.frame(y=c(V1,V2[1:8],V3[1:6],V4[1:4]), An, Na))
+head(biolum)
+summary(biolum)
+@ 
+
+Pour obtenir le nombre d'observations par croisement des niveaux des deux
+facteurs (soit 4 combinaisons ou traitements), on utilisera la commande
+\texttt{length} pour compter le nombre d'observations avec la commande
+\texttt{tapply} qui permet d'isoler les combinaisons de niveaux de facteurs.
+<<ex1-6c>>=
+with(biolum, tapply(y, list(An, Na), length))
+@ 
+
+Pour sauvegarder le nouveau tableau de données, on utilisera la commande
+\texttt{save} en donnant le nom du fichier dans lequel stocker les données,
+par exemple \texttt{bioluminescence.RData}.
+<<ex1-6d>>=
+save(biolum, file="bioluminescence.RData")
+@ 
+\end{sol}
+\end{exo}
+
 \Closesolutionfile{solutions}
 
 \section*{Corrigés}
@@ -2789,12 +2871,64 @@ summary(lm(WEIGHT ~ as.ordered(PARITY2), data=weights))
 \end{sol}
 \end{exo}
 %
-% ANOVA two-way parallel group
+% STAB TD 3
 %
-%% \begin{exo}
-%%   ANOVA two-way parallel group
-%% \end{exo}
-%
+\begin{exo}\label{exo:4.4}
+On souhaite analyser les données traitées à l'exercice~\ref{exo:1.6}
+(p.~\pageref{exo:1.6}) par un modèle d'analyse de variance.
+
+\begin{description}
+\item[(a)] Calculer moyenne et variance des mesures pour chaque traitement.
+\item[(b)] Représenter graphiquement les moyennes par traitement dans un
+  graphique d'interaction.
+\item[(c)] Effectuer une ANOVA à deux facteurs, sans interaction.
+\item[(d)] Refaire une ANOVA en incluant l'interaction entre les facteurs
+  \texttt{Na} et \texttt{An}.
+\end{description}
+\begin{sol}
+Les données ont été normalement été sauvegardées au format \R à
+l'exercice~\ref{exo:1.6}. On supposera que le fichier a été sauvegardé sous
+le nom \texttt{bioluminescence.RData}. Pour l'importer sous \R, on utilise
+la commande \texttt{load} directement :
+<<ex4-4a>>=
+load("bioluminescence.RData")
+ls()
+@ 
+
+Pour calculer la moyenne et la variance pour chaque traitement, on peut
+utiliser le même principe qu'à l'exercice~\ref{exo:1.6}, c'est-à-dire une
+combinaison des commandes \texttt{tapply} et \texttt{mean} ou \texttt{var}. 
+<<ex4-4b>>=
+with(biolum, tapply(y, list(An=An, Na=Na), mean))
+with(biolum, tapply(y, list(An=An, Na=Na), var))
+@ 
+L'ajout des noms de variables dans \texttt{list} permet de mieux interpréter
+les résultats afficher par \R : le premier facteur de la liste, \texttt{An},
+est affiché en ligne, alors que les niveaux du second sont affichés en
+colonnes. 
+
+Pour représenter les données moyennes sous forme graphique (diagramme ou
+graphique d'intercation), on utilisera la commande \texttt{xyplot} avec
+l'option \verb|type="a"| qui permet de calculer automatiquement les moyennes
+de groupe à partir des données brutes. Le reste des options
+(\texttt{auto.key}) permet de générer la légende pour faciliter la lecture
+du graphique.
+<<ex4-4c, fig=TRUE>>=
+xyplot(y ~ An, data=biolum, groups=Na, type=c("a","g"), 
+       auto.key=list(corner=c(0,1), lines=TRUE, points=FALSE, title="Na", cex.title=.8))
+@ 
+
+<<ex4-4d>>=
+summary(aov(y ~ An + Na, data=biolum))
+@ 
+
+<<ex4-4d>>=
+summary(aov(y ~ An + Na + An:Na, data=biolum))
+@ 
+
+\end{sol}
+\end{exo}
+
 % ANOVA two-way cross-over
 %
 %% \begin{exo}
@@ -5105,11 +5239,42 @@ faut utiliser.
 summary(coxph(Surv(years, status) ~ rx, data=pb))
 @ 
 \end{sol}
-\end{exo}
 %
+% Hill et al. 1996 p. 22
+%
+\end{exo}
+\begin{exo}\label{exo:7.2}
+Ci-dessous figurent les durées de rémission en semaines dans un essai
+comparant 6-MP à un placebo.\autocite{freireich63} Les observations
+censurées (sujet dans rechute aux dernières nouvelles) sont signalées par
+une astérisque.
+\vskip1em
+
+\begin{tabular}{ll}
+\toprule
+Placebo & 1 1 2 2 3 4 4 5 5 8 8 8 8 11 11 12 12 \\
+        & 15 17 22 23 \\
+6-MP    & 6 6 6 6* 7 9* 10 10* 11* 13 16 17* 19* \\
+        & 20* 22 23 25* 32* 32* 34* 35* \\
+\bottomrule
+\end{tabular}
+\vskip1em
+
+\begin{description}
+\item[(a)] Construire un tableau indiquant le nombre d'exposés et le nombre
+  de rechutes en fonction du temps pour chacun des deux groupes.
+\item[(b)] Afficher la courbe de survie dans le groupe 6-MP, ainsi que son
+  intervalle de confiance à 95~\% (estimateur de Kaplan-Meier).
+\item[(c)] Afficher la fonction de risque cumulée (estimateur de Nelson).
+\item[(d)] Calculer la médiane de survie pour chacun des groupes.
+\item[(e)] Calculer la survie espérée pour un patient du groupe 6-MP à 15
+  semaines. 
+\end{description}
+\end{exo}
+% 
 % Everitt p. 348
 %
-\begin{exo}\label{exo:7.2}
+\begin{exo}\label{exo:7.3}
 Dans un essai randomisé, on a cherché à comparer deux traitements pour le
 cancer de la prostate. Les patients prenaient chaque jour par voie orale
 soit 1 mg de diethylstilbestrol (DES, bras actif) soit un placebo, et le
@@ -5131,7 +5296,7 @@ données \texttt{prostate.dat}.
 Pour importer les données, on utilisera la commande \texttt{read.table}. On
 profitera de l'inspection préalable des données pour recoder la variable
 \texttt{Treatment} en variable qualitative.
-<<ex7-2a>>=
+<<ex7-3a>>=
 prostate <- read.table("prostate.dat", header=TRUE)
 str(prostate)
 head(prostate)
@@ -5143,7 +5308,7 @@ qualitative puisque l'on va utiliser cette variable conjointement avec
 \texttt{Time} pour l'analyse de survie. Dans un premier temps, pour
 transformer les données en données de survie, incluant la censure, il est
 nécessaire de passer par la commande \texttt{Surv} du package \texttt{survival}.
-<<ex7-2b>>=
+<<ex7-3b>>=
 library(survival)
 with(prostate, Surv(time=Time, event=Status))
 @ 
@@ -5153,28 +5318,28 @@ commande générale permettant de manipuler les données de survie par la
 méthode de Kaplan-Meier ou le modèle de Cox. Si l'on ne tient pas compte des
 groupes de traitement (et plus généralement d'un quelconque co-facteur), on
 l'utilisera ainsi : 
-<<ex7-2c>>=
+<<ex7-3c>>=
 survfit(Surv(Time, Status) ~ 1, data=prostate)
 @
 Pour stratifier l'analyse selon le traitement, on utilisera en revanche :
-<<ex7-2d>>=
+<<ex7-3d>>=
 survfit(Surv(Time, Status) ~ Treatment, data=prostate)
 @ 
 
 Pour afficher les courbes de survie correspondant aux deux groupes de
 traitement, on procèdera comme suit :
-<<ex7-2e, fig=TRUE>>=
+<<ex7-3e, fig=TRUE>>=
 plot(survfit(Surv(Time, Status) ~ Treatment, data=prostate))
 @ 
 
 Le test du log-rank peut être obtenu de deux manières différentes. La plus
 simple consiste à utiliser la commande \texttt{survdiff} pour comparer deux
 courbes de survie à partir de l'estimateur de Kaplan-Meier.
-<<ex7-2f>>=
+<<ex7-3f>>=
 survdiff(Surv(time=Time, event=Status) ~ Treatment, data=prostate)
 @ 
 L'autre solution consiste à utiliser une régression de Cox
-<<ex7-2f>>=
+<<ex7-3f>>=
 summary(coxph(Surv(time=Time, event=Status) ~ Treatment, data=prostate))
 @ 
 \end{sol}

@@ -1,0 +1,2907 @@
+%---------------------------------------------------------------- Séance 08 --
+\chapter{Élements du langage et statistiques descriptives}
+
+\soln{\ref{exo:1.1}} Stata dispose d'un éditeur de données qui se présente
+sous la forme d'un tableur (à l'image d'Excel), mais on peut saisir
+dirctement des données à l'aide de la commande \texttt{input}. Après avoir
+donné le nom de la ou des variables (lorsqu'il y a plusieurs variables, on
+sépare leur nom par un espace), on presse sur la touche \textsf{Entrée}
+et on saisit les observations (idem, lorsqu'il y a plusieurs variables on
+saisit les observations ou valeurs observées en les séparant par un
+espace). Lorsque la saisie est terminé, on saisit le mot \texttt{end} et on
+presse sur \textsf{Entrée} pour indiquer à Stata que la saisie est
+terminée. \label{para:edit}
+\begin{verbatim}
+. input x
+
+             x
+  1. 3.68
+  2. 2.21
+  3. 2.45
+  4. 8.64
+  5. 4.32
+  6. 3.43
+  7. 5.11
+  8. 3.87
+  9. end
+\end{verbatim}
+On peut vérifier la saisie en affichant les valeurs 3 ou 4 premières valeurs
+de \texttt{x} :
+\begin{verbatim}
+. list in 1/4
+
+     +------+
+     |    x |
+     |------|
+  1. | 3.68 |
+  2. | 2.21 |
+  3. | 2.45 |
+  4. | 8.64 |
+     +------+
+\end{verbatim}
+Les commandes \texttt{describe} ou \texttt{summarize} fournissent toutes les
+deux le nombre d'observations contenues dans la variable \texttt{x} (comme
+il n'y a qu'une seule variable, il n'est même pas nécessaire de spécifier le
+nom de la variable lorsque l'on utilise ces commandes).
+\begin{verbatim}
+. summarize
+
+    Variable |       Obs        Mean    Std. Dev.       Min        Max
+-------------+--------------------------------------------------------
+           x |         8     4.21375    2.019526       2.21       8.64
+\end{verbatim}
+Pour corriger la valeur erronée (8.64), on utilisera \texttt{replace} en
+sépcifiant la position de l'observation dans la variable (son rang
+numérique) :
+\begin{verbatim}
+. replace x = 3.64 in 4
+(1 real change made)
+\end{verbatim}
+On procèdera de même pour recoder la 7\ieme\ observation en valeur
+manquante, sachant que les valeurs manquantes simples sont codées à l'aide
+d'un point :
+\begin{verbatim}
+. replace x = . in 7   
+(1 real change made, 1 to missing)
+\end{verbatim}
+D'où le résumé numérique final suivant :
+\begin{verbatim}
+. summarize
+
+    Variable |       Obs        Mean    Std. Dev.       Min        Max
+-------------+--------------------------------------------------------
+           x |         7    3.371429    .7656246       2.21       4.32
+\end{verbatim}
+% 
+%
+%
+\soln{\ref{exo:1.2}} On peut utiliser la même solution qu'à l'exercice
+précédent pour saisir les données, c'est-à-dire utiliser la commande
+\texttt{input} ou bien se servir de léditeur de données qui se présente sous
+la forme d'un tableur :
+
+\includegraphics{./figs/stata_editX}
+
+On en profitera pour nommer la variable (\texttt{var1} par défaut pour la
+première colonne du tableur). Le seuil de détection en logarithme vaut :
+\begin{verbatim}
+. display log10(50)
+1.69897
+\end{verbatim}
+On peut donc compter le nombre d'observation ne remplissant pas la condition
+$X>\log(50)$ à l'aide de la commande \texttt{count}.
+\begin{verbatim}
+. count if X <= log10(50)
+    4
+\end{verbatim}
+D'où le calcul de la charge virale médiane en ne considérant que les données
+au-dessus de la limite de détection :
+\begin{verbatim}
+. egen Xm = median(10^X) if X > log10(50)
+. display round(Xm)
+12980
+\end{verbatim}
+Pour calculer la médiane des $X_i$ remplissant la condition $X_i>\log(50)$,
+on a utilisé directement la commande \texttt{egen} qui fournit un certain
+nombre de fonctions de transformations et de calcul de base (voir l'aide en
+ligne, \verb|help egen|).
+%
+%
+%
+\soln{\ref{exo:1.5}}
+Pour lire les données contenues dans le fichier \texttt{anorexia.data} dont
+un aperçu est fourni ci-dessous
+\begin{verbatim}
+Group Before After
+g1 80.5  82.2
+g1 84.9  85.6
+g1 81.5  81.4
+g1 82.6  81.9
+g1 79.9  76.4
+\end{verbatim}
+on va utiliser la commande \texttt{infile} à partir d'un fichier \og
+dictionnaire\fg\ qui décrit la structure des données. Ce fichier porte
+généralement le même nom que le fichier source de données, et possède
+l'extension \texttt{dct}. En voici le listing complet
+(\texttt{anorexia.dct}) :
+\begin{verbatim}
+infile dictionary using anorexia.dat {
+  _first(2)
+  str2 Group "Type de therapie"
+  double Before "Avant"
+  double After "Apres"
+}
+\end{verbatim}
+Dans celui-ci, on indique que les observations commencent à la 2\ieme\ ligne
+(on ignore la ligne d'en-tête), et que l'on a trois variables,
+\texttt{Group} (variable qualitative), \texttt{Before} et \texttt{After}
+(variables numériques). Notons que l'on a associé des étiquettes de
+description pour ces trois variables. Il suffit ensuite d'utiliser la
+commande \texttt{infile} en fournissant le nom de ce fichier dictionnaire
+(inutile de préciser l'extension du fichier).
+\begin{verbatim}
+. infile using anorexia
+
+infile dictionary using anorexia.dat {
+  _first(2)
+  str2 Group "Type de therapie"
+  double Before "Avant"
+  double After "Apres"
+}
+
+(72 observations read)
+\end{verbatim}
+On peut ensuite vérifier que les données ont été importées correctement à
+l'aide de \texttt{describe}. Cette commande fournit par ailleurs le nombre
+d'observations disponibles dans le tableau de données ($N=72$).
+\begin{verbatim}
+. describe
+
+Contains data
+  obs:            72                          
+ vars:             3                          
+ size:         1,296                          
+----------------------------------------------------------------------------------------
+              storage  display     value
+variable name   type   format      label      variable label
+----------------------------------------------------------------------------------------
+Group           str2   %9s                    Type de therapie
+Before          double %10.0g                 Avant
+After           double %10.0g                 Apres
+----------------------------------------------------------------------------------------
+Sorted by:  
+     Note:  dataset has changed since last saved
+\end{verbatim}
+Pour obtenir les effectifs par type de thérapie, on utilise un simple tri à
+plat à l'aide de la commande \texttt{tabulate}.
+\begin{verbatim}
+. tabulate Group
+
+    Type de |
+   therapie |      Freq.     Percent        Cum.
+------------+-----------------------------------
+         g1 |         29       40.28       40.28
+         g2 |         26       36.11       76.39
+         g3 |         17       23.61      100.00
+------------+-----------------------------------
+\end{verbatim}
+La transformation d'unités pour les poids ne pose pas de problème
+spécifique, mais il faut décider si l'on crée de nouvelles variables
+(\texttt{generate}) ou si l'on remplace les valeurs existantes
+(\texttt{replace}). Ici, on remplacera les valeurs existantes :
+\begin{verbatim}
+. replace Before = Before/2.2
+(72 real changes made)
+. replace After = After/2.2
+(72 real changes made)
+\end{verbatim}
+Pour les scores de différences, on crée cette fois-ci une nouvelles variable
+à l'aide de la commande \texttt{generate}.
+\begin{verbatim}
+. generate diff = After - Before
+. summarize diff
+
+    Variable |       Obs        Mean    Std. Dev.       Min        Max
+-------------+--------------------------------------------------------
+        diff |        72    1.256313    3.628908  -5.545455   9.772727
+\end{verbatim}
+
+La commande \texttt{summarize} peut être utilisée pour fournir un résumé
+numérique pour chacun des groupes de traitement, par exemple 
+\verb|by Group, sort: summarize diff|. Mais, pour calculer spécifiquement
+certains indicateurs descriptifs, il est plus commode d'utiliser la comamnde
+\texttt{tabstat} à laquelle on fournit la variable réponse et le facteur de
+classification, ainsi que les statistiques recherchées via
+\texttt{stats()}. \label{para:tabstat}
+\begin{verbatim}
+. tabstat diff, by(Group) stats(mean min max)
+
+Summary for variables: diff
+     by categories of: Group (Type de therapie)
+
+ Group |      mean       min       max
+-------+------------------------------
+    g1 |  1.366771 -4.136364       9.5
+    g2 | -.2045454 -5.545455  7.227273
+    g3 |  3.302139 -2.409091  9.772727
+-------+------------------------------
+ Total |  1.256313 -5.545455  9.772727
+--------------------------------------
+\end{verbatim}
+%
+%
+%
+\soln{\ref{exo:2.1}} Pour la saisie des données, on procéder de la même
+manière qu'à l'exercice~1.1, p.~\pageref{para:edit}, ou tout simplement
+saisir les données dans un fichier au format texte. Supposons que les
+données aient été entrées dans un fichier appelé \verb|saisie_x.txt| dont
+voici un aperçu :
+\begin{verbatim}
+24.9 25.0 25.0 25.1 25.2 ...
+\end{verbatim}
+Les valeurs de $X$ sont simplement séparées par un espace. Dans ce cas, les
+données peuvent être lues et importées dans Stata avec la commande \texttt{infile}.
+\begin{verbatim}
+. infile x using "saisie_x.txt"             
+(26 observations read)
+\end{verbatim}
+On n'oubliera pas d'ajouter l'option \texttt{clear} si des données existe
+déjà dans l'espace de travail de Stata.
+
+La commande \texttt{tabstat} peut être utilisée pour calculer la moyenne et
+la médiane des observations. On utilisera par contre la commande
+\texttt{egen} avec la fonction \texttt{mode} pour calculer les valeurs
+modales de $X$. Comme il y a plusieurs modes, on demandera à Stata de
+renvoyer la valeur la plus basse des deux modes. Notons que la commande
+\texttt{egen} pourrait également être utilisée pour calculer la moyenne et
+la médiane de $X$. 
+\begin{verbatim}
+. tabstat x, stats(mean median)
+
+    variable |      mean       p50
+-------------+--------------------
+           x |  25.44615     25.45
+----------------------------------
+. egen xmode = mode(x), minmode
+. display xmode
+25.4
+\end{verbatim}
+Concernant la variance, on a directement accès à l'écart-type à partir de 
+\verb|summarize x|, mais on peut également la calculer avec \texttt{egen}
+comme le carré de l'écart-type estimé à partir de l'échantillon, puis
+l'afficher sur la console des résultats :
+\begin{verbatim}
+. egen varx = sd(x)
+. di varx^2
+.0793846
+\end{verbatim}
+Pour le recodage en 4 classes d'intervalles pré-définis pour la variable
+\texttt{x}, on peut toujours utiliser la fonction \texttt{cut} avec
+\texttt{egen}. On peut ensuite vérifier que les intervalles de classe sont
+bien respectés à l'aide de \texttt{table} qui est plus souple que la
+commande \texttt{summarize} et permet de préciser la liste des valeurs
+statistiques à afficher.
+\begin{verbatim}
+. egen xc = cut(x), at(24.8,25.2,25.5,25.8,26.1) label
+. table xc, contents(min x max x)
+
+----------------------------------
+       xc |     min(x)      max(x)
+----------+-----------------------
+    24.8- |       24.9        25.1
+    25.2- |       25.2        25.4
+    25.5- |       25.5        25.8
+    25.8- |       25.9          26
+----------------------------------
+\end{verbatim}
+En revanche, le tableau d'effectifs peut s'obtenir directement avec
+\texttt{tabulate}, par exemple :
+\begin{verbatim}
+. tabulate xc, plot
+
+         xc |      Freq.
+------------+------------+-----------------------------------------------------
+      24.8- |          4 |****
+      25.2- |          9 |*********
+      25.5- |         11 |***********
+      25.8- |          2 |**
+------------+------------+-----------------------------------------------------
+      Total |         26
+\end{verbatim}
+Enfin, pour la représentation sous forme d'histogramme, Stata dispose de ses
+propres algorithmes de calcul pour la détermination du nombre de classes à
+construire, tout comme R. Tout est géré à partir de la commande
+\texttt{histogram}. 
+\begin{verbatim}
+. histogram x, frequency
+(bin=5, start=24.9, width=.22000008)
+\end{verbatim}
+Ne pas oublier l'option \texttt{frequency} si l'on souhaite afficher les
+effectifs plutôt que la densité (qui est le choix par défaut).
+
+\includegraphics{./figs/stata_histx}
+%
+%
+%
+\soln{\ref{exo:2.3}} Pour importer les données stockées dans un simple
+fichier texte, on utilise la commande \verb|- infile -|.
+\begin{verbatim}
+. infile tailles using "elderly.dat", clear
+\end{verbatim}
+Ici, on notera que l'on ne précise pas la manière dont sont codées les
+valeurs manquantes car le "." est le format utilisé par défaut par Stata
+(pour les variables numériques uniquement).
+
+Il existe plusieurs commandes qui facilitent la détection et
+l'identification des valeurs manquantes. Parmi celles disponibles par défaut
+sur Stata, on distingue \verb|- codebook -| qui fournit un résumé de la
+variable, ainsi que les fonctions de base qui permettent de tabuler ou
+compter les observations répondant à un certain critère.
+\begin{verbatim}
+. count if tailles == .
+    5
+\end{verbatim}
+
+Pour obtenir la taille moyenne et son intervalle de confiance à 95~\%
+associé, il suffit d'entrer la commande suivante :
+\begin{verbatim}
+. ci tailles
+
+    Variable |        Obs        Mean    Std. Err.       [95% Conf. Interval]
+-------------+---------------------------------------------------------------
+     tailles |        346    159.8324    .3232401        159.1966    160.4681
+\end{verbatim}
+
+Enfin, pour afficher la distribution des tailles sous forme d'une courbe de
+densité, on utilise la commande \texttt{histogram} avec l'option
+\texttt{kdensity}. Le degré de lissage peut être contrôlé à l'aide de
+l'option \texttt{kdenopts} ; par exemple, ajouter \verb|kdenopts(gauss width(1))| 
+à la commande ci-dessous produirait une courbe \og moins lisse\fg\
+(c'est-à-dire s'ajustant plus aux données).
+\begin{verbatim}
+. histogram tailles, kdensity
+(bin=18, start=142, width=2)
+\end{verbatim}
+
+\includegraphics{./figs/stata_kdens}
+
+%
+%
+%
+\soln{\ref{exo:2.4}} Les données sur les poids à la naissance de Hosmer \&
+Lemeshow (1989) peuvent être obtenues directement au format Stata grâce à la
+commande \verb|webuse lbw|, mais par souci de simplicité on utilisera les
+mêmes données que celles traitées avec \R. Celles-ci ont été exportées au
+format texte dans le fichier \texttt{birthwt.dat}, et elles peuvent être
+importées ainsi : 
+\begin{verbatim}
+. infile low age lwt race smoke ptl ht ui ftv bwt using "birthwt.dat", clear
+\end{verbatim}
+
+On peut vérifier avec la commande \verb|- describe -| que les variables sont
+bien toutes au format numérique (colonne \texttt{storage type}).
+\begin{verbatim}
+. describe
+
+Contains data
+  obs:           189                          
+ vars:            10                          
+ size:         7,560                          
+-----------------------------------------------------------------------------------------
+              storage  display     value
+variable name   type   format      label      variable label
+-----------------------------------------------------------------------------------------
+low             float  %9.0g                  
+age             float  %9.0g                  
+lwt             float  %9.0g                  
+race            float  %9.0g                  
+smoke           float  %9.0g                  
+ptl             float  %9.0g                  
+ht              float  %9.0g                  
+ui              float  %9.0g                  
+ftv             float  %9.0g                  
+bwt             float  %9.0g                  
+-----------------------------------------------------------------------------------------
+Sorted by:  
+     Note:  dataset has changed since last saved
+\end{verbatim}
+Pour créer de nouvelles étiquettes aux variables \texttt{low},
+\texttt{race}, \texttt{smoke}, \texttt{ui} et \texttt{ht}, il suffit de
+définir des "labels" et de les associer aux variables en question (cela ne
+change le format de représentation des variables en mémoire, qui restent
+stockées sous forme de nombre).
+\begin{verbatim}
+. label define yesno 0 "no" 1 "yes"
+. label define ethn 1 "White" 2 "Black" 3 "Other"
+. label values low smoke ui ht yesno
+. label values race ethn
+\end{verbatim}
+On peut vérifier que le tableau de données a bien été mis à jour
+\begin{verbatim}
+. list in 1/5
+
+     +---------------------------------------------------------------+
+     | low   age   lwt    race   smoke   ptl   ht    ui   ftv    bwt |
+     |---------------------------------------------------------------|
+  1. |  no    19   182   Black      no     0   no   yes     0   2523 |
+  2. |  no    33   155   Other      no     0   no    no     3   2551 |
+  3. |  no    20   105   White     yes     0   no    no     1   2557 |
+  4. |  no    21   108   White     yes     0   no   yes     2   2594 |
+  5. |  no    18   107   White     yes     0   no   yes     0   2600 |
+     +---------------------------------------------------------------+
+\end{verbatim}
+
+La conversion du poids des mères en \emph{kg} ne pose pas de problème
+particulier, et ici on remplacera directement les données disponibles à
+l'aide de la commande \texttt{replace}
+\begin{verbatim}
+. replace lwt = lwt/2.2
+(189 real changes made)
+\end{verbatim}
+Les indicateurs de tendance centrale et de dispersion relative sont obtenus
+à partir de la commande \verb|summarize|.
+\begin{verbatim}
+. summarize lwt, detail
+
+                             lwt
+-------------------------------------------------------------
+      Percentiles      Smallest
+ 1%     38.63636       36.36364
+ 5%     42.72727       38.63636
+10%     44.54546       38.63636       Obs                 189
+25%           50       40.45454       Sum of Wgt.         189
+
+50%           55                      Mean           59.00673
+                        Largest       Std. Dev.      13.89972
+75%     63.63636       104.0909
+90%     77.27273       106.8182       Variance       193.2022
+95%     85.90909       109.5455       Skewness       1.390855
+99%     109.5455       113.6364       Kurtosis       5.309181
+\end{verbatim}
+On a ajouté l'option \texttt{detail} car la commande \verb|summarize lwt| ne
+fournit pas la médiane. On a cependant vu une alternative possible avec la
+commande \texttt{tabstat} dans l'exercice~1.5
+(p.~\pageref{para:tabstat}). Pour obtenir l'intervalle inter-quartile, on
+peut le calculer ainsi :
+\begin{verbatim}
+. egen lwtiqr = iqr(lwt)
+. di lwtiqr
+13.636364
+\end{verbatim}
+Enfin, un histogramme du poids des mères est construit à l'aide de la
+commande \verb|histogram|. Ici, sans autre option un histogramme de
+densité sera construit.
+\begin{verbatim}
+. histogram lwt
+(bin=13, start=36.363636, width=5.9440557)
+\end{verbatim}
+
+\includegraphics{./figs/stata_birthwt}
+
+Concernant la proportion de mères ayant fumé durant la grossesse et
+le calcul de l'intervalle de confiance à 95~\% associé, on peut utiliser la
+commande \verb|- prtest -|, qui comme dans le cas de la commande \R
+\texttt{prop.test} suppose de grands échantillons :
+\begin{verbatim}
+. tabulate smoke
+
+      smoke |      Freq.     Percent        Cum.
+------------+-----------------------------------
+         no |        115       60.85       60.85
+        yes |         74       39.15      100.00
+------------+-----------------------------------
+      Total |        189      100.00
+. prtest smoke == .5
+
+One-sample test of proportion                  smoke: Number of obs =      189
+------------------------------------------------------------------------------
+    Variable |       Mean   Std. Err.                     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+       smoke |   .3915344   .0355036                      .3219487    .4611201
+------------------------------------------------------------------------------
+    p = proportion(smoke)                                         z =  -2.9823
+Ho: p = 0.5
+
+     Ha: p < 0.5                 Ha: p != 0.5                   Ha: p > 0.5
+ Pr(Z < z) = 0.0014         Pr(|Z| > |z|) = 0.0029          Pr(Z > z) = 0.9986
+\end{verbatim}
+Le test utilisé par Stata diffère du $\chi^2$ de \R mais ces deux tests
+fournissent essentiellement les mêmes résultats. Ici, la proportion estimée
+vaut 0.392 avec un intervalle de confiance de $[0.322;0.461]$. Si l'on ne
+souhaite pas utiliser l'approximation pour grands échantillons, on peut
+utiliser \verb|- bintest -| à la place.
+
+La commande \verb|- graph bar -| permet de construire assez facilement des
+diagrammes en barres. 
+\begin{verbatim}
+. gen one = 1
+. graph bar (sum) one, over(smoke) ytitle("Effectif")
+\end{verbatim}
+
+\includegraphics{./figs/stata_birthwt2}
+
+Pour générer les terciles, on utilise la commande \verb|- xtile -| en
+spécifiant le nombre de quantile désiré, \texttt{nq(3)}. 
+\begin{verbatim}
+. xtile ageter = age, nq(3)
+. tabulate ageter
+
+3 quantiles |
+     of age |      Freq.     Percent        Cum.
+------------+-----------------------------------
+          1 |         69       36.51       36.51
+          2 |         66       34.92       71.43
+          3 |         54       28.57      100.00
+------------+-----------------------------------
+      Total |        189      100.00
+\end{verbatim}
+On notera que Stata n'attribue pas automatiquement des labels aux catégories
+générées, mais simplement un rang (ici, ${1,2,3}$). On peut toutefois
+obtenir les bornes des intervalles des terciles de deux manières. La
+première solution, 
+\begin{verbatim}
+. _pctile age, n(3)
+. return list
+
+scalars:
+                 r(r1) =  20
+                 r(r2) =  25
+\end{verbatim}
+renvoit les bornes inférieures (exclues) des deux derniers intervalles, d'où
+les trois intervalles : (14,20], (20,25] et (25,45], la borne inférieure du
+1\ier intervalle étant obtenue comme le \texttt{min} de la variable
+\texttt{age}. La seconde méthode consiste à fournir un résumé plus détaillé
+de la variable \texttt{ageter} :
+\begin{verbatim}
+. table ageter, contents(freq min age min age)
+
+----------------------------------------------
+3         |
+quantiles |
+of age    |      Freq.    min(age)    min(age)
+----------+-----------------------------------
+        1 |         69          14          14
+        2 |         66          21          21
+        3 |         54          26          26
+----------------------------------------------
+\end{verbatim}
+
+On notera qu'une commande telle que \texttt{cut} permettrait de générer des
+groupes approximativement équivalents en termes d'effectifs, mais cela ne
+correspond pas tout à fait au résultat souhaité.
+\begin{verbatim}
+. egen ageter = cut(age), group(3) label
+\end{verbatim}
+
+Le croisement de cette nouvelle variable avec la variable indicatrice de
+sous-poids donne les résultats suivants, exprimées en termes de proportions
+(par colonne) :
+\begin{verbatim}
+. tabulate ageter low, col nofreq
+
+         3 |
+ quantiles |          low
+    of age |        no        yes |     Total
+-----------+----------------------+----------
+         1 |     35.38      38.98 |     36.51 
+         2 |     33.08      38.98 |     34.92 
+         3 |     31.54      22.03 |     28.57 
+-----------+----------------------+----------
+     Total |    100.00     100.00 |    100.00
+\end{verbatim}
+
+Un tri à plat de la variable \texttt{race} est effectuée de la même manière
+à partir de la comamnde \verb|- tabulate -|.
+\begin{verbatim}
+. tabulate race
+
+       race |      Freq.     Percent        Cum.
+------------+-----------------------------------
+      White |         96       50.79       50.79
+      Black |         26       13.76       64.55
+      Other |         67       35.45      100.00
+------------+-----------------------------------
+      Total |        189      100.00
+\end{verbatim}
+
+
+Enfin, pour résumer la distribution des variables selon la variable
+indicatrice \texttt{low}, on peut procéder en deux temps. D'abord, on résume
+les variables quantitatives :
+\begin{verbatim}
+. by low, sort: summarize age lwt ptl ftv
+
+-------------------------------------------------------------------------------------------------------------------
+-> low = no
+
+    Variable |       Obs        Mean    Std. Dev.       Min        Max
+-------------+--------------------------------------------------------
+         age |       130    23.66154    5.584522         14         45
+         lwt |       130    60.59091    14.42001   38.63636   113.6364
+         ptl |       130    .1307692    .4556019          0          3
+         ftv |       130    .8384615    1.069694          0          6
+
+-------------------------------------------------------------------------------------------------------------------
+-> low = yes
+
+    Variable |       Obs        Mean    Std. Dev.       Min        Max
+-------------+--------------------------------------------------------
+         age |        59    22.30508    4.511496         14         34
+         lwt |        59    55.51618     12.0724   36.36364   90.90909
+         ptl |        59    .3389831    .5448875          0          2
+         ftv |        59    .6949153    1.038139          0          4
+\end{verbatim}
+Puis, on procède de même avec les variables qualitatives :
+\begin{verbatim}
+. by low, sort: tab1 race smoke ht ui
+\end{verbatim}
+
+
+%---------------------------------------------------------------- Séance 09 --
+\chapter{Mesures d'association, comparaison de moyennes et de proportions
+  pour deux échantillons ou plus}  
+
+\soln{\ref{exo:3.1}} On rappelle que seuls les valeurs numériques des poids
+à la naissance sont disponibles dans le fichier \texttt{sirds.dat}, et qu'il
+nous faut contruire la variable de groupement (enfants décédés \emph{versus}
+vivants). Une manière de procéder consiste à générer une variable prenant
+deux valeurs puis à associer des "labels" aux valeurs distinctes prises par
+cette variable. Par exemple,
+\begin{verbatim}
+. infile poids using "sirds.dat", clear
+. gen status = 0
+. replace status = 1 if _n>27
+. label define labstatus 0 "décédé" 1 "vivant"
+. label values status labstatus
+\end{verbatim}
+
+Il est possible d'obtenir un résumé numérique de la variable \texttt{poids}
+pour chaque modalité de la variable \texttt{status} nouvellement créée à
+l'aide de la commande \verb|- summarize -|.
+\begin{verbatim}
+. by status, sort: summarize poids
+
+-> status = décédé
+
+    Variable |       Obs        Mean    Std. Dev.       Min        Max
+-------------+--------------------------------------------------------
+       poids |        27    1.691741    .5176473       1.03       2.73
+
+-----------------------------------------------------------------------------------------
+-> status = vivant
+
+    Variable |       Obs        Mean    Std. Dev.       Min        Max
+-------------+--------------------------------------------------------
+       poids |        23    2.307391    .6647229       1.13       3.64
+\end{verbatim}
+
+Pour réaliser un histogramme de la distribution des poids à la naissance en
+fonction du status clinique, on peut procéder ainsi :
+\begin{verbatim}
+. histogram poids, frequency by(status)
+\end{verbatim}
+\includegraphics{./figs/stata_sirds}
+
+Enfin, le test de Student est réalisé en utilisant la commande
+\texttt{ttest}, qui par défaut suppose l'homogénéité des variances vérifiée :
+\begin{verbatim}
+. ttest poids, by(status)
+
+Two-sample t test with equal variances
+------------------------------------------------------------------------------
+   Group |     Obs        Mean    Std. Err.   Std. Dev.   [95% Conf. Interval]
+---------+--------------------------------------------------------------------
+  décédé |      27    1.691741    .0996213    .5176473    1.486966    1.896515
+  vivant |      23    2.307391    .1386043    .6647229    2.019944    2.594839
+---------+--------------------------------------------------------------------
+combined |      50     1.97494    .0934493     .660786    1.787147    2.162733
+---------+--------------------------------------------------------------------
+    diff |           -.6156506    .1673084               -.9520467   -.2792545
+------------------------------------------------------------------------------
+    diff = mean(décédé) - mean(vivant)                            t =  -3.6797
+Ho: diff = 0                                     degrees of freedom =       48
+
+    Ha: diff < 0                 Ha: diff != 0                 Ha: diff > 0
+ Pr(T < t) = 0.0003         Pr(|T| > |t|) = 0.0006          Pr(T > t) = 0.9997
+\end{verbatim}
+Stata reporte les degrés de significativité correspondant aux deux types de
+tests, uni- et bilatéral. Ici, pour le test bilatéral, le degré de
+significativité estimé est de 0.0006 ; ce résultat est arrondi, mais il est
+possible d'obtenir une valeur plus précise à l'aide de la commande suivante :
+\begin{verbatim}
+. display r(p)
+.00059019
+\end{verbatim}
+La commande ci-dessus doit être entrée immédiatement après l'appel à la
+commande \verb|- ttest -|.
+%
+%
+%
+\soln{\ref{exo:3.2}} Les données de l'étude sur le sommeil servant de base à
+l'article de Student ne sont pas disponibles sous Stata. On peut en revanche
+les saisir manuellement à l'aide de la commande \verb|input|, comme on l'a
+vu p.~\pageref{para:edit}. Dans le cas présent, on va donc créer deux
+variables, \texttt{DHH} et \texttt{LHH}, correspondant aux temps de sommeil
+enregistrées pour les molécules D. hyoscyamine hydrobromide et
+L. hyoscyamine hydrobromide, respectivement. 
+\begin{verbatim}
+. clear all
+. input DHH LHH
+
+           DHH        LHH
+  1. 0.7 1.9
+  2. -1.6 0.8
+  3. -0.2 1.1
+  4. -1.2 0.1
+  5. -0.1 -0.1
+  6. 3.4 4.4
+  7. 3.7 5.5
+  8. 0.8 1.6
+  9. 0.0 4.6
+ 10. 2.0 3.4
+ 11. end
+\end{verbatim}
+On peut vérifier que la saisie donne bien les résultats attendus en
+affichant les 5 premières observations :
+\begin{verbatim}
+. list in 1/5
+
+     +------------+
+     |  DHH   LHH |
+     |------------|
+  1. |   .7   1.9 |
+  2. | -1.6    .8 |
+  3. |  -.2   1.1 |
+  4. | -1.2    .1 |
+  5. |  -.1   -.1 |
+     +------------+
+\end{verbatim}
+
+Les moyennes par groupe de traitement sont obtenues à l'aide de
+\texttt{tabstat}, qui sans autre option renvoit la moyenne des variables
+listées dans la commande.
+\begin{verbatim}
+. tabstat DHH LHH, save
+
+   stats |       DHH       LHH
+---------+--------------------
+    mean |       .75      2.33
+------------------------------
+\end{verbatim}
+L'option \texttt{save} utilisée ci-dessus permet de stocker temporairement
+les résultats renvoyés par la commande \texttt{tabstat}, ce qui permet de
+les réutiliser pour calculer la différence de moyennes entre les deux
+molécules. 
+\begin{verbatim}
+. return list
+
+matrices:
+          r(StatTotal) :  1 x 2
+. matrix m = r(StatTotal)
+. mat li m
+
+m[1,2]
+            DHH        LHH
+mean  .75000001       2.33
+. display m[1,2] - m[1,1]
+1.58
+\end{verbatim}
+Comme on l'a vu avec R, la manipulation de la variable auxiliaire
+\texttt{m}, dans laquelle on a stocké les deux moyennes de groupe, se fait
+en appelant ses éléments par numéro de position (la moyenne pour le groupe
+LHH se trouve en seconde position, donc peut être utilisée comme
+\verb|m[1,2]|). 
+
+On calculera les scores de différences par simple soustraction, et on
+stockera les résultats dans une nouvelle variable comme indiqué ci-après.
+\begin{verbatim}
+. gen sdif = LHH - DHH
+. tabstat sdif, stats(mean sd)
+
+    variable |      mean        sd
+-------------+--------------------
+        sdif |      1.58  1.229995
+----------------------------------
+\end{verbatim}
+Enfin, pour afficher la distribution des scores de différences sous forme
+d'un histogramme en imposant des intervalles de classe de 0.5 heure, il
+faudra ajouter les options \texttt{bin(8)} (8 intervalles au total) et
+\texttt{start(0)} (en débutant à 0).
+\begin{verbatim}
+. histogram sdif, percent bin(8) start(0)
+(bin=8, start=0, width=.57499999)
+\end{verbatim}
+
+\includegraphics{./figs/stata_sdif}
+
+Pour réaliser un test $t$ pour données appariées, on utilise toujours la
+commande \verb|- ttest -|, avec cette fois-ci une syntaxe légèrement
+différente :
+\begin{verbatim}
+. ttest DHH == LHH
+
+Paired t test
+------------------------------------------------------------------------------
+Variable |     Obs        Mean    Std. Err.   Std. Dev.   [95% Conf. Interval]
+---------+--------------------------------------------------------------------
+     DHH |      10         .75    .5657345     1.78901   -.5297804     2.02978
+     LHH |      10        2.33    .6331666    2.002249    .8976776    3.762322
+---------+--------------------------------------------------------------------
+    diff |      10       -1.58    .3889587    1.229995   -2.459886   -.7001143
+------------------------------------------------------------------------------
+     mean(diff) = mean(DHH - LHH)                                 t =  -4.0621
+ Ho: mean(diff) = 0                              degrees of freedom =        9
+
+ Ha: mean(diff) < 0           Ha: mean(diff) != 0           Ha: mean(diff) > 0
+ Pr(T < t) = 0.0014         Pr(|T| > |t|) = 0.0028          Pr(T > t) = 0.9986
+\end{verbatim}
+
+Enfin, on peut représenter les gains moyens de temps de sommeil pour
+chaque molécule à l'aide d'un diagramme en barres.
+\begin{verbatim}
+. graph hbar DHH LHH, bargap(20)
+\end{verbatim}
+\includegraphics{./figs/stata_student}
+
+Ici, on a choisi de représenter les données sous forme de barres
+horizontales (\texttt{hbar} au lieu de \texttt{bar}), sachant que par défaut
+Stata calcule automatiquement les moyennes conditionnelles. Pour afficher la
+médiane, on utiliserait la commande \verb|graph hbar (median) DHH LHH|.
+% 
+%
+%
+\soln{\ref{exo:3.4}} Stata dispose de commandes appelées "immédiates"
+permettant de calculer les statistiques de test associées à des données
+saisies directement à l'invite de commande, c'est-à-dire sans passer par
+l'importation d'un fichier de données ou la saisie d'un tableau
+d'effectifs. Dans le cas présent, on peut répondre aux trois questions
+posées à partir de la même commande, \texttt{tabi} (à ne pas confondre
+avec la commande externe \texttt{chitesti} qui réalise des tests
+d'ajustement à une loi donnée).  
+\begin{verbatim}
+. tabi 26 21\ 38 44, exact chi2 expected
+
++--------------------+
+| Key                |
+|--------------------|
+|     frequency      |
+| expected frequency |
++--------------------+
+
+           |          col
+       row |         1          2 |     Total
+-----------+----------------------+----------
+         1 |        26         21 |        47 
+           |      23.3       23.7 |      47.0 
+-----------+----------------------+----------
+         2 |        38         44 |        82 
+           |      40.7       41.3 |      82.0 
+-----------+----------------------+----------
+     Total |        64         65 |       129 
+           |      64.0       65.0 |     129.0 
+
+          Pearson chi2(1) =   0.9632   Pr = 0.326
+           Fisher's exact =                 0.364
+   1-sided Fisher's exact =                 0.212
+\end{verbatim}
+\emph{À noter} : Stata ne fournit pas de correction de continuité de Yates pour ce
+type de test parmi les commandes de base.  
+%
+%
+%
+\soln{\ref{exo:3.5}} Comme dans l'exercice précédent, on pourrait travailler
+à l'aide de commandes "immédiates". Toutefois, il est parfois utile de
+recréer directement le tableau d'effectif sous Stata. Voici une façon de
+procéder. \label{exo:3.5stata}
+
+La première étape consiste à créer trois variables qui permettront de
+stocker, pour chaque combinaison de traitement (placebo ou aspirine) et de
+réponse (infarctus ou pas d'infarctus), les effectifs observés. Les deux
+variables \texttt{traitement} et \texttt{infarctus} sont des variables
+binaires (deux modalités, codées 0 et 1). 
+\begin{verbatim}
+. clear all
+. input traitement infarctus N
+
+     traitem~t  infarctus          N
+  1. 0 1 28
+  2. 0 0 656
+  3. 1 1 18
+  4. 1 0 658
+  5. end
+\end{verbatim}
+Ensuite, on associe des labels aux modalités des variables nouvellement
+créées. On peut ensuite vérifier que les données ont bien été enregistrées
+dans le format attendu.
+\begin{verbatim}
+. label define tx 0 "Placebo" 1 "Aspirine"
+. label values traitement tx
+. label define ouinon 0 "Non" 1 "Oui"
+. label values infarctus ouinon
+. list
+
+     +---------------------------+
+     | traite~t   infarc~s     N |
+     |---------------------------|
+  1. |  Placebo        Oui    28 |
+  2. |  Placebo        Non   656 |
+  3. | Aspirine        Oui    18 |
+  4. | Aspirine        Non   658 |
+     +---------------------------+
+\end{verbatim}
+
+Les diagrammes en barres sont prouits avec la commande \verb|- graph bar -|.
+\begin{verbatim}
+. graph bar (asis) N, over(infarctus) asyvars over(traitement) legend(title("Infarctus"))
+\end{verbatim}
+L'option \texttt{asyvars} insérée entre les deux variables de classification
+est indispensable si l'on souhaite que les barres aient des couleurs
+différentes selon le type de variable considéré.
+
+\includegraphics{./figs/stata_infarctus}
+% FIXME:
+% display as percent
+% catplot infarctus traitement [fw=N], percent recast(bar)
+
+Pour représenter les proportions d'infarctus selon le type de traitement, on
+peut utiliser une commande externe de Stata (à installer de la manière
+suivante : \verb|ssc install catplot|) qui est bien commode pour la
+représentation graphique des données catégorielles. Son usage est le suivant :
+\begin{verbatim}
+. catplot infarctus traitement [fw=N] if infarctus==1, percent
+\end{verbatim}
+
+\includegraphics{./figs/stata_infarctus2}
+
+On verra dans le chapitre consacré aux données épidémiologiques comment
+estimer l'odds-ratio et son intervalle de confiance à partir de la commande
+\texttt{cc}. Dans le cas présent, on se contentera d'utiliser
+\texttt{tabodds} qui fournit une estimation des odds et de
+l'odds-ratio. Pour ce dernier, il faut préciser l'option \texttt{or} comme
+indiqué ci-après ainsi que la catégorie de référence (\texttt{base}).
+\begin{verbatim}
+. tabodds infarctus traitement [fweight=N], or base(2)
+
+---------------------------------------------------------------------------
+   infarctus |  Odds Ratio       chi2       P>chi2     [95% Conf. Interval]
+-------------+-------------------------------------------------------------
+         Non |           .          .           .              .          .
+         Oui |           .          .           .              .          .
+---------------------------------------------------------------------------
+Test of homogeneity (equal odds): chi2(1)  =     2.13
+                                  Pr>chi2  =   0.1446
+
+Score test for trend of odds:     chi2(1)  =     2.13
+                                  Pr>chi2  =   0.1446
+\end{verbatim}
+%
+%
+%
+\soln{\ref{exo:4.1}} Le chargement des données ne pose pas vraiment de
+problème puisque les données sont déjà disponibles au format Stata.
+\begin{verbatim}
+. use polymorphism.dta
+. by genotype: summarize age
+
+-----------------------------------------------------------------------------------------
+-> genotype = 1.6/1.6
+
+    Variable |       Obs        Mean    Std. Dev.       Min        Max
+-------------+--------------------------------------------------------
+         age |        14    64.64286    11.18108         43         79
+
+-----------------------------------------------------------------------------------------
+-> genotype = 1.6/0.7
+
+    Variable |       Obs        Mean    Std. Dev.       Min        Max
+-------------+--------------------------------------------------------
+         age |        29    64.37931    13.25954         38         87
+
+-----------------------------------------------------------------------------------------
+-> genotype = 0.7/0.7
+
+    Variable |       Obs        Mean    Std. Dev.       Min        Max
+-------------+--------------------------------------------------------
+         age |        16      50.375    10.63877         33         72
+\end{verbatim}
+Les intervalles de confiance reportés ci-dessus ne sont pas calculés à
+partir de l'ANOVA réalisée ci-après, mais en considérant une approximation à
+la loi normale. On peut en revanche obtenir un résumé descriptif simplifié
+avec la commande \texttt{summarize}
+\begin{verbatim}
+. by genotype: summarize age
+\end{verbatim}
+ou plus détaillé en ajoutant l'option \texttt{detail}:
+\begin{verbatim}
+. by genotype: summarize age, detail
+\end{verbatim}
+
+Il est possible d'afficher la distribution des âges pour chacun des
+génotypes à l'aide de boites à moustaches.
+\begin{verbatim}
+. graph box age, over(genotype)
+\end{verbatim}
+
+\includegraphics{./figs/stata_polymsm}
+
+Si l'on souhaite représenter la distribution des âges à l'aide
+d'histogrammes, on peut utiliser la commande \texttt{histogram} de la
+manière suivante :
+\begin{verbatim}
+. histogram age, by(genotype, col(3))
+\end{verbatim}
+L'option \verb|by(genotype, col(3))| permet d'afficher les distributions
+conditionnellement au génotype et d'aligner les histogrammes horizontalement
+(c'est-à-dire sur 3 colonnes).
+
+\includegraphics{./figs/stata_histby}
+
+La commande \texttt{oneway} permet de réaliser une analyse de variance à un
+effet fixe, comme suit :
+\begin{verbatim}
+. oneway age genotype
+
+                        Analysis of Variance
+    Source              SS         df      MS            F     Prob > F
+------------------------------------------------------------------------
+Between groups      2315.73355      2   1157.86678      7.86     0.0010
+ Within groups      8245.79187     56   147.246283
+------------------------------------------------------------------------
+    Total           10561.5254     58   182.095266
+
+Bartlett's test for equal variances:  chi2(2) =   1.0798  Prob>chi2 = 0.583
+\end{verbatim}
+Le tableau d'ANOVA produit par Stata est sensiblement identique à celui
+fourni par \R, à ceci près que Stata reporte également les totaux pour les
+sommes de carrés, carrés moyens et degrés de liberté associés. On notera
+également que Stata fournit le résultat d'un test de Bartlett concernant
+l'hypothèse d'homogénéité des variances. Le test de Levene pour tester
+l'homogénéité des variances peut être obtenu à l'aide d'une approche un peu
+différente : la commande \verb|- robvar -| qui fournit un ensemble de tests
+robustes pour l'égalité des variances.
+\begin{verbatim}
+. robvar age, by(genotype)
+
+            |     Summary of Age at Diagnosis
+   Genotype |        Mean   Std. Dev.       Freq.
+------------+------------------------------------
+    1.6/1.6 |   64.642857   11.181077          14
+    1.6/0.7 |    64.37931   13.259535          29
+    0.7/0.7 |      50.375   10.638766          16
+------------+------------------------------------
+      Total |   60.644068   13.494268          59
+
+W0  =  0.83032671   df(2, 56)     Pr > F = 0.44120161
+
+W50 =  0.60460508   df(2, 56)     Pr > F = 0.54981692
+
+W10 =  0.79381598   df(2, 56)     Pr > F = 0.45713722
+\end{verbatim}
+Le test de Levene est reporté sous la statistique de test \texttt{W0}.
+
+Enfin, notons que le résumé numérique produit à l'étape précédente (moyennes
+conditionnelles) peut être reproduit partiellement (sans les intervalles de
+confiance) en ajoutant l'option \texttt{tabulate} :
+\begin{verbatim}
+. oneway age genotype, tabulate
+\end{verbatim}
+Si l'on souhaite former les intervalles de confiance associés aux moyennes
+de groupe à partir des résultats de l'ANOVA, c'est-à-dire en considérant une
+estimation de la résiduelle basée sur la variance commune, on peut procéder
+comme dans le cas \R, en utilisant le carré moyen de l'erreur
+(\texttt{Within groups}) et le quantile de référence de la loi $t$ (0.975)
+que l'on peut obtenir comme ceci sous Stata (ici pour le premier génotype,
+1.6/1.6) :
+\begin{verbatim}
+. display invttail(14-3, 0.025)
+2.2009852
+\end{verbatim}
+
+Plus généralement, on pourrait générer les bornes inférieures et supérieures
+des intervalles de confiance à 95~\% des trois moyennes de groupe à partir
+des données aggrégées, comme le montre l'exemple suivant (on ne tient plus
+compte de l'estimé de la variance commune dans ce cas) :
+\begin{verbatim}
+. collapse (mean) agem=age (sd) ages=age (count) n=age, by(genotype)
+. generate agelci = agem - invttail(n-1, 0.025)*(ages/sqrt(n))
+. generate ageuci = agem + invttail(n-1, 0.025)*(ages/sqrt(n))
+\end{verbatim}
+et une commande telle que \verb|twoway (bar agem genotype) (rcap ageuci agelci genotype)|
+permettrait d'afficher les résultats sous forme graphique. Une solution
+alternative et plus commode est d'utiliser la commande \texttt{serrbar}  qui
+permet d'afficher une série de moyennes associées à leur erreurs
+standard. Comme on souhaite utiliser les intervalles de confiance plutôt que
+les erreurs standard, il suffit juste d'ajouter une petite modification à
+l'usage standard. En utilisant les calculs précédents, on calcule la
+demi-largeur de l'IC (sachant que celui-ci est symétrique autour de la moyenne)
+\begin{verbatim}
+. gen ageb = agem-agelci
+. serrbar agem ageb genotype, xlabel(1 "1.6/1.6" 2 "1.6/0.7" 3 "0.7/0.7")
+\end{verbatim}
+
+\includegraphics{./figs/stata_sebar}
+
+
+On notera que les différences de moyennes peuvent être obtenues en formant
+des contrastes spécifiques à partir d'un modèle de régression qui donne des
+résultats équivalents au modèle d'ANOVA, sous réserve de coder la variable
+qualitative \texttt{genotype} sous forme d'une matrice d'indicatrices à
+l'aide de l'opérateur \verb|i.*|. On ne présente pas les résultats de
+l'appel à la commande \texttt{regress} puisque ce qui nous intéresse est
+simplement d'exploiter les résultats qu'elle sauvegarde (cf. \verb|e()|).
+\begin{verbatim}
+. regress age i.genotype
+\end{verbatim}
+
+Pour la différence de moyennes entre génotype 0.7/0.7 et 1.6/0.7, par
+exemple, on utiliserait la commande suivante :
+\begin{verbatim}
+. lincom 3.genotype - 2.genotype
+
+ ( 1)  - 2.genotype + 3.genotype = 0
+
+------------------------------------------------------------------------------
+         age |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+         (1) |  -14.00431   3.778935    -3.71   0.000    -21.57443   -6.434194
+------------------------------------------------------------------------------
+\end{verbatim}
+On procédera de même pour les deux autres différences de moyennes, 0.7/0.7 -
+1.6/1.6 et 1.6/0.7 - 1.6/1.6.
+
+En fait, la même approche (par régression) nous permettrait d'obtenir les
+intervalles de confiance à 95~\% pour chaque moyenne de groupe :
+\begin{verbatim}
+. lincom _cons + 1.genotype
+
+ ( 1)  1b.genotype + _cons = 0
+
+------------------------------------------------------------------------------
+         age |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+         (1) |   64.64286   3.243084    19.93   0.000     58.14618    71.13953
+------------------------------------------------------------------------------
+\end{verbatim}
+
+\soln{\ref{exo:4.2}}
+Les données peuvent être saisies manuellement dans Stata (ou à l'aide de
+l'éditeur de données, ou \texttt{Data Editor}), comme présentées dans le
+tableau de l'énoncé, c'est-à-dire trois variables organisées en colonnes :
+
+\includegraphics{./figs/stata_dataentry}
+
+Pour utiliser la commande \texttt{oneway}, il est toutefois nécessaire de
+réarranger ces trois variables de façon à avoir une variable réponse et une
+variable décrivant le facteur de classification (à trois classes, A, B et
+C). Pour cela, on utilise la commande \texttt{stack} qui permet de
+concaténer (verticalement) des variables arrangées en colonnes.
+\begin{verbatim}
+. stack A B C, into(pb) clear
+. rename _stack tx
+. label define txlab 1 "A" 2 "B" 3 "C"
+. label values tx txlab
+. list in 1/5
+
+     +-----------+
+     | tx     pb |
+     |-----------|
+  1. |  A   19.8 |
+  2. |  A   20.5 |
+  3. |  A   23.7 |
+  4. |  A   27.1 |
+  5. |  A   29.6 |
+     +-----------+
+\end{verbatim}
+
+Concernant le résumé descriptif des données, on pourra procéder comme suit :
+\begin{verbatim}
+. tabstat pb, stats(mean sd n) by(tx)
+
+Summary for variables: pb
+     by categories of: tx 
+
+    tx |      mean        sd         N
+-------+------------------------------
+     A |      25.1  4.438468         6
+     B |  20.76667  2.798333         6
+     C |  18.28333  1.965113         6
+-------+------------------------------
+ Total |  21.38333  4.199335        18
+--------------------------------------
+. graph box pb, over(tx)
+\end{verbatim}
+
+\includegraphics{./figs/stata_pbtx}
+
+L'ANOVA à un facteur est réalisée comme dans l'exercice précédent avec la
+commande \texttt{oneway}. Notons que l'on a ajouté l'option
+\texttt{bonferroni} pour tester automatiquement les paires de moyennes entre
+elles. Le résultat du test F est significatif et le test de Bartlett
+concernant l'homogénéité des variances suggère que cette hypothèse est
+raisonnable au vu des données. Les tests multiples protégés permettent de
+préciser 
+\begin{verbatim}
+. oneway pb tx, bonferroni
+
+                        Analysis of Variance
+    Source              SS         df      MS            F     Prob > F
+------------------------------------------------------------------------
+Between groups      142.823331      2   71.4116655      6.82     0.0078
+ Within groups      156.961681     15   10.4641121
+------------------------------------------------------------------------
+    Total           299.785012     17   17.6344125
+
+Bartlett's test for equal variances:  chi2(2) =   3.0035  Prob>chi2 = 0.223
+
+                            Comparison of pb by tx
+                                (Bonferroni)
+Row Mean-|
+Col Mean |          A          B
+---------+----------------------
+       B |   -4.33333
+         |      0.105
+         |
+       C |   -6.81667   -2.48333
+         |      0.007      0.610
+\end{verbatim}
+
+Si l'hypothèse de normalité doit être remise en cause, on peut alors
+utiliser la commande \texttt{kwallis} pour réaliser une ANOVA sur les rangs
+(approche non-paramétrique).
+\begin{verbatim}
+. kwallis pb, by(tx)
+
+Kruskal-Wallis equality-of-populations rank test
+
+  +---------------------+
+  | tx | Obs | Rank Sum |
+  |----+-----+----------|
+  |  A |   6 |    82.00 |
+  |  B |   6 |    59.00 |
+  |  C |   6 |    30.00 |
+  +---------------------+
+
+chi-squared =     7.942 with 2 d.f.
+probability =     0.0189
+
+chi-squared with ties =     7.942 with 2 d.f.
+probability =     0.0189
+\end{verbatim}
+Le résultat ci-dessus est cohérent avec le résultat de l'ANOVA
+paramétrique. Pour la comparaison des paires de variables, on utilisera un
+test de Wilcoxon (échantillons indépendants), en corrigeant la $p$-valeur
+par le nombre de tests réalisés (ici, 3). On peut soit utiliser la commande
+\texttt{ranksum}, par exemple \verb+ranksum pb if tx == 1 | tx == 2, by(tx)+, 
+pour comparer les deux premiers traitements, ou alors la commande
+\texttt{kwallis2} qui fournit les mêmes résultats que \texttt{kwallis} mais
+également les tests post-hoc associés. Il est toutefois nécessaire
+d'installer ce package (\texttt{findit kwallis2}, puis suivre la procédure
+d'installation indiquée).
+\begin{verbatim}
+. kwallis2 pb, by(tx)
+
+One-way analysis of variance by ranks (Kruskal-Wallis Test)
+
+tx       Obs   RankSum  RankMean 
+--------------------------------
+  1        6     82.00     13.67
+  2        6     59.00      9.83
+  3        6     30.00      5.00
+
+Chi-squared (uncorrected for ties) =     7.942 with    2 d.f. (p = 0.01886)
+Chi-squared (corrected for ties)   =     7.942 with    2 d.f. (p = 0.01886)
+
+Multiple comparisons between groups
+-----------------------------------
+(Adjusted p-value for significance is 0.008333)
+
+Ho: pb(tx==1) = pb(tx==2)
+    RankMeans difference =      3.83  Critical value =      7.38
+    Prob = 0.106805 (NS)
+
+Ho: pb(tx==1) = pb(tx==3)
+    RankMeans difference =      8.67  Critical value =      7.38
+    Prob = 0.002463 (S)
+
+Ho: pb(tx==2) = pb(tx==3)
+    RankMeans difference =      4.83  Critical value =      7.38
+    Prob = 0.058424 (NS)
+\end{verbatim}
+
+\soln{\ref{exo:4.3}}
+Il n'existe pas de solution très commode pour importer un fichier SPSS sous
+Stata directement, sauf lorsque l'on travaille sous Windows (voir la
+commande \texttt{usespss}). Le fichier contenant les données,
+\texttt{weights.sav}, a été exporté depuis R au format Stata à l'aide des
+commandes suivantes :
+\begin{verbatim}
+library(foreign)
+weights <- read.spss("weights.sav", to.data.frame=TRUE)
+write.dta(weights, file="weights.dta")
+\end{verbatim}
+Depuis Stata, on peut donc l'importer très simplement à l'aide de la
+commande \texttt{use} :
+\begin{verbatim}
+. use "weights.dta", clear
+. list in 1/5
+
+     +----------------------------------------------------------------+
+     |   ID   WEIGHT   LENGTH   HEADC   GENDER   EDUCATIO      PARITY |
+     |----------------------------------------------------------------|
+  1. | L001     3.95     55.5    37.5   Female   tertiary   3 or more |
+  2. | L003     4.63       57    38.5   Female   tertiary   Singleton |
+  3. | L004     4.75       56    38.5     Male     year12   2 sibling |
+  4. | L005     3.92       56      39     Male   tertiary   One sibli |
+  5. | L006     4.56       55    39.5     Male     year10   2 sibling |
+     +----------------------------------------------------------------+
+\end{verbatim}
+
+Le tableau d'effectifs et de fréquences relatives pour la variable
+\texttt{PARITY} s'obtient à partir de la commande \texttt{tabulate} :
+\begin{verbatim}
+. tabulate PARITY
+
+            PARITY |      Freq.     Percent        Cum.
+-------------------+-----------------------------------
+         Singleton |        180       32.73       32.73
+       One sibling |        192       34.91       67.64
+        2 siblings |        116       21.09       88.73
+3 or more siblings |         62       11.27      100.00
+-------------------+-----------------------------------
+             Total |        550      100.00
+\end{verbatim}
+Les moyennes et écarts-type du poids selon la taille de la fratrie
+s'obtiennent ainsi :
+\begin{verbatim}
+. tabstat WEIGHT, stats(mean sd) by(PARITY) format(%9.2f)
+
+Summary for variables: WEIGHT
+     by categories of: PARITY (PARITY)
+
+          PARITY |      mean        sd
+-----------------+--------------------
+       Singleton |      4.26      0.62
+     One sibling |      4.39      0.59
+      2 siblings |      4.46      0.61
+3 or more siblin |      4.43      0.54
+-----------------+--------------------
+           Total |      4.37      0.60
+--------------------------------------
+\end{verbatim}
+L'option \verb|format(%9.2f)| permet de limiter l'affichage des nombres à
+deux décimales.
+
+L'ANOVA à un facteur se réalise comme dans les exercices précédents, à
+l'aide de la commande \texttt{oneway} et en fournissant la variable réponse
+et la variable qualitative décrivant les groupes à comparer.
+\begin{verbatim}
+. oneway WEIGHT PARITY
+
+                        Analysis of Variance
+    Source              SS         df      MS            F     Prob > F
+------------------------------------------------------------------------
+Between groups       3.4769599      3   1.15898663      3.24     0.0219
+ Within groups      195.364879    546   .357811134
+------------------------------------------------------------------------
+    Total           198.841839    549   .362189142
+
+Bartlett's test for equal variances:  chi2(3) =   1.9085  Prob>chi2 = 0.592
+\end{verbatim}
+Comme on l'a vu avec R, on peut calculer la part de variance expliquée à
+partir des sommes de carré reportées ci-dessus. On peut également utiliser
+la commande \texttt{anova} qui renvoit, outre un tableau d'analyse de
+variance, le coefficient de détermination associé au modèle.
+\begin{verbatim}
+. anova WEIGHT PARITY
+
+                           Number of obs =     550     R-squared     =  0.0175
+                           Root MSE      = .598173     Adj R-squared =  0.0121
+
+                  Source |  Partial SS    df       MS           F     Prob > F
+              -----------+----------------------------------------------------
+                   Model |   3.4769599     3  1.15898663       3.24     0.0219
+                         |
+                  PARITY |   3.4769599     3  1.15898663       3.24     0.0219
+                         |
+                Residual |  195.364879   546  .357811134   
+              -----------+----------------------------------------------------
+                   Total |  198.841839   549  .362189142
+\end{verbatim}
+
+Pour afficher les données sous forme d'histogrammes pour chaque groupe, il
+faut utiliser la commande \texttt{histogram} avec l'option \texttt{by} pour
+définir le facteur de classification. L'option \texttt{freq} permet quant à
+elle d'afficher des effectifs plutôt que des proportions (ou densités).
+\begin{verbatim}
+. histogram WEIGHT, by(PARITY) freq
+\end{verbatim}
+
+\includegraphics{./figs/stata_histweight}
+
+Pour afficher afficher un diagramme de dispersion, comme sous R, on peut
+utiliser une commande externe, telle que \texttt{stripplot} (\texttt{ssc
+  install stripplot}), par exemple
+\begin{verbatim}
+. stripplot WEIGHT, over(PARITY) stack height(.4) center vertical width(.3)
+\end{verbatim}
+ou plus simplement 
+\begin{verbatim}
+. twoway scatter WEIGHT PARITY, jitter(3) xlabel(1 "Singleton" 2 "One sibling" 3 "2 siblings" 4 "3 more")
+\end{verbatim}
+
+\includegraphics{./figs/stata_stripheight}
+
+La commande \texttt{oneway} affiche par défaut le résultat d'un test de
+Bartlett pour comparer les variances des groupes entre elles. Si l'on
+souhaite utiliser un test de Levene, il faut utiliser la commande
+\texttt{robvar} qui fournit le résultat du test de Levene (\texttt{W0}) :
+\begin{verbatim}
+. robvar WEIGHT, by(PARITY)
+
+            |          Summary of WEIGHT
+     PARITY |        Mean   Std. Dev.       Freq.
+------------+------------------------------------
+  Singleton |   4.2589445   .61950106         180
+  One sibli |   4.3886979   .59258231         192
+  2 sibling |   4.4600862   .60519991         116
+  3 or more |   4.4341935   .53526321          62
+------------+------------------------------------
+      Total |   4.3664182   .60182152         550
+
+W0  =  0.63850632   df(3, 546)     Pr > F = 0.59046456
+
+W50 =  0.64415596   df(3, 546)     Pr > F = 0.58688851
+
+W10 =  0.64584135   df(3, 546)     Pr > F = 0.58582455
+\end{verbatim}
+
+Il existe plusieurs façon de recoder des variables sous Stata, mais dans le
+cas présent le plus simple pour aggréger les deux dernières classes
+(\texttt{2 siblings} et \texttt{3 or more}) consiste à générer une deuxième
+variable, \texttt{PARITY2}, de la manière suivante :
+\begin{verbatim}
+. recode PARITY (1=1) (2=2) (3/4=3), gen(PARITY2)
+\end{verbatim}
+Pour vérifier que la conversion s'est déroulée correctement, on affichera un
+simple tableau de contingence croisant les effectifs des deux variables :
+\begin{verbatim}
+. tabulate PARITY PARITY2
+
+                   |    RECODE of PARITY (PARITY)
+            PARITY |         1          2          3 |     Total
+-------------------+---------------------------------+----------
+         Singleton |       180          0          0 |       180 
+       One sibling |         0        192          0 |       192 
+        2 siblings |         0          0        116 |       116 
+3 or more siblings |         0          0         62 |        62 
+-------------------+---------------------------------+----------
+             Total |       180        192        178 |       550
+\end{verbatim}
+
+Les résultats de l'ANOVA à un facteur considérant la variable nouvellement
+créée sont reportés ci-dessous :
+\begin{verbatim}
+. oneway WEIGHT PARITY2
+
+                        Analysis of Variance
+    Source              SS         df      MS            F     Prob > F
+------------------------------------------------------------------------
+Between groups      3.44987154      2   1.72493577      4.83     0.0083
+ Within groups      195.391968    547   .357206522
+------------------------------------------------------------------------
+    Total           198.841839    549   .362189142
+
+Bartlett's test for equal variances:  chi2(2) =   0.7963  Prob>chi2 = 0.672
+\end{verbatim}
+Pour le test de la tendance linéaire, on présente deux manières (méthode des
+contrastes et régression linéaire). Pour générer un contraste testant la
+tendance linéaire, il faut explicitement demander à Stata d'effectuer une
+régression en considérant la variable \texttt{PARITY2} comme une variable
+qualitative (passage par des variables indicatrices codant pour les deux
+dernières modalités du facteur). On utilisera dans ce cas la commande de
+post-estimation \texttt{contrast}. Comme le résultat de la régression sur la
+variable qualitative ne nous intéresse pas vraiment, on demandera à Stata de
+ne pas afficher les résultats à l'aide de l'instruction \verb|quietly :|.
+\begin{verbatim}
+. quietly: regress WEIGHT i.PARITY2
+. contrast p.PARITY2, noeffects
+
+Contrasts of marginal linear predictions
+
+Margins      : asbalanced
+
+------------------------------------------------
+             |         df           F        P>F
+-------------+----------------------------------
+     PARITY2 |
+   (linear)  |          1        9.25     0.0025
+(quadratic)  |          1        0.40     0.5288
+      Joint  |          2        4.83     0.0083
+             |
+    Residual |        547
+------------------------------------------------
+\end{verbatim}
+Le contraste d'intérêt apparaît sur la ligne intitulée \verb|(linear)|.
+
+Pour l'approche par régression linéaire simple, la commande est plus simple :
+\begin{verbatim}
+. regress WEIGHT PARITY2
+
+      Source |       SS       df       MS              Number of obs =     550
+-------------+------------------------------           F(  1,   548) =    9.27
+       Model |  3.30800821     1  3.30800821           Prob > F      =  0.0024
+    Residual |  195.533831   548   .35681356           R-squared     =  0.0166
+-------------+------------------------------           Adj R-squared =  0.0148
+       Total |  198.841839   549  .362189142           Root MSE      =  .59734
+
+------------------------------------------------------------------------------
+      WEIGHT |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+     PARITY2 |   .0961272   .0315707     3.04   0.002     .0341129    .1581415
+       _cons |   4.174513   .0679786    61.41   0.000     4.040983    4.308044
+------------------------------------------------------------------------------
+\end{verbatim}
+Le test de tendance correspond au test associé à la pente de la droite de
+régression, ici le coefficient \texttt{PARITY2}.
+
+
+%---------------------------------------------------------------- Séance 10 --
+\chapter{Régression linéaire et logistique}
+
+\soln{\ref{exo:5.1}}
+Les données tabulées sont disponibles dans un fichier texte que l'on peut
+importer à l'aide de la commande \texttt{insheet}. Toutefois, on peut
+également importer les données avec \texttt{infile} qui a l'avantage de
+fonctionner même dans le cas où les données ne sont pas issue d'un tableau
+de type Excel.
+\begin{verbatim}
+. infile int (Sub Age Sex) Height Weight BMP FEV RV FRC TLC PEmax using "cystic.dat" in 2/26, clear
+\end{verbatim}
+Dans l'instruction ci-dessus, on a explicitement demandé à Stata de coder
+les trois premières variables sous forme d'entiers et non de nombres réels,
+ce qui dans le présent ne change pas grand-chose mais permet d'économiser de
+l'espace mémoire pour les gros jeux de données.
+Comme on l'a fait avec R, on recodera d'emblée la variable \texttt{Sex} en
+variable qualitative pour éviter toute confusion.
+\begin{verbatim}
+. label define labsex 0 "M" 1 "F"
+. label values Sex labsex
+. tabulate Sex
+
+        Sex |      Freq.     Percent        Cum.
+------------+-----------------------------------
+          M |         14       56.00       56.00
+          F |         11       44.00      100.00
+------------+-----------------------------------
+      Total |         25      100.00
+\end{verbatim}
+
+L'estimation du coefficient de corrélation de Bravais-Pearson se fait avec
+la commande \texttt{correlate}, mais celle-ci ne fournit pas d'options pour
+l'intervalle de confiance. On peut utiliser des commandes externes comme
+\texttt{ci2} qui fonctionne sur le même principe que la commande interne
+\texttt{ci} (pour les moyennes et proportions) dans le cas paramétrique ou
+non-paramétrique (Spearman) ou bien \texttt{corrci}, uniquement pour le cas
+paramétrique. \label{cmd:corrci}
+\begin{verbatim}
+. correlate PEmax Weight
+(obs=25)
+
+             |    PEmax   Weight
+-------------+------------------
+       PEmax |   1.0000
+      Weight |   0.6363   1.0000
+. corrci PEmax Weight
+
+(obs=25)
+
+                correlation and 95% limits
+PEmax  Weight      0.636    0.322    0.824
+\end{verbatim}
+
+Pour tester ce coefficient de corrélation contre l'alternative $H_0:
+\rho=0.3$, il faut
+% FIXME:
+% change to compute test against H_0: \rho=0.3
+\begin{verbatim}
+. pwcorr PEmax Weight, sig
+
+             |    PEmax   Weight
+-------------+------------------
+       PEmax |   1.0000 
+             |
+             |
+      Weight |   0.6363   1.0000 
+             |   0.0006
+             |
+\end{verbatim}
+
+Pour afficher l'ensemble des diagrammes de dispersion, on utilise la
+commande \texttt{graph matrix} en sépcifiant la liste de variables que l'on
+souhaite voir figurer dans le graphique. Ici, on omettra la variable
+\texttt{Sex} : 
+\begin{verbatim}
+. graph matrix Age Height-PEmax
+\end{verbatim}
+
+\includegraphics{./figs/stata_splom}
+
+Les corrélations pour chaque paire de variables s'obtiennent avec la
+commande \texttt{pwcorr}, et on utilisera la même notation pour indiquer les
+variables qui nous intéressent.
+\begin{verbatim}
+. pwcorr Age Height-PEmax
+
+             |      Age   Height   Weight      BMP      FEV       RV      FRC      TLC      PEmax
+-------------+-----------------------------------------------------------------------------------
+         Age |   1.0000 
+      Height |   0.9261   1.0000 
+      Weight |   0.9065   0.9221   1.0000 
+         BMP |   0.3778   0.4408   0.6703   1.0000 
+         FEV |   0.2945   0.3167   0.4492   0.5455   1.0000 
+          RV |  -0.5519  -0.5695  -0.6234  -0.5824  -0.6659   1.0000 
+         FRC |  -0.6394  -0.6243  -0.6182  -0.4344  -0.6651   0.9106   1.0000 
+         TLC |  -0.4734  -0.4595  -0.4214  -0.3633  -0.4425   0.5899   0.7056    1.0000 
+       PEmax |   0.6135   0.5992   0.6363   0.2295   0.4534  -0.3156  -0.4172   -0.1805   1.0000
+\end{verbatim}
+Pour les corrélations de Spearman, on remplacera \texttt{pwcorr} par
+\texttt{spearman}.
+\begin{verbatim}
+. spearman Age Height-PEmax, stats(rho)
+(obs=25)
+
+             |      Age   Height   Weight      BMP      FEV       RV      FRC      TLC    PEmax
+-------------+---------------------------------------------------------------------------------
+         Age |   1.0000 
+      Height |   0.9335   1.0000 
+      Weight |   0.9013   0.9619   1.0000 
+         BMP |   0.5091   0.5734   0.7264   1.0000 
+         FEV |   0.2975   0.4256   0.4637   0.5623   1.0000 
+          RV |  -0.5815  -0.6221  -0.7005  -0.6917  -0.6830   1.0000 
+         FRC |  -0.7185  -0.6642  -0.6706  -0.5547  -0.6044   0.8547   1.0000 
+         TLC |  -0.4926  -0.4734  -0.4846  -0.4935  -0.4398   0.5895   0.6721   1.0000 
+       PEmax |   0.5198   0.5920   0.4881   0.2224   0.3140  -0.3089  -0.3835  -0.1482   1.0000
+\end{verbatim}
+
+% FIXME:
+% filtrage correlations elevees à faire.
+
+La corrélation partielle entre les variables \texttt{PEmax} et
+\texttt{Weight} en tenant compte de \texttt{Age} est obtenue à l'aide de la
+commande \texttt{pcorr} ; la variable d'intérêt doit être située en première
+position dans la liste des variables et par défaut Stata affiche l'ensemble
+des coefficients de corrélation partielle pour les autres variables.
+\begin{verbatim}
+. pcorr PEmax Weight Age
+(obs=25)
+
+Partial and semipartial correlations of PEmax with
+
+               Partial   Semipartial      Partial   Semipartial   Significance
+   Variable |    Corr.         Corr.      Corr.^2       Corr.^2          Value
+------------+-----------------------------------------------------------------
+     Weight |   0.2405        0.1899       0.0578        0.0361         0.2577
+        Age |   0.1126        0.0869       0.0127        0.0076         0.6002
+\end{verbatim}
+Pour réaliser un tercilage de la variable \texttt{Age}, on peut procéder comme à
+l'exercice~\ref{exo:2.4}, c'est-à-dire en créant une variable dérivée, avec
+\texttt{egen}, et en utilisant la fonction \texttt{cut}. Mais on peut
+directement utiliser la commande \texttt{xtile} qui est plus simple d'emploi :
+\begin{verbatim}
+. xtile Age3 = Age, nq(3)
+\end{verbatim}
+Enfin, pour le diagramme de dispersion, voici une première solution :
+\begin{verbatim}
+. scatter PEmax Weight if Age3 != 2, mlab(Age3)
+\end{verbatim}
+On pourrait également (2\ieme\ solution) enchaîner deux appels à la commande
+\texttt{scatter}, en restreignant à chaque fois l'échantillon aux seules
+classe de \texttt{Age3} qui nous intéressent (1 et 3, en l'occurence).
+\begin{verbatim}
+. scatter PEmax Weight if Age3 == 1, msymbol(circle) || scatter PEmax Weight if Age3 == 3, msymbol(square) 
+  legend(label(1 "1st tercile") label(2 "3rd tercile"))
+\end{verbatim}
+
+\includegraphics{./figs/stata_tercile}
+
+\soln{\ref{exo:5.2}}
+Le chargement des données ne pose pas de difficultés particulières car
+celles-ci ont été exportées depuis Excel et sont au format CSV. On veillera
+cependant à préciser le type de délimiteur de champ, ici un point-virgule/
+\begin{verbatim}
+. insheet using "/Users/chl/Documents/Tutors/cesam-r/tex/quetelet.csv", delim(";") clear
+(5 vars, 32 obs)
+. describe
+
+Contains data
+  obs:            32                          
+ vars:             5                          
+ size:           320                          
+-----------------------------------------------------------------------------------------
+              storage  display     value
+variable name   type   format      label      variable label
+-----------------------------------------------------------------------------------------
+id              byte   %8.0g                  ID
+pas             int    %8.0g                  PAS
+qtt             str5   %9s                    QTT
+age             byte   %8.0g                  AGE
+tab             byte   %8.0g                  TAB
+-----------------------------------------------------------------------------------------
+Sorted by:
+\end{verbatim}
+Après l'importation, on remarque que la variable \texttt{qtt} n'est pas
+reconnue en tant que nombre mais a été codée sous forme de chaîne de
+caractère. Ceci s'explique par le fait que la partie décimale est séparée de
+la partie entière par une virgule et non un point. Il faut donc convertir cette
+variable en nombre, ce que l'on peut réaliser avec la commande
+\texttt{destring} et l'option \texttt{dpcomma}.
+\begin{verbatim}
+. destring qtt, dpcomma replace
+qtt has all characters numeric; replaced as double
+\end{verbatim}
+Ensuite, on recode la variable \texttt{tab} en variable qualitative avec des
+étiquettes plus informatives. 
+\begin{verbatim}
+. label define ltab 0 "NF" 1 "F"
+. label values tab ltab
+. list in 1/5
+
+     +------------------------------+
+     | id   pas     qtt   age   tab |
+     |------------------------------|
+  1. |  1   135   2.876    45    NF |
+  2. |  2   122   3.251    41    NF |
+  3. |  3   130     3.1    49    NF |
+  4. |  4   148   3.768    52    NF |
+  5. |  5   146   2.979    54     F |
+     +------------------------------+
+\end{verbatim}
+Enfin, le résumé numérique des variable s'obtient avec la commande \texttt{summarize}.
+\begin{verbatim}
+. summarize pas-tab
+
+    Variable |       Obs        Mean    Std. Dev.       Min        Max
+-------------+--------------------------------------------------------
+         pas |        32    144.5313    14.39755        120        180
+         qtt |        32    3.441094    .4970781      2.368      4.637
+         age |        32       53.25    6.956083         41         65
+         tab |        32      .53125    .5070073          0          1
+\end{verbatim}
+Comme la variable \texttt{tab} est internellement codée en 0/1, la moyenne
+correspond à la fréquence relative des fumeurs, soit 53~\%.
+
+Le coefficeint de corrélation liénaire entre les variables \texttt{pas} et
+\texttt{qtt} peut être estimé, ainsi que son intervalle de confiance, avec
+la commande \texttt{corrci} (p.~\pageref{cmd:corrci}). L'option
+\texttt{level(90)} permet de spécifier le niveau de confiance.
+\begin{verbatim}
+. corrci pas qtt, level(90)
+
+(obs=32)
+
+          correlation and 90% limits
+pas qtt      0.742    0.571    0.851
+\end{verbatim}
+
+La commande \texttt{regress} permet d'effectuer une régression linéaire
+pour une variable réponse (placée en premier dans la liste des variables) et
+une ou plusieurs variables explicatives. On l'utilise comme suit :
+\begin{verbatim}
+. regress pas qtt
+
+      Source |       SS       df       MS              Number of obs =      32
+-------------+------------------------------           F(  1,    30) =   36.75
+       Model |  3537.94574     1  3537.94574           Prob > F      =  0.0000
+    Residual |  2888.02301    30  96.2674337           R-squared     =  0.5506
+-------------+------------------------------           Adj R-squared =  0.5356
+       Total |  6425.96875    31  207.289315           Root MSE      =  9.8116
+
+------------------------------------------------------------------------------
+         pas |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+         qtt |   21.49167   3.545147     6.06   0.000     14.25151    28.73182
+       _cons |    70.5764   12.32187     5.73   0.000     45.41179    95.74101
+------------------------------------------------------------------------------
+\end{verbatim}
+Par défaut, on obtient un tableau d'analyse de variance pour le modèle de
+régression et un tableau des coefficients du modèle, ici l'ordonnée à
+l'origine (70.58) et la pente de la droite de régression (21.49). Le test
+de Student associé à la pente permet d'évaluer sa significativité au vu des
+données. Si l'on souhaite manipuler les coefficients de régression, il est
+possible de les extraire du tableau de résultats comme indiqué ci-dessous :
+\begin{verbatim}
+. matrix b = e(b)
+. svmat b
+. di "pente = " b1 ", ordonnée origine = " b2
+pente = 21.491669, ordonnée origine = 70.576401
+\end{verbatim}
+
+En ce qui concerne l'affichage du diagramme de dispersion avec les deux
+droites de régression superposées, on utilise une combinaison de
+\texttt{lfit} (pour tracer la droite de régression) et \texttt{scatter}
+(pour afficher les observations). L'inconvénient est qu'il est nécessaire de
+construire manuellement la légende. On notera également que l'on impose que
+les droites de régression soient présentées sur toute l'étendue de la
+variable \texttt{qtt}, d'où l'option \texttt{range(2, 5)}. \label{para:twoway}
+\begin{verbatim}
+. twoway lfit pas qtt if tab == 0, range(2 5) lpattern(dot) || 
+  scatter pas qtt if tab == 0, msymbol(square) || 
+  lfit pas qtt if tab == 1, range(2 5) ||
+  scatter pas qtt if tab == 1, msymbol(circle) 
+  legend(label(1 "") label(2 "NF") label(3 "") label(4 "F"))
+\end{verbatim}
+
+\includegraphics{./figs/stata_lfit}
+
+La régression de \texttt{qtt} sur \texttt{pas} en restreignant l'analyse aux
+seules observations du groupe fumeur (\verb|tab == 1| ou \verb|tab == "F"|) 
+ne pose pas de problème car on vient de le voir dans l'application
+précdente, il suffit d'ajouter une option \texttt{if tab == 1} :
+\begin{verbatim}
+. regress pas qtt if tab == 1
+
+      Source |       SS       df       MS              Number of obs =      17
+-------------+------------------------------           F(  1,    15) =   19.40
+       Model |  2088.16977     1  2088.16977           Prob > F      =  0.0005
+    Residual |  1614.30082    15  107.620055           R-squared     =  0.5640
+-------------+------------------------------           Adj R-squared =  0.5349
+       Total |  3702.47059    16  231.404412           Root MSE      =  10.374
+
+------------------------------------------------------------------------------
+         pas |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+         qtt |   20.11804   4.567193     4.40   0.001      10.3833    29.85278
+       _cons |   79.25533   15.76837     5.03   0.000     45.64585    112.8648
+------------------------------------------------------------------------------
+\end{verbatim}
+
+\soln{\ref{exo:5.3}}
+Puisque les données sont disponibles au format CSV \og classique\fg\
+(utilisant la virgule comme séparateur de champ), on peut les importer très
+simplement à l'aide de la commande \texttt{insheet}. 
+\begin{verbatim}
+. insheet using "/Users/chl/Documents/Tutors/cesam-r/tex/Framingham.csv"
+(10 vars, 4699 obs)
+. describe, simple
+sex       sbp       dbp       scl       chdfate   followup  age       bmi   month     id
+. list in 1/5
+
+     +------------------------------------------------------------------------+
+     | sex   sbp   dbp   scl   chdfate   followup   age    bmi   month     id |
+     |------------------------------------------------------------------------|
+  1. |   1   120    80   267         1         18    55     25       8   2642 |
+  2. |   1   130    78   192         1         35    53   28.4      12   4627 |
+  3. |   1   144    90   207         1        109    61   25.1       8   2568 |
+  4. |   1    92    66   231         1        147    48   26.2      11   4192 |
+  5. |   1   162    98   271         1        169    39   28.4      11   3977 |
+     +------------------------------------------------------------------------+
+\end{verbatim}
+Pour faciliter l'interprétation et la lecture des tableaux de résultats, on
+associera des étiquettes plus informatives à la variable qualitative \texttt{sex}.
+\begin{verbatim}
+. label define labsex 1 "M" 2 "F"
+. label values sex labsex
+. tabulate sex
+
+        sex |      Freq.     Percent        Cum.
+------------+-----------------------------------
+          M |      2,049       43.61       43.61
+          F |      2,650       56.39      100.00
+------------+-----------------------------------
+      Total |      4,699      100.00
+\end{verbatim}
+Pour afficher un résumé du nombre de données manquantes pour chacune des
+variables de ce tableau de données, on peut utiliser la commande suivante :
+\begin{verbatim}
+. misstable summarize
+                                                               Obs<.
+                                                +------------------------------
+               |                                | Unique
+      Variable |     Obs=.     Obs>.     Obs<.  | values        Min         Max
+  -------------+--------------------------------+------------------------------
+           scl |        33               4,666  |    248        115         568
+           bmi |         9               4,690  |    248       16.2        57.6
+  -----------------------------------------------------------------------------
+\end{verbatim}
+On voit donc que les variables \texttt{scl} et \texttt{bmi} incluent 33 et 9
+valeurs manquantes, respectivement. D'où le tableau corrigé des effectifs
+par sexe :
+\begin{verbatim}
+. tabulate sex if bmi < .
+
+        sex |      Freq.     Percent        Cum.
+------------+-----------------------------------
+          M |      2,047       43.65       43.65
+          F |      2,643       56.35      100.00
+------------+-----------------------------------
+      Total |      4,690      100.00
+\end{verbatim}
+
+Sous Stata, il n'est pas possible d'utiliser des marqueurs transparents dans
+un diagramme de dispersion. Dans le cas où le nombre d'observations est
+élevé, Il est donc préférable de modifier le type de symbole par défaut
+(disque) et d'utiliser de petits cercles (\texttt{oh} ou \texttt{Oh}).
+\begin{verbatim}
+. scatter sbp bmi, by(sex) msymbol(Oh)
+\end{verbatim}
+
+\includegraphics{./figs/stata_overplotting}
+
+Le coefficient de corrélation linéaire entre les variables \texttt{sbp} et
+\texttt{bmi} selon le sexe peut être obtenu à l'aide de \texttt{correlate}
+après stratification sur le facteur \texttt{sex}. On notera que l'option
+\texttt{by} figure en premier et qu'il est nécessaire de trier les données
+dans un premier temps, d'où l'ajout de la commande \texttt{sort}
+immédiatement après la stratification.
+\begin{verbatim}
+. by sex, sort: correlate sbp bmi
+
+----------------------------------------------------------------------------------------
+-> sex = M
+(obs=2047)
+
+             |      sbp      bmi
+-------------+------------------
+         sbp |   1.0000
+         bmi |   0.2364   1.0000
+
+
+----------------------------------------------------------------------------------------
+-> sex = F
+(obs=2643)
+
+             |      sbp      bmi
+-------------+------------------
+         sbp |   1.0000
+         bmi |   0.3736   1.0000
+\end{verbatim}
+
+% FIXME:
+% test correlation by sex
+
+Pour le modèle de régression, on va d'abord transformer les variables
+\texttt{bmi} (variable explicative) et \texttt{sbp} (variable réponse) à
+l'aide d'une transformation logarithmique.
+\begin{verbatim}
+. gen logbmi = log(bmi)
+(9 missing values generated)
+. gen logsbp = log(sbp)
+\end{verbatim}
+On peut ensuite vérifier visuellement à l'aide d'un histogramme (ou d'un
+QQ-plot) que cette transformation a bien permis de ramener les distributions
+de ces deux variables proches de la normale. Pour afficher simultanément les
+quatre histogrammes, on peut sauver chacune des figures au format Stata
+(\texttt{gph}) et ensuite les combiner à l'aide de la commande \texttt{graph combine}.
+\begin{verbatim}
+. histogram bmi, saving(gphbmi)
+(bin=36, start=16.200001, width=1.1499999)
+(file gphbmi.gph saved)
+. histogram logbmi, saving(gphlogbmi)
+(bin=36, start=2.7850113, width=.03523642)
+(file gphlogbmi.gph saved)
+. histogram sbp, saving(gphsbp)
+(bin=36, start=80, width=5.2777778)
+(file gphsbp.gph saved)
+. histogram logsbp, saving(gphlogsbp)
+(bin=36, start=4.3820267, width=.03378876)
+(file gphlogsbp.gph saved)
+. graph combine gphbmi.gph gphlogbmi.gph gphsbp.gph gphlogsbp.gph
+\end{verbatim}
+
+\includegraphics{./figs/stata_combine}
+
+Le modèle de régression stratifié par sexe ne pose pas de problème majeur,
+et contrairement à R il n'est pas nécessaire de calculer les intervalles de
+confiance pour les pentes avec une commande séparée car ceux-ci sont
+directement fournis dans le tableau de résultats renvoyés par Stata.
+\begin{verbatim}
+. regress logsbp logbmi if sex == 1, noheader
+------------------------------------------------------------------------------
+      logsbp |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+      logbmi |    .272646   .0232152    11.74   0.000     .2271182    .3181739
+       _cons |   3.988043   .0754584    52.85   0.000      3.84006    4.136026
+------------------------------------------------------------------------------
+
+. regress logsbp logbmi if sex == 2, noheader
+------------------------------------------------------------------------------
+      logsbp |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+      logbmi |   .3985947   .0185464    21.49   0.000     .3622278    .4349616
+       _cons |   3.593017   .0597887    60.10   0.000     3.475779    3.710254
+------------------------------------------------------------------------------
+\end{verbatim}
+
+\soln{\ref{exo:6.1}}
+Dans un premier temps, il est nécessaire de construire le tableau
+d'effectifs donné dans l'énoncé. On s'inspirera de la méthode manuelle vue à
+l'exercice~\ref{exo:3.5stata} (p.~\pageref{exo:3.5stata}). Par contre, on va
+saisir directement les labels des variables et non des codes
+numériques. Pour cela, il est nécessaire d'indiquer à Stata quel est le
+format de ces labels à l'aide de l'instruction \texttt{str} que l'on suffixe
+par le nombre de caractères que l'on souhaite utiliser pour le codage des
+modalités des variables.
+\begin{verbatim}
+. clear all
+. input str1 traitement str3 infection N
+
+     traitem~t  infection          N
+  1. "A" "Non" 157
+  2. "B" "Non" 119
+  3. "A" "Oui" 52
+  4. "B" "Oui" 103
+  5. end
+. list
+
+     +---------------------------+
+     | traite~t   infect~n     N |
+     |---------------------------|
+  1. |        A        Oui   157 |
+  2. |        B        Oui   119 |
+  3. |        A        Non    52 |
+  4. |        B        Non   103 |
+     +---------------------------+
+\end{verbatim}
+
+
+Voici donc le tableau de l'énoncé, avec le test du $\chi^2$ associé :
+\begin{verbatim}
+. tabulate traitement infection [fweight=N], chi
+
+           |       infection
+traitement |       Non        Oui |     Total
+-----------+----------------------+----------
+         A |       157         52 |       209 
+         B |       119        103 |       222 
+-----------+----------------------+----------
+     Total |       276        155 |       431 
+
+          Pearson chi2(1) =  21.6401   Pr = 0.000
+\end{verbatim}
+Si l'on souhaite une valeur plus précise pour le degré de significativité du
+test, on peut utiliser les informations renvoyées (de manière invisible) par
+la commande précédente :
+\begin{verbatim}
+. return list
+
+scalars:
+                  r(N) =  431
+                  r(r) =  2
+                  r(c) =  2
+               r(chi2) =  21.64010539408598
+                  r(p) =  3.28902266933e-06
+\end{verbatim}
+D'où pour le "petit $p$", 
+\begin{verbatim}
+. display %10.9f r(p)
+0.000003289
+\end{verbatim}
+La commande ci-dessus demande à Stata d'afficher le résultat sous forme d'un
+nombre avec 9 décimales.
+
+Concernant les effectifs théoriques, on utilise exactement la même commande
+que précédemment mais en ajoutant l'option \texttt{expected}.
+\begin{verbatim}
+. tabulate traitement infection [fweight=N], chi expected nofreq
+
+           |       infection
+traitement |       Non        Oui |     Total
+-----------+----------------------+----------
+         A |     133.8       75.2 |     209.0 
+         B |     142.2       79.8 |     222.0 
+-----------+----------------------+----------
+     Total |     276.0      155.0 |     431.0 
+
+          Pearson chi2(1) =  21.6401   Pr = 0.000
+\end{verbatim}
+Notons que l'on a supprimé l'affichage des effectifs observés grâce à
+l'option \texttt{nofreq}.
+
+% FIXME:
+% tabodds infection traitement [fw=N], or
+Pour calculer la valeur de l'odds-ratio, on utilisera la commande
+\texttt{cc}. Toutefois, les commandes "epitab" nécessitent que les variables
+soient codées sous forme binaire (0 = non-exposé/non-malade, 1 =
+exposé/malade). La saisie des données effectuée à l'étape précédente n'étant
+pas compatible avec ce format, il est nécessaire de recoder les données
+comme dans l'exercice~\ref{exo:3.5stata}. Par exemple, en utilisant la
+commande \texttt{input} :
+\begin{verbatim}
+. input traitement infection N
+
+     traitem~t  infection          N
+  1. 1 0 157
+  2. 0 0 119
+  3. 1 1 52
+  4. 0 1 103
+  5. end
+. label define tx 0 "Placebo" 1 "Traitement"
+. label values traitement tx
+. label define ouinon 0 "Non" 1 "Oui"
+. label values infection ouinon
+\end{verbatim}
+Ensuite, il est possible de procéder à l'estimation de l'odds-ratio
+\begin{verbatim}
+. cc infection traitement [fweight=N], woolf exact
+
+                 | traitement             |             Proportion
+                 |   Exposed   Unexposed  |      Total     Exposed
+-----------------+------------------------+------------------------
+           Cases |        52         103  |        155       0.3355
+        Controls |       157         119  |        276       0.5688
+-----------------+------------------------+------------------------
+           Total |       209         222  |        431       0.4849
+                 |                        |
+                 |      Point estimate    |    [95% Conf. Interval]
+                 |------------------------+------------------------
+      Odds ratio |         .3826603       |    .2540087    .5764721 (Woolf)
+ Prev. frac. ex. |         .6173397       |    .4235279    .7459913 (Woolf)
+ Prev. frac. pop |         .3511679       |
+                 +-------------------------------------------------
+                                  1-sided Fisher's exact P = 0.0000
+                                  2-sided Fisher's exact P = 0.0000
+\end{verbatim}
+On remarquera que cette fois-ci on a précisé l'option \texttt{exact} pour
+obtenir un test de Fisher au lieu de l'approximation par la loi du $\chi^2$
+pour le test d'hypothèse sur le tableau.
+
+Si l'on tient compte des données par centre, il est nécessaire de
+reconstruire les tableaux d'effectifs, en ne considérant que les marges
+colonnes des tableaux d'effectifs donnés dans l'énoncé. La saisie des
+données avec \texttt{input} ne pose pas de difficultés particulières.
+\begin{verbatim}
+. input infection centre N
+
+     infection     centre          N
+  1. 0 1 98
+  2. 1 1 27
+  3. 0 2 152
+  4. 1 2 106
+  5. 0 3 26
+  6. 1 3 22
+  7. end
+. tabulate infection centre [fweight=N], chi
+
+           |              centre
+ infection |         1          2          3 |     Total
+-----------+---------------------------------+----------
+         0 |        98        152         26 |       276 
+         1 |        27        106         22 |       155 
+-----------+---------------------------------+----------
+     Total |       125        258         48 |       431 
+
+          Pearson chi2(2) =  16.1673   Pr = 0.000
+\end{verbatim}
+Une fois de plus on adopte le format rapide de saisie des données aggrégées
+: 2 variables (épisodes infectieux oui/non, \no\ de centre) et les effectifs
+associés au croisement de chacun des niveaux de ces variables. L'option
+\texttt{fweight} permet ensuite d'appliquer un test du $\chi^2$ via la
+commande \texttt{tabulate} en pondérant le tableau à deux entrées par les
+effectifs \texttt{N}. 
+
+Pour réaliser un test de Mantel-Haenszel, il est nécessaire de revenir à
+l'ensemble des données (3 tableaux $2\times 2$) et d'utiliser la commande
+\texttt{cc} en précisant le facteur de stratification grâce à l'option
+\texttt{by}. Voici une manière de procéder, en considérant trois variables
+\texttt{tx} (traitement A (1) ou B (0)), \texttt{inf} (infection non (0)/oui (1)) et
+\texttt{cen} (centre, 1 à 3). Attention à bien coder les classes des deux
+variables de classification en 0 et 1.
+\begin{verbatim}
+. input tx inf cen N
+
+            tx        inf        cen          N
+  1. 1 0 1 51
+  2. 1 1 1 8
+  3. 0 0 1 47
+  4. 0 1 1 19
+--%<----
+ 13. end
+\end{verbatim}
+On peut vérifier la structure des données à l'aide de la commande
+\texttt{table}, en suivant exactement le même principe pour les options
+(variables de classification, facteur de pondération et variable de
+stratification). On en profitera pour ajouter des étiquettes plus
+informatives aux modalités des variables de classification.
+\begin{verbatim}
+. label define txlab 0 "A" 1 "B"
+. label define inflab 0 "Non" 1 "Oui"
+. label values tx txlab
+. label value inf inflab
+. table tx inf [fw=N], by(cen)
+
+----------------------
+cen and   |    inf    
+tx        |  Non   Oui
+----------+-----------
+1         |
+        A |    8    51
+        B |   19    47
+----------+-----------
+2         |
+        A |   35    91
+        B |   71    61
+----------+-----------
+3         |
+        A |    9    15
+        B |   13    11
+----------------------
+\end{verbatim}
+Concernant le test de Mantel-Haenszel, on obtient les résultats suivants :
+\begin{verbatim}
+. cc tx inf [freq=N], by(cen)
+
+             cen |       OR       [95% Conf. Interval]   M-H Weight
+-----------------+-------------------------------------------------
+               1 |   .3880289      .1346123    1.04317        7.752 (exact)
+               2 |   .3304442      .1899288   .5726148     25.04264 (exact)
+               3 |   .5076923      .1370954   1.857073       4.0625 (exact)
+-----------------+-------------------------------------------------
+           Crude |   .3826603      .2483246   .5877322              (exact)
+    M-H combined |   .3620925      .2379264   .5510569              
+-------------------------------------------------------------------
+Test of homogeneity (M-H)      chi2(2) =     0.47  Pr>chi2 = 0.7898
+
+                   Test that combined OR = 1:
+                                Mantel-Haenszel chi2(1) =     23.01
+                                                Pr>chi2 =    0.0000
+\end{verbatim}
+%
+%
+%
+\soln{\ref{exo:6.3}}
+Pour le chargement des données qui se présentent sous la forme de données
+tabulées dans un fichier texte sans ligne d'en-tête, on utilisera la
+commande \texttt{infile} en spécificiant le nom des variables. On notera que
+Stata indique le nombre de lignes ("observations") lues, ce qui permet de
+d'assurer de l'intégrité des données si l'on connaît le nombre
+d'observations à l'avance.
+\begin{verbatim}
+. infile ck pres abs using sck.dat
+(13 observations read)
+\end{verbatim}
+
+Le nombre total de sujets correspond à la somme des valeurs dans les
+variables \texttt{pres} et \texttt{abs}. Le plus simple est donc de faire la
+somme de l'ensemble de ces valeurs pour avoir l'effectif total :
+\begin{verbatim}
+. generate tot = pres+abs
+. egen ntot = sum(tot)
+. display ntot
+360
+\end{verbatim}
+
+%% Concernant la représentation des fréquences relatives des variables
+%% \texttt{pres} et \texttt(abs}, il est nécessaire de \og construire\fg\ deux
+%% nouvelles variables. Voici une solution possible :
+%% \begin{verbatim}
+%% . quietly: summarize pres
+%% . scalar npres = r(sum)
+%% . gen ppres = pres / npres
+%% \end{verbatim}
+
+Il existe plusieurs commandes pour construire un modèle de régression
+logistique sous Stata. Dans le cas des données dites "groupées", on peut
+utiliser la commande \texttt{blogit} qui nécessite de connaître les
+effectifs pour chacune des deux classes de la variable binaire à prédire, ou
+plus exactement les effectifs de la classe "positive" et les effectifs
+totaux. Bien qu'on présente son usage ici, on verra qu'il est préférable
+d'utiliser un autre type de commande par la suite.
+\footnote{\url{http://www.stata.com/support/faqs/statistics/logistic-regression-with-grouped-data/}}
+\begin{verbatim}
+. blogit pres tot ck
+
+Logistic regression for grouped data              Number of obs   =        360
+                                                  LR chi2(1)      =     283.15
+                                                  Prob > chi2     =     0.0000
+Log likelihood = -93.886407                       Pseudo R2       =     0.6013
+
+------------------------------------------------------------------------------
+    _outcome |      Coef.   Std. Err.      z    P>|z|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+          ck |   .0351044   .0040812     8.60   0.000     .0271053    .0431035
+       _cons |  -2.326272   .2993611    -7.77   0.000    -2.913009   -1.739535
+------------------------------------------------------------------------------
+\end{verbatim}
+La lecture de ce type de sortie ne présente pas de problème particulier : on
+tiendra compte du fait que le coefficient de régression associé à la
+variable d'étude \texttt{ck} est exprimé sur une échelle log odds ; pour
+obtenir la valeur de l'odds-ratio associé, il est donc nécessaire de prendre
+l'exponentielle de la valeur retournée (.0351044), par exemple
+\begin{verbatim}
+. display exp(_b[ck])
+1.0357278
+\end{verbatim}
+
+Pour afficher sur un même graphique les proportions empiriques (malades) et
+les valeurs prédites par le modèle (sous forme d'une ligne brisée), il est
+nécessaire de calculer ces deux quantités.
+\begin{verbatim}
+. gen prop = pres/tot
+. predict pred, p
+. label variable prop "observed"
+. label variable pred "predicted"
+. graph twoway (line pred ck) (scatter prop ck), ytitle("Probabilité")
+\end{verbatim}
+
+\includegraphics{./figs/stata_sck}
+
+La commande \texttt{predict} comprend le nom dela variable (\texttt{pred}
+dans laquelle on souhaite stocker les résultats, et le type de prédictions
+que l'on souhaite réaliser (\texttt{p}, pour probabilités). Un diagramme de
+dispersion composé de deux séries d'instructions délimitées par des
+parenthèses est ensuite généré à l'aide de la commande \texttt{twoway}.
+
+La commande \texttt{blogit} permet de travailler avec des données
+groupées. Il existe une autre manière de construire des modèles de
+régression logistique, pour données individuelles ou groupées. En
+particulier, les comamndes \texttt{logit} et \texttt{logistic} fournissent
+des résultats additionnels. Dans la suite, on va transformer le jeu de
+données initial (données groupées) en données individuelles, puis ré-estimer
+les paramètres du même modèle de régression logistique. Les commandes
+suivantes permettent de générer autant de lignes qu'il y a d'unités
+statistiques (nombre d'observations tel que calculé et stocké dans
+\texttt{ntot}) ainsi qu'une variable binaire, \texttt{infct}, codant pour
+l'observation de l'événement (malade/non-malade).
+\begin{verbatim}
+. expand tot
+(347 observations created)
+. bysort ck: gen infct = _n <= pres
+. logit infct ck, nolog
+
+Logistic regression                               Number of obs   =        360
+                                                  LR chi2(1)      =     283.15
+                                                  Prob > chi2     =     0.0000
+Log likelihood = -93.886407                       Pseudo R2       =     0.6013
+
+------------------------------------------------------------------------------
+       infct |      Coef.   Std. Err.      z    P>|z|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+          ck |   .0351044   .0040812     8.60   0.000     .0271053    .0431035
+       _cons |  -2.326272   .2993611    -7.77   0.000    -2.913009   -1.739535
+------------------------------------------------------------------------------
+\end{verbatim}
+
+Parmi les commandes de post-estimation disponible, la commande
+\texttt{classification} fournit automatiquement un tableau de synthèse des
+unités correctement ou incorrectement classées selon le critère choisi (par
+défaut, $P(\texttt{malade})>0.5$).
+\begin{verbatim}
+. estat classification
+
+Logistic model for infct
+
+              -------- True --------
+Classified |         D            ~D  |      Total
+-----------+--------------------------+-----------
+     +     |       215            16  |        231
+     -     |        15           114  |        129
+-----------+--------------------------+-----------
+   Total   |       230           130  |        360
+
+Classified + if predicted Pr(D) >= .5
+True D defined as infct != 0
+--------------------------------------------------
+Sensitivity                     Pr( +| D)   93.48%
+Specificity                     Pr( -|~D)   87.69%
+Positive predictive value       Pr( D| +)   93.07%
+Negative predictive value       Pr(~D| -)   88.37%
+--------------------------------------------------
+False + rate for true ~D        Pr( +|~D)   12.31%
+False - rate for true D         Pr( -| D)    6.52%
+False + rate for classified +   Pr(~D| +)    6.93%
+False - rate for classified -   Pr( D| -)   11.63%
+--------------------------------------------------
+Correctly classified                        91.39%
+--------------------------------------------------
+\end{verbatim}
+
+\begin{verbatim}
+. estat classification, cutoff(.15)
+
+Logistic model for infct
+
+              -------- True --------
+Classified |         D            ~D  |      Total
+-----------+--------------------------+-----------
+     +     |       228            42  |        270
+     -     |         2            88  |         90
+-----------+--------------------------+-----------
+   Total   |       230           130  |        360
+
+Classified + if predicted Pr(D) >= .15
+True D defined as infct != 0
+--------------------------------------------------
+Sensitivity                     Pr( +| D)   99.13%
+Specificity                     Pr( -|~D)   67.69%
+Positive predictive value       Pr( D| +)   84.44%
+Negative predictive value       Pr(~D| -)   97.78%
+--------------------------------------------------
+False + rate for true ~D        Pr( +|~D)   32.31%
+False - rate for true D         Pr( -| D)    0.87%
+False + rate for classified +   Pr(~D| +)   15.56%
+False - rate for classified -   Pr( D| -)    2.22%
+--------------------------------------------------
+Correctly classified                        87.78%
+--------------------------------------------------
+\end{verbatim}
+
+ROC curve
+\begin{verbatim}
+. lroc
+
+Logistic model for infct
+
+number of observations =      360
+area under ROC curve   =   0.9593
+\end{verbatim}
+
+\includegraphics{./figs/stata_sck2}
+
+Sensibilité/spécificité
+\begin{verbatim}
+. lsens
+\end{verbatim}
+
+\includegraphics{./figs/stata_sck3}
+
+% 
+%
+%
+\soln{\ref{exo:6.5}}
+Les données ont été sauvegardées dans un format compact (3 colonnes
+indiquant la présence ou non d'un cancer, le niveau de consommation
+d'alcool, et les effectifs associés).
+\begin{verbatim}
+. insheet using "cc_oesophage.csv", clear
+. label define yesno 0 "No" 1 "Yes" 
+. label values cancer yesno 
+. label define dose 0 "< 80g" 1 ">= 80g"
+. label values alcohol dose
+. list
+
+     +-----------------------------+
+     | cancer   alcohol   patients |
+     |-----------------------------|
+  1. |     No     < 80g        666 |
+  2. |    Yes     < 80g        104 |
+  3. |     No    >= 80g        109 |
+  4. |    Yes    >= 80g         96 |
+     +-----------------------------+
+\end{verbatim}
+Les commandes précédentes permettent de charger le fichier de données et
+d'associer aux modalités des variables (\texttt{cancer} et \texttt{alcohol})
+des noms plus informatifs. Pour obtenir le nombre total de patients, on peut
+utiliser la commande suivante :
+\begin{verbatim}
+. egen ntot = sum(patients)
+. display ntot
+975
+\end{verbatim}
+
+La proportion d'individus à risque, c'est-à-dire ayant une consommation
+journalière d'alcool $\ge 80$ g s'obtient à partir d'un simple tableau
+d'effectifs croisant les variables \texttt{cancer} et \texttt{alcohol} (il
+faut indiquer comment remplir les cellules en ajoutant une option
+\texttt{weight}), et en demandant les profils lignes, c'est-à-dire les les
+fréquences relatives par ligne.
+\begin{verbatim}
+. tabulate cancer alcohol [fweight=patients], row
+
++----------------+
+| Key            |
+|----------------|
+|   frequency    |
+| row percentage |
++----------------+
+
+           |        alcohol
+    cancer |     < 80g     >= 80g |     Total
+-----------+----------------------+----------
+        No |       666        109 |       775 
+           |     85.94      14.06 |    100.00 
+-----------+----------------------+----------
+       Yes |       104         96 |       200 
+           |     52.00      48.00 |    100.00 
+-----------+----------------------+----------
+     Total |       770        205 |       975 
+           |     78.97      21.03 |    100.00
+\end{verbatim}
+
+Le calcul de l'odds-ratio peut se faire à l'aide de l'une des commandes
+Stata dites "immédiates", \texttt{cc}, en gardant à l'esprit qu'il faut bien
+tenir compte de la colonne \texttt{patients}, comme précédemment :
+\begin{verbatim}
+. cc cancer alcohol [fweight=patients], woolf
+
+                 | alcohol                |             Proportion
+                 |   Exposed   Unexposed  |      Total     Exposed
+-----------------+------------------------+------------------------
+           Cases |        96         104  |        200       0.4800
+        Controls |       109         666  |        775       0.1406
+-----------------+------------------------+------------------------
+           Total |       205         770  |        975       0.2103
+                 |                        |
+                 |      Point estimate    |    [95% Conf. Interval]
+                 |------------------------+------------------------
+      Odds ratio |         5.640085       |    4.000589    7.951467 (Woolf)
+ Attr. frac. ex. |         .8226977       |    .7500368    .8742371 (Woolf)
+ Attr. frac. pop |         .3948949       |
+                 +-------------------------------------------------
+                               chi2(1) =   110.26  Pr>chi2 = 0.0000
+\end{verbatim}
+
+Si l'on dispose du tableau d'effectifs, c'est-à-dire la répartition des 975
+sujets dans les quatre cellules du tableau croisant l'exposition à l'alcool
+et le statut cas-témoin, il est également possible d'utiliser le calculateur
+pour odds-ratio dans les études cas-témoins accessible par le menu
+\textsf{Statistics} $\rhd$ \textsf{Epidemiology and related} $\rhd$
+\textsf{Tables for epidemiologists}.
+
+\includegraphics{./figs/stata_ORcalculator}
+
+Pour tester l'hypothèse que la proportion de personnes avec une consommation
+journalière d'alcool $\ge 80$ g est identique chez les cas ($p_1$) et les
+témoins ($p_1$), on peut procéder comme suit :
+\begin{verbatim}
+. prtesti 96 0.4800 109 0.1406
+
+Two-sample test of proportions                     x: Number of obs =       96
+                                                   y: Number of obs =      109
+------------------------------------------------------------------------------
+    Variable |       Mean   Std. Err.      z    P>|z|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+           x |        .48   .0509902                      .3800611    .5799389
+           y |      .1406   .0332949                      .0753433    .2058567
+-------------+----------------------------------------------------------------
+        diff |      .3394   .0608978                      .2200424    .4587576
+             |  under Ho:   .0641131     5.29   0.000
+------------------------------------------------------------------------------
+        diff = prop(x) - prop(y)                                  z =   5.2938
+    Ho: diff = 0
+
+    Ha: diff < 0                 Ha: diff != 0                 Ha: diff > 0
+ Pr(Z < z) = 1.0000         Pr(|Z| < |z|) = 0.0000          Pr(Z > z) = 0.0000
+\end{verbatim}
+
+Une autre façon de tester cette hypothèse consiste à remarquer que
+l'hypothèse précédente, $H_0:\, \pi_0=\pi_1$, n'est vraie que si
+l'odds-ratio vaut 1. D'où l'idée d'exploiter directement le test du $\chi^2$
+pour l'odds-ratio donné par la commande \texttt{cc} (ici, $\chi^2=110.26$,
+$p<0.001$). 
+
+Le modèle de régression logistique, comme les autres modèles de régression
+sous Stata, se formule ainsi : 
+
+\begin{verbatim}
+. logistic alcohol cancer [freq=patients]
+
+Logistic regression                               Number of obs   =        975
+                                                  LR chi2(1)      =      96.43
+                                                  Prob > chi2     =     0.0000
+Log likelihood =  -453.2224                       Pseudo R2       =     0.0962
+
+------------------------------------------------------------------------------
+     alcohol | Odds Ratio   Std. Err.      z    P>|z|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+      cancer |   5.640085   .9883492     9.87   0.000     4.000589    7.951467
+       _cons |   .1636637   .0169104   -17.52   0.000     .1336604    .2004018
+------------------------------------------------------------------------------
+\end{verbatim}
+
+Par défaut, Stata présente les résultats (coefficients du modèle) sous forme
+d'odds-ratio, avec leurs intervalles de confiance associés. Si l'on souhaite
+obtenir directement les coefficients de régression (sur l'échelle du log
+odds), il faut utiliser la commande \texttt{logit} après avoir utilisé
+\texttt{logistic}. On pourrait également utiliser directement une commande de
+type \verb|logistic alcohol cancer [freq=patients]|.
+\begin{verbatim}
+. logit
+
+Logistic regression                               Number of obs   =        975
+                                                  LR chi2(1)      =      96.43
+                                                  Prob > chi2     =     0.0000
+Log likelihood =  -453.2224                       Pseudo R2       =     0.0962
+
+------------------------------------------------------------------------------
+     alcohol |      Coef.   Std. Err.      z    P>|z|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+      cancer |   1.729899   .1752366     9.87   0.000     1.386442    2.073356
+       _cons |  -1.809942   .1033238   -17.52   0.000    -2.012453   -1.607431
+------------------------------------------------------------------------------
+\end{verbatim}
+
+%---------------------------------------------------------------- Séance 11 --
+\chapter{Analyse de données de survie}
+
+\soln{\ref{exo:7.1}}
+Le format texte du fichier de données \texttt{prostate.dat} est identique à
+celui du fichier \texttt{pbc.txt} de l'exercice précédent, à ceci près que
+les champs sont séparés par un simple espace. On utilisera donc la commande
+\texttt{insheet} :
+\begin{verbatim}
+. insheet using "prostate.dat", delimiter(" ")
+(7 vars, 38 obs)
+. list in 1/5
+
+     +--------------------------------------------------------+
+     | treatm~t   time   status   age   haem   size   gleason |
+     |--------------------------------------------------------|
+  1. |        1     65        0    67   13.4     34         8 |
+  2. |        2     61        0    60   14.6      4        10 |
+  3. |        2     60        0    77   15.6      3         8 |
+  4. |        1     58        0    64   16.2      6         9 |
+  5. |        2     51        0    65   14.1     21         9 |
+     +--------------------------------------------------------+
+\end{verbatim}
+Le nombre de patients vivants à la date de point est obtenu à partir de
+\texttt{tabulate} :
+\begin{verbatim}
+. tabulate status
+
+     Status |      Freq.     Percent        Cum.
+------------+-----------------------------------
+          0 |         32       84.21       84.21
+          1 |          6       15.79      100.00
+------------+-----------------------------------
+      Total |         38      100.00
+\end{verbatim}
+soit 32 personnes encore en vie à la fin de la durée de suivi.
+
+Comme dans l'exercice~7.1, il est nécessaire d'indiquer à Stata quelle
+variable sert à identifier les événements (\texttt{status}) et le temps
+(\texttt{time}). On utilisera la commande \texttt{stset} de la manière
+suivante :
+\begin{verbatim}
+. stset time, failure(status)
+
+     failure event:  status != 0 & status < .
+obs. time interval:  (0, time]
+ exit on or before:  failure
+
+------------------------------------------------------------------------------
+       38  total obs.
+        0  exclusions
+------------------------------------------------------------------------------
+       38  obs. remaining, representing
+        6  failures in single record/single failure data
+     1890  total analysis time at risk, at risk from t =         0
+                             earliest observed entry t =         0
+                                  last observed exit t =        70
+\end{verbatim}
+
+La médiane de survie selon le traitement est disponible à partir de la
+commande \texttt{stci}, en précisant le percentile d'intérêt (ici,
+\texttt{p(50)}). 
+\begin{verbatim}
+. stci, by(treatment) p(50)
+
+         failure _d:  status
+   analysis time _t:  time
+
+             |    no. of 
+treatment    |  subjects         50%     Std. Err.     [95% Conf. Interval]
+-------------+-------------------------------------------------------------
+           1 |        18          69      .3043484           42          .
+           2 |        20           .             .            .          .
+-------------+-------------------------------------------------------------
+       total |        38           .             .           69          .
+\end{verbatim}
+
+Pour afficher les courbes de survie pour chacun des bras de traitement, on
+utilisera la commande \texttt{sts graph} en spécifiant le facteur de
+classification à l'aide de l'option \texttt{by}. L'affichage des données
+censurées se fait à l'aide de l'option \texttt{censored}.
+\begin{verbatim}
+. sts graph, by(treatment) censored(s)
+\end{verbatim}
+
+\includegraphics{./figs/stata_ststwoway}
+
+Le test du log-rank s'effectue avec la commande \texttt{sts test}. Notons
+que l'on n'a besoin de spécifier que le facteur traitement.
+\begin{verbatim}
+. sts test treatment
+
+         failure _d:  status
+   analysis time _t:  time
+
+
+Log-rank test for equality of survivor functions
+
+          |   Events         Events
+treatment |  observed       expected
+----------+-------------------------
+1         |         5           2.47
+2         |         1           3.53
+----------+-------------------------
+Total     |         6           6.00
+
+                chi2(1) =       4.42
+                Pr>chi2 =     0.0355
+\end{verbatim}
+
+\soln{\ref{exo:7.3}}
+Le fichier de données est un fichier texte avec des tabulations comme
+séparateur de champ. On peut l'importer sous Stata en utilisant la commande
+\texttt{insheet}. Pour afficher le nom des variables après importation, il
+suffit d'utiliser \texttt{describe} avec l'option \texttt{simple}.
+\begin{verbatim}
+. insheet using "pbc.txt", tab
+(28 vars, 312 obs)
+. describe, simple
+number    rx        asictes   spiders   bilirub   albumin   alkphos   trigli
+prothrom  age       sample    logalbu   _st       _t
+status    sex       hepatom   edema     cholest   copper    sgot      platel
+histol    years     logbili   logprot   _d        _t0
+\end{verbatim}
+Après recodage des étiquettes des variables \texttt{rx} et \texttt{sex}, 
+\begin{verbatim}
+. label define trt 1 "Placebo" 2 "DPCA"
+. label define sexe 0 "M" 1 "F"
+. label values rx trt
+. label values sex sexe
+\end{verbatim}
+on peut vérifier la proportion de patients décédés (\texttt{status}, 0 =
+vivant et 1 = décédé) et leur répartition selon le groupe de traitement à
+l'aide de tris simple et croisé. Pour le tri croisé, on ajoutera l'option
+\texttt{row} pour obtenir les fréquences relatives par status.
+\begin{verbatim}
+. tabulate status
+
+     status |      Freq.     Percent        Cum.
+------------+-----------------------------------
+          0 |        187       59.94       59.94
+          1 |        125       40.06      100.00
+------------+-----------------------------------
+      Total |        312      100.00
+
+. tabulate status rx, row
+
++----------------+
+| Key            |
+|----------------|
+|   frequency    |
+| row percentage |
++----------------+
+
+           |          rx
+    status |   Placebo       DPCA |     Total
+-----------+----------------------+----------
+         0 |        93         94 |       187 
+           |     49.73      50.27 |    100.00 
+-----------+----------------------+----------
+         1 |        65         60 |       125 
+           |     52.00      48.00 |    100.00 
+-----------+----------------------+----------
+     Total |       158        154 |       312 
+           |     50.64      49.36 |    100.00
+\end{verbatim}
+
+Pour afficher la distribution des temps de suivi, on utilisera un simple
+diagramme de dispersion comme on l'a vu dans le cas de R. Pour faire
+appraître distinctement les observations selon le status (0 ou 1), on
+pourrait très bien superposer deux séries de points sur le même graphique
+(cf. exercice~5.2, p.~\pageref{para:twoway}). Voici une autre manière de
+procéder :
+\begin{verbatim}
+. separate number, by(status)
+
+              storage  display     value
+variable name   type   format      label      variable label
+-----------------------------------------------------------------------------------------
+number0         int    %8.0g                  number, status == 0
+number1         int    %8.0g                  number, status == 1
+
+. twoway scatter number0 number1 years, msymbol(S O)
+\end{verbatim}
+La première commande permet en fait de séparer les numéros de patients en
+fonction du status afin d'afficher les deux séries d'observation en fonction
+de la durée de suivi en années.
+
+\includegraphics{./figs/stata_followup}
+
+La médiane de la durée de suivi par groupe de traitement peut s'obtenir avec
+la commande \texttt{tabstat} en opérant par groupe grâce à l'option
+\texttt{by}. 
+\begin{verbatim}
+. tabstat years, by(rx) stats(median) nototal
+
+Summary for variables: years
+     by categories of: rx 
+
+     rx |       p50
+--------+----------
+Placebo |    5.1882
+   DPCA |   4.95825
+-------------------
+\end{verbatim}
+
+Le nombre de décès enregistrés au-delà de 10.5 années de suivi s'obtient
+avec un simple tri à plat par la commande \texttt{tabulate} :
+\begin{verbatim}
+. tabulate status if years > 10.49
+
+     status |      Freq.     Percent        Cum.
+------------+-----------------------------------
+          0 |         23       85.19       85.19
+          1 |          4       14.81      100.00
+------------+-----------------------------------
+      Total |         27      100.00
+\end{verbatim}
+de même que le sexe des patients décédé après cette période :
+\begin{verbatim}
+. tabulate sex if years > 10.49 & status == 1
+
+        sex |      Freq.     Percent        Cum.
+------------+-----------------------------------
+          M |          2       50.00       50.00
+          F |          2       50.00      100.00
+------------+-----------------------------------
+      Total |          4      100.00
+\end{verbatim}
+
+Concernant l'analyse des patients transplantés, on peut également procéder
+comme on l'a fait avec R, c'est-à-dire restreindre le tableau de données à
+ces seuls patients. Comme Stata ne permet de travailler qu'avec un seul
+tableau de données à la fois, il est toutefois nécessaire de sauvegarder
+temporairement les données actuelles avant de créer un nouveau tableau.
+\begin{verbatim}
+. preserve
+. egen idx = anymatch(number), values(5 105 111 120 125 158 183 241 246 247 254 263 264
+  265 274 288 291 295 297 345 361 362 375 380 383)
+. keep if idx
+(293 observations deleted)
+. gen days = years*365
+. tabstat age sex days, stats(mean median sum)
+
+   stats |       age       sex      days
+---------+------------------------------
+    mean |  41.17568  .8421053  1507.177
+     p50 |   40.9008         1  1434.012
+     sum |  782.3379        16  28636.37
+----------------------------------------
+\end{verbatim}
+La première commande permet de construire une liste des individus que l'on
+souhaite utiliser pour filtrer le tableau de données d'origine (sur la base
+des numéros de sujet contenus dans la variable \texttt{number}). Ensuite, on
+applique le calcul des statistiques descriptives à l'aide d'une commande
+\texttt{tabstat}. Une fois les calculs terminés, on peut restorer les
+données d'origine de la manière suivante :
+\begin{verbatim}
+. restore
+\end{verbatim}
+
+Comme R, Stata utilise ses propres conventions pour le codage des données de
+survie. Les commandes essentielles sont ainsi : \texttt{stset} pour définir
+la façon dont les événements sont enregistrés et le temps d'observation,
+\texttt{sts} pour calculer un tableau de survie à partir de l'estimateur de
+Kaplan-Meier. Voici comment appliquer ces commandes pour construire le
+tableau et la courbe de survie, sans considération du facteur traitement.
+\begin{verbatim}
+. stset years, failure(status)
+
+     failure event:  status != 0 & status < .
+obs. time interval:  (0, years]
+ exit on or before:  failure
+
+------------------------------------------------------------------------------
+      312  total obs.
+        0  exclusions
+------------------------------------------------------------------------------
+      312  obs. remaining, representing
+      125  failures in single record/single failure data
+ 1713.854  total analysis time at risk, at risk from t =         0
+                             earliest observed entry t =         0
+                                  last observed exit t =   12.4736
+
+. sts list
+\end{verbatim}
+La deuxième commande affiche le tableau demandé. Pour la courbe de survie,
+on utilisera :
+\begin{verbatim}
+. sts graph, ci censored(single)
+\end{verbatim}
+L'option \texttt{ci} permet d'afficher l'intervalle de confiance à 95~\%
+pour l'estimateur de KM.
+
+\includegraphics{./figs/stata_stsgraph}
