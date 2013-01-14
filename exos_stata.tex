@@ -1,5 +1,3 @@
-\part{Module Stata}
-
 \chapter{Élements du langage et statistiques descriptives}
 
 \begin{exo}\label{exo:8.1}
@@ -32,8 +30,116 @@ Reprendre l'énoncé 2.3 (p.~\pageref{exo:2.3}) et répondre aux questions a–c
 Reprendre l'énoncé 2.4 (p.~\pageref{exo:2.4}) et répondre aux questions a–f.
 \end{exo}
 
-\chapter{Mesures d'association, comparaison de moyennes et de proportions
-  pour deux échantillons ou plus}  
+%--------------------------------------------------------------- Devoir 07 ---
+\chapter*{Devoir \no 7}
+\addcontentsline{toc}{chapter}{Devoir \no 7}
+
+Les exercices sont indépendants. Une seule réponse est correcte pour chaque
+question. Lorsque vous ne savez pas répondre, cochez la case correspondante.
+
+\section*{Exercice 1}
+Considérons le petit jeu de données affichés ci-dessous comme une sortie
+\Stata (produit avec la commande \verb|list|):
+\begin{verbatim}
+     +----------------+
+     |   x      y   z |
+     |----------------|
+  1. | 1.2    8.1   1 |
+  2. | 2.4   12.4   2 |
+  3. | 3.1    6.7   1 |
+  4. | 1.8    9.8   2 |
+  5. | 5.7   10.3   1 |
+     |----------------|
+  6. | 6.4   10.8   2 |
+  7. | 3.8    9.2   1 |
+  8. | 2.6      .   2 |
+  9. | 5.7   11.2   1 |
+ 10. | 3.8   12.7   2 |
+     +----------------+
+\end{verbatim}
+\begin{description}
+\item[\bf 1.1] On souhaite remplacer la 6\ieme\ observation de la variable
+  \texttt{x} (6.4) par la valeur 5.9. Quelle commande faut-il utiliser ?
+  \marginpar{1.1 $\square$} 
+  \begin{description}
+  \item[A.] \verb|replace x[6] = 5.9|
+  \item[B.] \verb|replace x = 5.9 in 6|
+  \item[C.] \verb|generate x = 5.9 in 6|
+  \item[D.] \verb|generate x = 5.9 in 6, replace|
+  \item[E.] Je ne sais pas.
+  \end{description}  
+\item[\bf 1.2] La commande
+\begin{verbatim}
+. tab z if y > 10
+\end{verbatim}
+permet de renvoyer le nombre d'observations pour lequel $y > 10$ pour chaque
+modalité de \texttt{z}. \marginpar{1.2 $\square$}
+  \begin{description}
+  \item[A.] Vrai.
+  \item[B.] Faux.
+  \item[C.] Je ne sais pas.
+  \end{description}  
+\item[\bf 1.3] En supposant que l'on dispose de la valeur moyenne des $y$
+  dans une variable \texttt{ym} définie comme suit :
+  \verb|egen ym = mean(y)|, quelle commande doit-on utiliser pour remplacer
+  la valeur manquante présente dans la variable \texttt{y} par la moyenne
+  des $y$ ?  \marginpar{1.3 $\square$}
+  \begin{description}
+  \item[A.] \verb|replace y = ym, if missing(y)|
+  \item[B.] \verb|replace y = ym if missing(y)|
+  \item[C.] \verb|generate y = ym, if missing(y)|
+  \item[D.] \verb|generate y = ym if missing(y)|
+  \item[E.] Je ne sais pas.
+  \end{description}  
+\item[\bf 1.4] Quelle commande a permis de produire le résultat suivant ?
+  \marginpar{1.4 $\square$} 
+\begin{verbatim}
+    Variable |       Obs        Mean    Std. Dev.       Min        Max
+-------------+--------------------------------------------------------
+           x |        10        3.65    1.776545        1.2        6.4
+\end{verbatim}
+  \begin{description}
+  \item[A.] \verb|describe|
+  \item[B.] \verb|summarise|
+  \item[C.] \verb|summarize| 
+  \item[D.] Je ne sais pas.
+  \end{description}
+\item[\bf 1.5] La variable \texttt{z} comporte deux valeurs uniques (1 et 2)
+  correspondant à deux catégories d'individus : 1 = Homme, 2 = Femme. On
+  souhaite associer ces étiquettes, que l'on supposera définies correctement
+  dans la variable \texttt{genderlab}, aux valeurs prises par \texttt{z}. La
+  commande suivante permet-elle de répondre à la question ? 
+  \marginpar{1.5 $\square$}
+\begin{verbatim}
+. label value genderlab z
+\end{verbatim}
+  \begin{description}
+  \item[A.] Oui.
+  \item[B.] Non.
+  \item[C.] Je ne sais pas.
+  \end{description}  
+\item[\bf 1.6] Que permet de réaliser la commande suivante : \marginpar{1.6 $\square$}
+\begin{verbatim}
+. by z, sort: count if y < 11 & x > 3
+\end{verbatim}
+  \begin{description}
+  \item[A.] Compter le nombre d'observations de la variable pour lesquels $y
+    < 11$ et $x > 3$ par modalité de \texttt{z}.
+  \item[B.] Trier la variable \texttt{z} par ordre croissant et dénombrer
+    les observations pour lesquelles $y < 11$ ou $x > 3$.
+  \item[C.] Je ne sais pas.
+  \end{description}  
+
+\end{description}
+\section*{Exercice 2}
+
+\section*{Exercice 3}
+
+
+
+\chapter[Mesures d'association, comparaison de moyennes et de
+proportions]{Mesures d'association, comparaison de moyennes et de
+  proportions pour deux échantillons ou plus}   
 
 \begin{exo}\label{exo:9.1}
 Reprendre l'énoncé 3.1 (p.~\pageref{exo:3.1}) et répondre aux questions a–c.
@@ -69,6 +175,124 @@ Reprendre l'énoncé 4.2 (p.~\pageref{exo:4.2}) et répondre aux questions a–c
 Reprendre l'énoncé 4.3 (p.~\pageref{exo:4.3}) et répondre aux questions a–e.
 \end{exo}
 
+%--------------------------------------------------------------- Devoir 08 ---
+\chapter*{Devoir \no 8}
+\addcontentsline{toc}{chapter}{Devoir \no 8}
+
+Les exercices sont indépendants. Une seule réponse est correcte pour chaque
+question. Lorsque vous ne savez pas répondre, cochez la case correspondante.
+
+\section*{Exercice 1}
+
+\section*{Exercice 2}
+
+\section*{Exercice 3}
+Un investigateur s'intéressant à la fonction respiratoire décide
+d'enregistrer le volume expiratoire maximum seconde (mesuré en litres) chez
+des sujets fumeurs et non fumeurs. Quatre catégories sont définies \emph{a
+  priori} : les non fumeurs, les anciens fumeurs, les nouveaux fumeurs et
+les fumeurs de longue date. Un ensemble de 6 personnes est tiré au sort dans
+chaque catégorie \citep[p.~34]{mickey04}. Les données présentées dans le
+tableau suivant sont disponibles dans le fichier \texttt{vems.dta}.
+\vskip1em
+
+\begin{tabular}{lcccccccc}
+\toprule
+Observation & 1 & 2 & 3 & 4 & 5 & 6 & Moy & Var \\
+\midrule
+Non fumeurs      & 4.41 & 4.96 & 3.50 & 3.66 & 4.68 & 4.11 & 4.22 & 0.33 \\
+Anciens fumeurs  & 3.69 & 3.90 & 3.82 & 4.08 & 3.76 & 4.38 & 3.94 & 0.06 \\
+Nouveaux fumeurs & 3.54 & 4.40 & 3.28 & 2.28 & 3.34 & 3.92 & 3.46 & 0.51 \\
+Fumeurs          & 2.98 & 2.95 & 2.15 & 3.41 & 3.97 & 3.86 & 3.22 & 0.46 \\
+\midrule
+Ensemble         & & & & & & & 3.71 & 0.34 \\
+\bottomrule
+\end{tabular}
+\vskip1em
+
+Un aperçu des données après importation sous \Stata est fourni ci-dessous
+\begin{verbatim}
+. list in 1/5
+
+     +--------------------+
+     | VEMS     categorie |
+     |--------------------|
+  1. | 4.41   Non fumeurs |
+  2. | 4.96   Non fumeurs |
+  3. |  3.5   Non fumeurs |
+  4. | 3.66   Non fumeurs |
+  5. | 4.68   Non fumeurs |
+     +--------------------+
+. codebook categorie, compact
+
+Variable   Obs Unique  Mean  Min  Max  Label
+-------------------------------------------------------------------------------
+categorie   24      4   2.5    1    4  Statut fumeur
+-------------------------------------------------------------------------------
+\end{verbatim}
+\begin{description}
+\item[\bf 3.1] Quelle commande doit-on utiliser pour calculer la moyenne et
+  la variance dans chaque groupe ? \marginpar{3.1 $\square$}
+  \begin{description}
+  \item[A.] \verb|summarize VEMS, by(categorie)|
+  \item[B.] \verb|by categorie, summarize VEMS|
+  \item[C.] \verb|tabstat VEMS, by(categorie) stats(mean sd)|
+  \item[D.] \verb|by categorie: tabstat VEMS, mean sd|
+  \item[E.] Je ne sais pas.
+  \end{description}  
+\item[\bf 3.2] Quelle commande permet de reproduire la figure suivante
+  (indépendemment du rapport largeur/hauteur et de la couleur) ?
+  \marginpar{3.2 $\square$}
+\begin{center}
+  \includegraphics{./figs/dev8_vemshisto}
+\end{center}
+\begin{description}
+\item[A.] \verb|histogram VEMS|
+\item[B.] \verb|histogram VEMS, freq|
+\item[C.] \verb|histogram VEMS, discrete|
+\item[D.] \verb|histogram VEMS, over(categorie)|
+\item[E.] Je ne sais pas.
+\end{description}
+\item[\bf 3.3] Quelle commande permet de reproduire la figure suivante
+  (indépendemment du rapport largeur/hauteur et de la couleur) ?
+  \marginpar{3.3 $\square$}
+\begin{center}
+  \includegraphics{./figs/dev8_vemsdot}
+\end{center}
+\begin{description}
+\item[A.] \verb|dotplot VEMS, over(categorie)|
+\item[B.] \verb|dotplot VEMS, by(categorie)|
+\item[C.] \verb|stripplot VEMS, over(categorie)|
+\item[D.] \verb|stripplot VEMS, by(categorie)|
+\item[E.] Je ne sais pas.
+\end{description}
+\item[\bf 3.4] On souhaite tester le rapport des deux variances les plus
+  extrêmes (anciens et nouveaux fumeurs). Quelle commande permet de répondre
+  à cette question ? \marginpar{3.4 $\square$}
+\begin{description}
+\item[A.] \verb+sdtest VEMS if categorie in 2 | categorie in 3+
+\item[B.] \verb+sdtest VEMS if categorie in 2 & categorie in 3+
+\item[C.] \verb+sdtest VEMS if categorie == 2 & categorie == 3, by(categorie)+
+\item[D.] \verb+sdtest VEMS if categorie == 2 | categorie == 3, by(categorie)+
+\item[E.] Je ne sais pas.
+\end{description}
+\item[\bf 3.5] Quelle commande doit-on utiliser pour réaliser une ANOVA à un
+  facteur de classification ? \marginpar{3.5 $\square$}
+\begin{description}
+\item[A.] \verb|oneway VEMS by categorie|
+\item[B.] \verb|oneway VEMS, over(categorie)|
+\item[C.] \verb|oneway VEMS categorie|
+\item[D.] Je ne sais pas.
+\end{description}
+\item[\bf 3.6] On souhaite obtenir les intervalles de confiance à 95~\% pour
+  les quatre moyennes de groupe, en utilisant la loi de Student comme
+  distribution asymptotique. Quelle commande doit-on utiliser ?
+  \marginpar{3.6 $\square$}
+
+\item[\bf 3.7] 
+\end{description}
+
+%--------------------------------------------------------------- Chapter 10 ---
 \chapter{Régression linéaire et logistique}
 
 \begin{exo}\label{exo:10.1}
@@ -100,6 +324,20 @@ Reprendre l'énoncé 6.3 (p.~\pageref{exo:6.3}) et répondre aux questions a–f
 Reprendre l'énoncé 6.5 (p.~\pageref{exo:6.5}) et répondre aux questions a–e.
 \end{exo}
 
+%--------------------------------------------------------------- Devoir 09 ---
+\chapter*{Devoir \no 9}
+\addcontentsline{toc}{chapter}{Devoir \no 9}
+
+Les exercices sont indépendants. Une seule réponse est correcte pour chaque
+question. Lorsque vous ne savez pas répondre, cochez la case correspondante.
+
+\section*{Exercice 1}
+
+\section*{Exercice 2}
+
+\section*{Exercice 3}
+
+%--------------------------------------------------------------- Chapter 11 ---
 \chapter{Analyse de données de survie}
 
 \begin{exo}\label{exo:11.1}
@@ -110,3 +348,16 @@ Reprendre l'énoncé 7.1 (p.~\pageref{exo:7.1}) et répondre aux questions a–d
 \begin{exo}\label{exo:11.2}
 Reprendre l'énoncé 7.3 (p.~\pageref{exo:7.3}) et répondre aux questions a–i.
 \end{exo}
+
+%--------------------------------------------------------------- Devoir 10 ---
+\chapter*{Devoir \no 10}
+\addcontentsline{toc}{chapter}{Devoir \no 10}
+
+Les exercices sont indépendants. Une seule réponse est correcte pour chaque
+question. Lorsque vous ne savez pas répondre, cochez la case correspondante.
+
+\section*{Exercice 1}
+
+\section*{Exercice 2}
+
+\section*{Exercice 3}

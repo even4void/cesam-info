@@ -1,7 +1,7 @@
 %---------------------------------------------------------------- Séance 08 --
-\chapter{Élements du langage et statistiques descriptives}
+\chapter*{Semaine 8\markboth{Corrigés de la semaine 8}{}}
 
-\soln{\ref{exo:1.1}} Stata dispose d'un éditeur de données qui se présente
+\soln{\ref{exo:8.1}} \Stata dispose d'un éditeur de données qui se présente
 sous la forme d'un tableur (à l'image d'Excel), mais on peut saisir
 dirctement des données à l'aide de la commande \texttt{input}. Après avoir
 donné le nom de la ou des variables (lorsqu'il y a plusieurs variables, on
@@ -9,7 +9,7 @@ sépare leur nom par un espace), on presse sur la touche \textsf{Entrée}
 et on saisit les observations (idem, lorsqu'il y a plusieurs variables on
 saisit les observations ou valeurs observées en les séparant par un
 espace). Lorsque la saisie est terminé, on saisit le mot \texttt{end} et on
-presse sur \textsf{Entrée} pour indiquer à Stata que la saisie est
+presse sur \textsf{Entrée} pour indiquer à \Stata que la saisie est
 terminée. \label{para:edit}
 \begin{verbatim}
 . input x
@@ -75,9 +75,9 @@ D'où le résumé numérique final suivant :
 % 
 %
 %
-\soln{\ref{exo:1.2}} On peut utiliser la même solution qu'à l'exercice
+\soln{\ref{exo:8.2}} On peut utiliser la même solution qu'à l'exercice
 précédent pour saisir les données, c'est-à-dire utiliser la commande
-\texttt{input} ou bien se servir de léditeur de données qui se présente sous
+\texttt{input} ou bien se servir de l'éditeur de données qui se présente sous
 la forme d'un tableur :
 
 \includegraphics{./figs/stata_editX}
@@ -108,7 +108,7 @@ ligne, \verb|help egen|).
 %
 %
 %
-\soln{\ref{exo:1.5}}
+\soln{\ref{exo:8.3}}
 Pour lire les données contenues dans le fichier \texttt{anorexia.data} dont
 un aperçu est fourni ci-dessous
 \begin{verbatim}
@@ -172,6 +172,7 @@ After           double %10.0g                 Apres
 Sorted by:  
      Note:  dataset has changed since last saved
 \end{verbatim}
+
 Pour obtenir les effectifs par type de thérapie, on utilise un simple tri à
 plat à l'aide de la commande \texttt{tabulate}.
 \begin{verbatim}
@@ -185,6 +186,7 @@ plat à l'aide de la commande \texttt{tabulate}.
          g3 |         17       23.61      100.00
 ------------+-----------------------------------
 \end{verbatim}
+
 La transformation d'unités pour les poids ne pose pas de problème
 spécifique, mais il faut décider si l'on crée de nouvelles variables
 (\texttt{generate}) ou si l'on remplace les valeurs existantes
@@ -195,6 +197,7 @@ spécifique, mais il faut décider si l'on crée de nouvelles variables
 . replace After = After/2.2
 (72 real changes made)
 \end{verbatim}
+
 Pour les scores de différences, on crée cette fois-ci une nouvelles variable
 à l'aide de la commande \texttt{generate}.
 \begin{verbatim}
@@ -231,8 +234,8 @@ Summary for variables: diff
 %
 %
 %
-\soln{\ref{exo:2.1}} Pour la saisie des données, on procéder de la même
-manière qu'à l'exercice~1.1, p.~\pageref{para:edit}, ou tout simplement
+\soln{\ref{exo:8.4}} Pour la saisie des données, on procéder de la même
+manière qu'à l'exercice~8.1, p.~\pageref{para:edit}, ou tout simplement
 saisir les données dans un fichier au format texte. Supposons que les
 données aient été entrées dans un fichier appelé \verb|saisie_x.txt| dont
 voici un aperçu :
@@ -240,18 +243,18 @@ voici un aperçu :
 24.9 25.0 25.0 25.1 25.2 ...
 \end{verbatim}
 Les valeurs de $X$ sont simplement séparées par un espace. Dans ce cas, les
-données peuvent être lues et importées dans Stata avec la commande \texttt{infile}.
+données peuvent être lues et importées dans \Stata avec la commande \texttt{infile}.
 \begin{verbatim}
 . infile x using "saisie_x.txt"             
 (26 observations read)
 \end{verbatim}
 On n'oubliera pas d'ajouter l'option \texttt{clear} si des données existe
-déjà dans l'espace de travail de Stata.
+déjà dans l'espace de travail de \Stata.
 
 La commande \texttt{tabstat} peut être utilisée pour calculer la moyenne et
 la médiane des observations. On utilisera par contre la commande
 \texttt{egen} avec la fonction \texttt{mode} pour calculer les valeurs
-modales de $X$. Comme il y a plusieurs modes, on demandera à Stata de
+modales de $X$. Comme il y a plusieurs modes, on demandera à \Stata de
 renvoyer la valeur la plus basse des deux modes. Notons que la commande
 \texttt{egen} pourrait également être utilisée pour calculer la moyenne et
 la médiane de $X$. 
@@ -266,6 +269,7 @@ la médiane de $X$.
 . display xmode
 25.4
 \end{verbatim}
+
 Concernant la variance, on a directement accès à l'écart-type à partir de 
 \verb|summarize x|, mais on peut également la calculer avec \texttt{egen}
 comme le carré de l'écart-type estimé à partir de l'échantillon, puis
@@ -275,6 +279,7 @@ l'afficher sur la console des résultats :
 . di varx^2
 .0793846
 \end{verbatim}
+
 Pour le recodage en 4 classes d'intervalles pré-définis pour la variable
 \texttt{x}, on peut toujours utiliser la fonction \texttt{cut} avec
 \texttt{egen}. On peut ensuite vérifier que les intervalles de classe sont
@@ -308,7 +313,7 @@ En revanche, le tableau d'effectifs peut s'obtenir directement avec
 ------------+------------+-----------------------------------------------------
       Total |         26
 \end{verbatim}
-Enfin, pour la représentation sous forme d'histogramme, Stata dispose de ses
+Enfin, pour la représentation sous forme d'histogramme, \Stata dispose de ses
 propres algorithmes de calcul pour la détermination du nombre de classes à
 construire, tout comme R. Tout est géré à partir de la commande
 \texttt{histogram}. 
@@ -323,18 +328,18 @@ effectifs plutôt que la densité (qui est le choix par défaut).
 %
 %
 %
-\soln{\ref{exo:2.3}} Pour importer les données stockées dans un simple
-fichier texte, on utilise la commande \verb|- infile -|.
+\soln{\ref{exo:8.5}} Pour importer les données stockées dans un simple
+fichier texte, on utilise la commande \verb|infile|.
 \begin{verbatim}
 . infile tailles using "elderly.dat", clear
 \end{verbatim}
 Ici, on notera que l'on ne précise pas la manière dont sont codées les
-valeurs manquantes car le "." est le format utilisé par défaut par Stata
+valeurs manquantes car le "." est le format utilisé par défaut par \Stata
 (pour les variables numériques uniquement).
 
 Il existe plusieurs commandes qui facilitent la détection et
 l'identification des valeurs manquantes. Parmi celles disponibles par défaut
-sur Stata, on distingue \verb|- codebook -| qui fournit un résumé de la
+sur \Stata, on distingue \verb|codebook| qui fournit un résumé de la
 variable, ainsi que les fonctions de base qui permettent de tabuler ou
 compter les observations répondant à un certain critère.
 \begin{verbatim}
@@ -368,8 +373,8 @@ l'option \texttt{kdenopts} ; par exemple, ajouter \verb|kdenopts(gauss width(1))
 %
 %
 %
-\soln{\ref{exo:2.4}} Les données sur les poids à la naissance de Hosmer \&
-Lemeshow (1989) peuvent être obtenues directement au format Stata grâce à la
+\soln{\ref{exo:8.6}} Les données sur les poids à la naissance de Hosmer \&
+Lemeshow (1989) peuvent être obtenues directement au format \Stata grâce à la
 commande \verb|webuse lbw|, mais par souci de simplicité on utilisera les
 mêmes données que celles traitées avec \R. Celles-ci ont été exportées au
 format texte dans le fichier \texttt{birthwt.dat}, et elles peuvent être
@@ -405,7 +410,7 @@ bwt             float  %9.0g
 Sorted by:  
      Note:  dataset has changed since last saved
 \end{verbatim}
-Pour créer de nouvelles étiquettes aux variables \texttt{low},
+Pour associer de nouvelles étiquettes aux variables \texttt{low},
 \texttt{race}, \texttt{smoke}, \texttt{ui} et \texttt{ht}, il suffit de
 définir des "labels" et de les associer aux variables en question (cela ne
 change le format de représentation des variables en mémoire, qui restent
@@ -465,7 +470,7 @@ commande \texttt{tabstat} dans l'exercice~1.5
 peut le calculer ainsi :
 \begin{verbatim}
 . egen lwtiqr = iqr(lwt)
-. di lwtiqr
+. display lwtiqr
 13.636364
 \end{verbatim}
 Enfin, un histogramme du poids des mères est construit à l'aide de la
@@ -480,7 +485,7 @@ densité sera construit.
 
 Concernant la proportion de mères ayant fumé durant la grossesse et
 le calcul de l'intervalle de confiance à 95~\% associé, on peut utiliser la
-commande \verb|- prtest -|, qui comme dans le cas de la commande \R
+commande \verb|prtest|, qui comme dans le cas de la commande \R
 \texttt{prop.test} suppose de grands échantillons :
 \begin{verbatim}
 . tabulate smoke
@@ -505,13 +510,13 @@ Ho: p = 0.5
      Ha: p < 0.5                 Ha: p != 0.5                   Ha: p > 0.5
  Pr(Z < z) = 0.0014         Pr(|Z| > |z|) = 0.0029          Pr(Z > z) = 0.9986
 \end{verbatim}
-Le test utilisé par Stata diffère du $\chi^2$ de \R mais ces deux tests
+Le test utilisé par \Stata diffère du $\chi^2$ de \R mais ces deux tests
 fournissent essentiellement les mêmes résultats. Ici, la proportion estimée
 vaut 0.392 avec un intervalle de confiance de $[0.322;0.461]$. Si l'on ne
 souhaite pas utiliser l'approximation pour grands échantillons, on peut
-utiliser \verb|- bintest -| à la place.
+utiliser \verb|bintest| à la place.
 
-La commande \verb|- graph bar -| permet de construire assez facilement des
+La commande \verb|graph bar| permet de construire assez facilement des
 diagrammes en barres. 
 \begin{verbatim}
 . gen one = 1
@@ -535,7 +540,7 @@ spécifiant le nombre de quantile désiré, \texttt{nq(3)}.
 ------------+-----------------------------------
       Total |        189      100.00
 \end{verbatim}
-On notera que Stata n'attribue pas automatiquement des labels aux catégories
+On notera que \Stata n'attribue pas automatiquement des labels aux catégories
 générées, mais simplement un rang (ici, ${1,2,3}$). On peut toutefois
 obtenir les bornes des intervalles des terciles de deux manières. La
 première solution, 
@@ -591,7 +596,7 @@ sous-poids donne les résultats suivants, exprimées en termes de proportions
 \end{verbatim}
 
 Un tri à plat de la variable \texttt{race} est effectuée de la même manière
-à partir de la comamnde \verb|- tabulate -|.
+à partir de la commande \verb|tabulate|.
 \begin{verbatim}
 . tabulate race
 
@@ -638,15 +643,14 @@ Puis, on procède de même avec les variables qualitatives :
 
 
 %---------------------------------------------------------------- Séance 09 --
-\chapter{Mesures d'association, comparaison de moyennes et de proportions
-  pour deux échantillons ou plus}  
+\chapter*{Semaine 9\markboth{Corrigés de la semaine 9}{}}
 
-\soln{\ref{exo:3.1}} On rappelle que seuls les valeurs numériques des poids
+\soln{\ref{exo:9.1}} On rappelle que seuls les valeurs numériques des poids
 à la naissance sont disponibles dans le fichier \texttt{sirds.dat}, et qu'il
 nous faut contruire la variable de groupement (enfants décédés \emph{versus}
 vivants). Une manière de procéder consiste à générer une variable prenant
-deux valeurs puis à associer des "labels" aux valeurs distinctes prises par
-cette variable. Par exemple,
+deux valeurs puis à associer des étiquettes ("labels") aux valeurs
+distinctes prises par cette variable. Par exemple,
 \begin{verbatim}
 . infile poids using "sirds.dat", clear
 . gen status = 0
@@ -704,7 +708,7 @@ Ho: diff = 0                                     degrees of freedom =       48
     Ha: diff < 0                 Ha: diff != 0                 Ha: diff > 0
  Pr(T < t) = 0.0003         Pr(|T| > |t|) = 0.0006          Pr(T > t) = 0.9997
 \end{verbatim}
-Stata reporte les degrés de significativité correspondant aux deux types de
+\Stata reporte les degrés de significativité correspondant aux deux types de
 tests, uni- et bilatéral. Ici, pour le test bilatéral, le degré de
 significativité estimé est de 0.0006 ; ce résultat est arrondi, mais il est
 possible d'obtenir une valeur plus précise à l'aide de la commande suivante :
@@ -713,12 +717,12 @@ possible d'obtenir une valeur plus précise à l'aide de la commande suivante :
 .00059019
 \end{verbatim}
 La commande ci-dessus doit être entrée immédiatement après l'appel à la
-commande \verb|- ttest -|.
+commande \verb|ttest|.
 %
 %
 %
-\soln{\ref{exo:3.2}} Les données de l'étude sur le sommeil servant de base à
-l'article de Student ne sont pas disponibles sous Stata. On peut en revanche
+\soln{\ref{exo:9.2}} Les données de l'étude sur le sommeil servant de base à
+l'article de Student ne sont pas disponibles sous \Stata. On peut en revanche
 les saisir manuellement à l'aide de la commande \verb|input|, comme on l'a
 vu p.~\pageref{para:edit}. Dans le cas présent, on va donc créer deux
 variables, \texttt{DHH} et \texttt{LHH}, correspondant aux temps de sommeil
@@ -815,7 +819,7 @@ faudra ajouter les options \texttt{bin(8)} (8 intervalles au total) et
 \includegraphics{./figs/stata_sdif}
 
 Pour réaliser un test $t$ pour données appariées, on utilise toujours la
-commande \verb|- ttest -|, avec cette fois-ci une syntaxe légèrement
+commande \verb|ttest|, avec cette fois-ci une syntaxe légèrement
 différente :
 \begin{verbatim}
 . ttest DHH == LHH
@@ -845,12 +849,12 @@ chaque molécule à l'aide d'un diagramme en barres.
 
 Ici, on a choisi de représenter les données sous forme de barres
 horizontales (\texttt{hbar} au lieu de \texttt{bar}), sachant que par défaut
-Stata calcule automatiquement les moyennes conditionnelles. Pour afficher la
+\Stata calcule automatiquement les moyennes conditionnelles. Pour afficher la
 médiane, on utiliserait la commande \verb|graph hbar (median) DHH LHH|.
 % 
 %
 %
-\soln{\ref{exo:3.4}} Stata dispose de commandes appelées "immédiates"
+\soln{\ref{exo:9.3}} \Stata dispose de commandes appelées "immédiates"
 permettant de calculer les statistiques de test associées à des données
 saisies directement à l'invite de commande, c'est-à-dire sans passer par
 l'importation d'un fichier de données ou la saisie d'un tableau
@@ -884,14 +888,14 @@ d'ajustement à une loi donnée).
            Fisher's exact =                 0.364
    1-sided Fisher's exact =                 0.212
 \end{verbatim}
-\emph{À noter} : Stata ne fournit pas de correction de continuité de Yates pour ce
+\emph{À noter} : \Stata ne fournit pas de correction de continuité de Yates pour ce
 type de test parmi les commandes de base.  
 %
 %
 %
-\soln{\ref{exo:3.5}} Comme dans l'exercice précédent, on pourrait travailler
+\soln{\ref{exo:9.4}} Comme dans l'exercice précédent, on pourrait travailler
 à l'aide de commandes "immédiates". Toutefois, il est parfois utile de
-recréer directement le tableau d'effectif sous Stata. Voici une façon de
+recréer directement le tableau d'effectif sous \Stata. Voici une façon de
 procéder. \label{exo:3.5stata}
 
 La première étape consiste à créer trois variables qui permettront de
@@ -944,7 +948,7 @@ différentes selon le type de variable considéré.
 % catplot infarctus traitement [fw=N], percent recast(bar)
 
 Pour représenter les proportions d'infarctus selon le type de traitement, on
-peut utiliser une commande externe de Stata (à installer de la manière
+peut utiliser une commande externe de \Stata (à installer de la manière
 suivante : \verb|ssc install catplot|) qui est bien commode pour la
 représentation graphique des données catégorielles. Son usage est le suivant :
 \begin{verbatim}
@@ -977,8 +981,8 @@ Score test for trend of odds:     chi2(1)  =     2.13
 %
 %
 %
-\soln{\ref{exo:4.1}} Le chargement des données ne pose pas vraiment de
-problème puisque les données sont déjà disponibles au format Stata.
+\soln{\ref{exo:9.5}} Le chargement des données ne pose pas vraiment de
+problème puisque les données sont déjà disponibles au format \Stata.
 \begin{verbatim}
 . use polymorphism.dta
 . by genotype: summarize age
@@ -1006,12 +1010,8 @@ problème puisque les données sont déjà disponibles au format Stata.
 \end{verbatim}
 Les intervalles de confiance reportés ci-dessus ne sont pas calculés à
 partir de l'ANOVA réalisée ci-après, mais en considérant une approximation à
-la loi normale. On peut en revanche obtenir un résumé descriptif simplifié
-avec la commande \texttt{summarize}
-\begin{verbatim}
-. by genotype: summarize age
-\end{verbatim}
-ou plus détaillé en ajoutant l'option \texttt{detail}:
+la loi normale. On peut en revanche obtenir un résumé descriptif plus
+détaillé en ajoutant l'option \texttt{detail}: 
 \begin{verbatim}
 . by genotype: summarize age, detail
 \end{verbatim}
@@ -1051,10 +1051,10 @@ Between groups      2315.73355      2   1157.86678      7.86     0.0010
 
 Bartlett's test for equal variances:  chi2(2) =   1.0798  Prob>chi2 = 0.583
 \end{verbatim}
-Le tableau d'ANOVA produit par Stata est sensiblement identique à celui
-fourni par \R, à ceci près que Stata reporte également les totaux pour les
+Le tableau d'ANOVA produit par \Stata est sensiblement identique à celui
+fourni par \R, à ceci près que \Stata reporte également les totaux pour les
 sommes de carrés, carrés moyens et degrés de liberté associés. On notera
-également que Stata fournit le résultat d'un test de Bartlett concernant
+également que \Stata fournit le résultat d'un test de Bartlett concernant
 l'hypothèse d'homogénéité des variances. Le test de Levene pour tester
 l'homogénéité des variances peut être obtenu à l'aide d'une approche un peu
 différente : la commande \verb|- robvar -| qui fournit un ensemble de tests
@@ -1090,7 +1090,7 @@ de groupe à partir des résultats de l'ANOVA, c'est-à-dire en considérant une
 estimation de la résiduelle basée sur la variance commune, on peut procéder
 comme dans le cas \R, en utilisant le carré moyen de l'erreur
 (\texttt{Within groups}) et le quantile de référence de la loi $t$ (0.975)
-que l'on peut obtenir comme ceci sous Stata (ici pour le premier génotype,
+que l'on peut obtenir comme ceci sous \Stata (ici pour le premier génotype,
 1.6/1.6) :
 \begin{verbatim}
 . display invttail(14-3, 0.025)
@@ -1164,7 +1164,7 @@ intervalles de confiance à 95~\% pour chaque moyenne de groupe :
 \end{verbatim}
 
 \soln{\ref{exo:4.2}}
-Les données peuvent être saisies manuellement dans Stata (ou à l'aide de
+Les données peuvent être saisies manuellement dans \Stata (ou à l'aide de
 l'éditeur de données, ou \texttt{Data Editor}), comme présentées dans le
 tableau de l'énoncé, c'est-à-dire trois variables organisées en colonnes :
 
@@ -1310,16 +1310,16 @@ Ho: pb(tx==2) = pb(tx==3)
 
 \soln{\ref{exo:4.3}}
 Il n'existe pas de solution très commode pour importer un fichier SPSS sous
-Stata directement, sauf lorsque l'on travaille sous Windows (voir la
+\Stata directement, sauf lorsque l'on travaille sous Windows (voir la
 commande \texttt{usespss}). Le fichier contenant les données,
-\texttt{weights.sav}, a été exporté depuis R au format Stata à l'aide des
+\texttt{weights.sav}, a été exporté depuis R au format \Stata à l'aide des
 commandes suivantes :
 \begin{verbatim}
 library(foreign)
 weights <- read.spss("weights.sav", to.data.frame=TRUE)
 write.dta(weights, file="weights.dta")
 \end{verbatim}
-Depuis Stata, on peut donc l'importer très simplement à l'aide de la
+Depuis \Stata, on peut donc l'importer très simplement à l'aide de la
 commande \texttt{use} :
 \begin{verbatim}
 . use "weights.dta", clear
@@ -1455,7 +1455,7 @@ W50 =  0.64415596   df(3, 546)     Pr > F = 0.58688851
 W10 =  0.64584135   df(3, 546)     Pr > F = 0.58582455
 \end{verbatim}
 
-Il existe plusieurs façon de recoder des variables sous Stata, mais dans le
+Il existe plusieurs façon de recoder des variables sous \Stata, mais dans le
 cas présent le plus simple pour aggréger les deux dernières classes
 (\texttt{2 siblings} et \texttt{3 or more}) consiste à générer une deuxième
 variable, \texttt{PARITY2}, de la manière suivante :
@@ -1495,12 +1495,12 @@ Bartlett's test for equal variances:  chi2(2) =   0.7963  Prob>chi2 = 0.672
 \end{verbatim}
 Pour le test de la tendance linéaire, on présente deux manières (méthode des
 contrastes et régression linéaire). Pour générer un contraste testant la
-tendance linéaire, il faut explicitement demander à Stata d'effectuer une
+tendance linéaire, il faut explicitement demander à \Stata d'effectuer une
 régression en considérant la variable \texttt{PARITY2} comme une variable
 qualitative (passage par des variables indicatrices codant pour les deux
 dernières modalités du facteur). On utilisera dans ce cas la commande de
 post-estimation \texttt{contrast}. Comme le résultat de la régression sur la
-variable qualitative ne nous intéresse pas vraiment, on demandera à Stata de
+variable qualitative ne nous intéresse pas vraiment, on demandera à \Stata de
 ne pas afficher les résultats à l'aide de l'instruction \verb|quietly :|.
 \begin{verbatim}
 . quietly: regress WEIGHT i.PARITY2
@@ -1546,7 +1546,7 @@ régression, ici le coefficient \texttt{PARITY2}.
 
 
 %---------------------------------------------------------------- Séance 10 --
-\chapter{Régression linéaire et logistique}
+\chapter*{Semaine 10\markboth{Corrigés de la semaine 10}{}}
 
 \soln{\ref{exo:5.1}}
 Les données tabulées sont disponibles dans un fichier texte que l'on peut
@@ -1557,7 +1557,7 @@ de type Excel.
 \begin{verbatim}
 . infile int (Sub Age Sex) Height Weight BMP FEV RV FRC TLC PEmax using "cystic.dat" in 2/26, clear
 \end{verbatim}
-Dans l'instruction ci-dessus, on a explicitement demandé à Stata de coder
+Dans l'instruction ci-dessus, on a explicitement demandé à \Stata de coder
 les trois premières variables sous forme d'entiers et non de nombres réels,
 ce qui dans le présent ne change pas grand-chose mais permet d'économiser de
 l'espace mémoire pour les gros jeux de données.
@@ -1669,7 +1669,7 @@ Pour les corrélations de Spearman, on remplacera \texttt{pwcorr} par
 La corrélation partielle entre les variables \texttt{PEmax} et
 \texttt{Weight} en tenant compte de \texttt{Age} est obtenue à l'aide de la
 commande \texttt{pcorr} ; la variable d'intérêt doit être située en première
-position dans la liste des variables et par défaut Stata affiche l'ensemble
+position dans la liste des variables et par défaut \Stata affiche l'ensemble
 des coefficients de corrélation partielle pour les autres variables.
 \begin{verbatim}
 . pcorr PEmax Weight Age
@@ -1917,7 +1917,7 @@ par sexe :
       Total |      4,690      100.00
 \end{verbatim}
 
-Sous Stata, il n'est pas possible d'utiliser des marqueurs transparents dans
+Sous \Stata, il n'est pas possible d'utiliser des marqueurs transparents dans
 un diagramme de dispersion. Dans le cas où le nombre d'observations est
 élevé, Il est donc préférable de modifier le type de symbole par défaut
 (disque) et d'utiliser de petits cercles (\texttt{oh} ou \texttt{Oh}).
@@ -1970,7 +1970,7 @@ l'aide d'une transformation logarithmique.
 On peut ensuite vérifier visuellement à l'aide d'un histogramme (ou d'un
 QQ-plot) que cette transformation a bien permis de ramener les distributions
 de ces deux variables proches de la normale. Pour afficher simultanément les
-quatre histogrammes, on peut sauver chacune des figures au format Stata
+quatre histogrammes, on peut sauver chacune des figures au format \Stata
 (\texttt{gph}) et ensuite les combiner à l'aide de la commande \texttt{graph combine}.
 \begin{verbatim}
 . histogram bmi, saving(gphbmi)
@@ -1993,7 +1993,7 @@ quatre histogrammes, on peut sauver chacune des figures au format Stata
 Le modèle de régression stratifié par sexe ne pose pas de problème majeur,
 et contrairement à R il n'est pas nécessaire de calculer les intervalles de
 confiance pour les pentes avec une commande séparée car ceux-ci sont
-directement fournis dans le tableau de résultats renvoyés par Stata.
+directement fournis dans le tableau de résultats renvoyés par \Stata.
 \begin{verbatim}
 . regress logsbp logbmi if sex == 1, noheader
 ------------------------------------------------------------------------------
@@ -2017,7 +2017,7 @@ Dans un premier temps, il est nécessaire de construire le tableau
 d'effectifs donné dans l'énoncé. On s'inspirera de la méthode manuelle vue à
 l'exercice~\ref{exo:3.5stata} (p.~\pageref{exo:3.5stata}). Par contre, on va
 saisir directement les labels des variables et non des codes
-numériques. Pour cela, il est nécessaire d'indiquer à Stata quel est le
+numériques. Pour cela, il est nécessaire d'indiquer à \Stata quel est le
 format de ces labels à l'aide de l'instruction \texttt{str} que l'on suffixe
 par le nombre de caractères que l'on souhaite utiliser pour le codage des
 modalités des variables.
@@ -2076,7 +2076,7 @@ D'où pour le "petit $p$",
 . display %10.9f r(p)
 0.000003289
 \end{verbatim}
-La commande ci-dessus demande à Stata d'afficher le résultat sous forme d'un
+La commande ci-dessus demande à \Stata d'afficher le résultat sous forme d'un
 nombre avec 9 décimales.
 
 Concernant les effectifs théoriques, on utilise exactement la même commande
@@ -2252,7 +2252,7 @@ Test of homogeneity (M-H)      chi2(2) =     0.47  Pr>chi2 = 0.7898
 Pour le chargement des données qui se présentent sous la forme de données
 tabulées dans un fichier texte sans ligne d'en-tête, on utilisera la
 commande \texttt{infile} en spécificiant le nom des variables. On notera que
-Stata indique le nombre de lignes ("observations") lues, ce qui permet de
+\Stata indique le nombre de lignes ("observations") lues, ce qui permet de
 d'assurer de l'intégrité des données si l'on connaît le nombre
 d'observations à l'avance.
 \begin{verbatim}
@@ -2280,7 +2280,7 @@ somme de l'ensemble de ces valeurs pour avoir l'effectif total :
 %% \end{verbatim}
 
 Il existe plusieurs commandes pour construire un modèle de régression
-logistique sous Stata. Dans le cas des données dites "groupées", on peut
+logistique sous \Stata. Dans le cas des données dites "groupées", on peut
 utiliser la commande \texttt{blogit} qui nécessite de connaître les
 effectifs pour chacune des deux classes de la variable binaire à prédire, ou
 plus exactement les effectifs de la classe "positive" et les effectifs
@@ -2508,7 +2508,7 @@ fréquences relatives par ligne.
 \end{verbatim}
 
 Le calcul de l'odds-ratio peut se faire à l'aide de l'une des commandes
-Stata dites "immédiates", \texttt{cc}, en gardant à l'esprit qu'il faut bien
+\Stata dites "immédiates", \texttt{cc}, en gardant à l'esprit qu'il faut bien
 tenir compte de la colonne \texttt{patients}, comme précédemment :
 \begin{verbatim}
 . cc cancer alcohol [fweight=patients], woolf
@@ -2570,7 +2570,7 @@ pour l'odds-ratio donné par la commande \texttt{cc} (ici, $\chi^2=110.26$,
 $p<0.001$). 
 
 Le modèle de régression logistique, comme les autres modèles de régression
-sous Stata, se formule ainsi : 
+sous \Stata, se formule ainsi : 
 
 \begin{verbatim}
 . logistic alcohol cancer [freq=patients]
@@ -2588,7 +2588,7 @@ Log likelihood =  -453.2224                       Pseudo R2       =     0.0962
 ------------------------------------------------------------------------------
 \end{verbatim}
 
-Par défaut, Stata présente les résultats (coefficients du modèle) sous forme
+Par défaut, \Stata présente les résultats (coefficients du modèle) sous forme
 d'odds-ratio, avec leurs intervalles de confiance associés. Si l'on souhaite
 obtenir directement les coefficients de régression (sur l'échelle du log
 odds), il faut utiliser la commande \texttt{logit} après avoir utilisé
@@ -2611,7 +2611,7 @@ Log likelihood =  -453.2224                       Pseudo R2       =     0.0962
 \end{verbatim}
 
 %---------------------------------------------------------------- Séance 11 --
-\chapter{Analyse de données de survie}
+\chapter*{Semaine 11\markboth{Corrigés de la semaine 11}{}}
 
 \soln{\ref{exo:7.1}}
 Le format texte du fichier de données \texttt{prostate.dat} est identique à
@@ -2647,7 +2647,7 @@ Le nombre de patients vivants à la date de point est obtenu à partir de
 \end{verbatim}
 soit 32 personnes encore en vie à la fin de la durée de suivi.
 
-Comme dans l'exercice~7.1, il est nécessaire d'indiquer à Stata quelle
+Comme dans l'exercice~7.1, il est nécessaire d'indiquer à \Stata quelle
 variable sert à identifier les événements (\texttt{status}) et le temps
 (\texttt{time}). On utilisera la commande \texttt{stset} de la manière
 suivante :
@@ -2722,7 +2722,7 @@ Total     |         6           6.00
 
 \soln{\ref{exo:7.3}}
 Le fichier de données est un fichier texte avec des tabulations comme
-séparateur de champ. On peut l'importer sous Stata en utilisant la commande
+séparateur de champ. On peut l'importer sous \Stata en utilisant la commande
 \texttt{insheet}. Pour afficher le nom des variables après importation, il
 suffit d'utiliser \texttt{describe} avec l'option \texttt{simple}.
 \begin{verbatim}
@@ -2842,7 +2842,7 @@ de même que le sexe des patients décédé après cette période :
 
 Concernant l'analyse des patients transplantés, on peut également procéder
 comme on l'a fait avec R, c'est-à-dire restreindre le tableau de données à
-ces seuls patients. Comme Stata ne permet de travailler qu'avec un seul
+ces seuls patients. Comme \Stata ne permet de travailler qu'avec un seul
 tableau de données à la fois, il est toutefois nécessaire de sauvegarder
 temporairement les données actuelles avant de créer un nouveau tableau.
 \begin{verbatim}
@@ -2871,7 +2871,7 @@ données d'origine de la manière suivante :
 . restore
 \end{verbatim}
 
-Comme R, Stata utilise ses propres conventions pour le codage des données de
+Comme R, \Stata utilise ses propres conventions pour le codage des données de
 survie. Les commandes essentielles sont ainsi : \texttt{stset} pour définir
 la façon dont les événements sont enregistrés et le temps d'observation,
 \texttt{sts} pour calculer un tableau de survie à partir de l'estimateur de

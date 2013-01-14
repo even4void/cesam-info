@@ -1,0 +1,690 @@
+%---------------------------------------------------------------- Séance 08 --
+\chapter*{Semaine 8\markboth{Corrigés de la semaine 8}{}}
+
+\soln{\ref{exo:8.1}}
+Pour saisir les données sous \SAS, on effectue dans un premier temps une
+étape \texttt{DATA} dans laquelle les données individuelles sont saisie
+manuellement à l'aide de la commande \texttt{input} pour indiquer le nom de
+la variable, suivi de \texttt{cards} qui place les données directement dans
+le programme \SAS.
+\begin{verbatim}
+DATA Exercice1_1;
+INPUT x;
+CARDS;
+3.68
+2.21
+2.45
+8.64
+4.32
+3.43
+5.11
+3.87
+;
+RUN;
+\end{verbatim}
+
+Le nombre d'observations ainsi que les valeurs des observations extrêmes de
+la distribution empirique sont obtenues à partir de la commande \texttt{PROC
+  SUMMARY}, en précisant les options correspondantes (\texttt{n},
+\texttt{min} et \texttt{max} et \texttt{range}).
+\begin{verbatim}
+PROC SUMMARY DATA=Exercice1_1 PRINT n min max range; VAR x; RUN;
+\end{verbatim}
+
+Comme le jeu de données est limité en termes d'effectifs, le plus simple
+consiste à modifier l'étape \texttt{DATA} précédente en effectuant les
+modifications demandées : (a) remplacement de la valeur 8.64 par 3.64, et
+(b) recodage de la valeur 5.11 en point (".") qui est le symbole par défaut
+utilisé par \SAS pour représenter les données manquantes.
+\begin{verbatim}
+DATA Exercice1_1;
+INPUT x;
+CARDS;
+3.68
+2.21
+2.45
+3.64    /* (a) */
+4.32
+3.43
+.       /* (b) */
+3.87
+;
+RUN;
+\end{verbatim}
+%
+%
+%
+\soln{\ref{exo:8.2}}
+La saisie des données s'effectue de la même manière qu'à l'exercice
+précédent, c'est-à-dire à partir d'une étape \texttt{DATA} :
+\begin{verbatim}
+DATA Exercice1_2;
+INPUT X;
+detect=1;
+IF X <= log10(50) THEN detect=0;
+CARDS;
+3.64
+2.27
+1.43
+1.77
+4.62
+3.04
+1.01
+2.14
+3.02
+5.62
+5.51
+5.51
+1.01
+1.05
+4.19
+2.63
+4.34
+4.85
+4.02
+5.92
+;
+RUN;
+\end{verbatim}
+On notera une petite différence par rapport à l'exercice~\ref{exo:1.1}, à
+savoir que l'on définit également une variable \texttt{detect} qui prend la
+valeur 0 si $X\le \log_{10}(50)$ et 1 autrement. Ceci est effectué avant
+l'instruction \texttt{cards} qui signifie le début de la sauvegarde des
+données numériques en mémoire.
+
+Le nombre de patients avec une charge virale indétectable s'obtient à partir
+d'un simple tri à plat de la variable \texttt{detect} grâce à la commande
+\texttt{PROC FREQ}.
+\begin{verbatim}
+PROC FREQ DATA=exercice1_2; TABLES detect; RUN;
+\end{verbatim}
+
+Pour calculer la charge virale médiane pour les seules observations valides
+(c'est-à-dire ayant une valeur au-dessus du seuil limite de détection), il
+est nécessaire de sélectionner les unités statistiques remplissant les
+conditions de validité et d'utiliser la commande \texttt{PROC SUMMARY}.
+\begin{verbatim}
+DATA detect; SET exercice1_2;
+Y=exp(X*log(10));
+IF detect=1; RUN;
+PROC SUMMARY DATA=detect PRINT median; VAR Y; RUN;
+\end{verbatim}
+%
+%
+%
+\soln{\ref{exo:8.3}}
+Pour lire les données contenues dans le fichier \texttt{anorexia.data} dont
+un aperçu est fourni ci-dessous
+\begin{verbatim}
+Group Before After
+g1 80.5  82.2
+g1 84.9  85.6
+g1 81.5  81.4
+g1 82.6  81.9
+g1 79.9  76.4
+\end{verbatim}
+on va utiliser la commande \texttt{infile} dans l'étape \texttt{DATA}, en
+précisant que la lecture des données doit commencer à la 2\ieme\ ligne
+(\texttt{firstobs=2}) et que les données sont séparées par des espaces (en
+nombre variable).
+\begin{verbatim}
+DATA anorexia;
+INFILE "C:\data\anorexia.dat" firstobs=2 dlm="09"X;
+INPUT  groupe $ 1-2  before 3-7   after 8-13;
+RUN;
+\end{verbatim}
+On peut très bien associer des étiquettes plus informatives aux modalités
+prises par la variable qualitative \texttt{Group} à l'aide d'une étape
+\texttt{FORMAT} :
+\begin{verbatim}
+PROC FORMAT;
+VALUE Therapie
+  1='Thérapie comportementale'
+  2='Thérapie familiale'
+  3='Thérapie contrôle'
+;
+RUN;
+\end{verbatim}
+
+Pour obtenir les effectifs par type de thérapie, on utilise un simple tri à
+plat à l'aide de la commande \texttt{PROC FREQ}. L'affichage des résultats
+peut être personnalisé en utilisant le renommage des groupes réalisé à
+l'étape précédente.
+\begin{verbatim}
+PROC FREQ DATA=anorexia; TABLES groupe; FORMAT groupe therapie.; RUN;
+\end{verbatim}
+
+La transformation d'unités pour les poids ne pose pas de problème
+spécifique, mais il faut décider si l'on crée de nouvelles variables ou si
+l'on remplace les valeurs existantes. Ici, on créera deux nouvelles
+variables, \verb|before_kg| et \verb|after_kg| :
+\begin{verbatim}
+DATA anorexia; SET anorexia;
+before_kg=before/2.2;
+after_kg=after/2.2;
+RUN;
+\end{verbatim}
+
+Pour les scores de différences, on crée également une nouvelles variable
+à l'aide d'une étape \texttt{DATA} :
+\begin{verbatim}
+DATA anorexia; SET anorexia;
+diff=after_kg-before_kg;
+RUN;
+\end{verbatim}
+et l'on résumé la distribution des scores de différence (moyenne et étendue)
+par groupe de traitement à l'aide de \texttt{PROC SUMMARY}. On notera que
+puisque l'on fait intervenir une variable de groupement, il est nécessaire
+dans un premier temps de trier les données par classe (variable
+\texttt{groupe}). 
+\begin{verbatim}
+PROC SORT DATA=anorexia; BY groupe; RUN;
+
+PROC SUMMARY DATA=anorexia PRINT n mean min max range; VAR diff; BY groupe; FORMAT groupe therapie.; RUN;
+\end{verbatim}
+%
+%
+%
+\soln{\ref{exo:8.4}}
+La saisie des données brutes se fera comme dans les exercices~8.1 et 8.2 à
+l'aide d'une étape \texttt{DATA} (commande \texttt{cards}).
+\begin{verbatim}
+DATA X;
+INPUT X;
+CARDS;
+24.9
+25.0
+25.0
+25.1
+25.2
+25.2
+25.3
+25.3
+25.3
+25.4
+25.4
+25.4
+25.4
+25.5
+25.5
+25.5
+25.5
+25.6
+25.6
+25.6
+25.7
+25.7
+25.8
+25.8
+25.9
+26.0
+;
+RUN;
+\end{verbatim}
+
+Les indicateurs de tendance centrale (moyenne, médiane et mode) peuvent être
+calculés et affichés à partir de la commande \texttt{PROC SUMMARY}.
+\begin{verbatim}
+PROC SUMMARY DATA=X PRINT mean median mode; VAR X; RUN;
+\end{verbatim}
+
+Quant à la variance, on changera simplement les options de calcul dans
+\texttt{PROC SUMMARY} :
+\begin{verbatim}
+PROC SUMMARY DATA=X PRINT var; VAR X; RUN;
+\end{verbatim}
+
+Pour le recodage en 4 classes d'intervalles pré-définis pour la variable
+\texttt{X}, on crée une variable auxiliaire \verb|X_classes| à laquelle on
+affecte les valeurs 1, 2, 3 et 4 selon les valeurs prises par \texttt{X}.
+\begin{verbatim}
+DATA X; SET X;
+/* 24.9-25.1, 25.2-25.4, 25.5-25.7, 25.8-26.0 */
+
+X_classes=1;
+IF X ge 25.2 THEN X_classes=2;
+IF X ge 25.5 THEN X_classes=3;
+IF X ge 25.8 THEN X_classes=4;
+RUN;
+\end{verbatim}
+Le tableau d'effectifs peut s'obtenir directement avec une commande
+\texttt{tables} dans \texttt{PROC FREQ} :
+\begin{verbatim}
+PROC FREQ DATA=X; TABLES X_classes; RUN;
+\end{verbatim}
+Pour faciliter la lecture des résultats, on peut tout à fait associer des
+étiquettes plus informatives aux quatre classes avec \texttt{PROC FORMAT}
+et associer celles-ci au tableau de résultat renvoyé par \texttt{tables}.
+\begin{verbatim}
+PROC FORMAT;
+    VALUE classes   24.9-25.1="Intervalle 1"
+                    25.2-25.4="Intervalle 2"
+                    25.5-25.7="Intervalle 3"
+                    25.8-26.0="Intervalle 4";
+RUN;
+
+PROC FREQ DATA=X; TABLES X; FORMAT X classes.; RUN;
+\end{verbatim}
+
+Enfin, pour la représentation sous forme d'histogramme, \SAS dispose de ses
+propres algorithmes de calcul pour la détermination du nombre de classes à
+construire, tout comme R. Tout est géré à partir de la commande
+\texttt{PROC GCHART}.
+\begin{verbatim}
+PROC GCHART DATA=X; Hbar X; RUN;  
+\end{verbatim}
+
+On pourrait également utiliser un diagramme en barres orientées
+verticalement en précisant l'option \texttt{Vbar}.
+\begin{verbatim}
+PROC GCHART DATA=X; Vbar X; RUN;
+\end{verbatim}
+%
+%
+%
+\soln{\ref{exo:8.5}}
+Pour importer les données stockées dans un simple fichier texte, on utilise
+la commande \verb|infile| dans une étape \texttt{DATA}.
+\begin{verbatim}
+DATA elderly;
+INFILE  "C:\data\elderly.dat" dlm="09"X ;
+INPUT  taille @@ ;
+RUN;
+\end{verbatim}
+Ici, on notera que l'on ne précise pas la manière dont sont codées les
+valeurs manquantes car le "." est le format utilisé par défaut par \SAS. une
+autre solution consisterait à introduire une commande \texttt{datalines}
+après la commande \texttt{input} et à copier/coller les données du fichier
+texte. 
+
+Le nombre total d'observations manquantes peut s'obtenir à partir de
+\texttt{PROC SUMMARY} en spécifiant l'option \texttt{nmiss}.
+\begin{verbatim}
+PROC SUMMARY DATA=elderly PRINT nmiss; VAR taille; RUN;
+\end{verbatim}
+
+Pour obtenir la taille moyenne et son intervalle de confiance à 95~\%
+associé, il suffit d'entrer la commande suivante :
+\begin{verbatim}
+PROC SUMMARY DATA=elderly PRINT clm uclm lclm; VAR taille; RUN;
+\end{verbatim}
+
+Enfin, pour afficher la distribution des tailles sous forme d'une courbe de
+densité, on utilise la commande \texttt{PROC UNIVARIATE} et
+\texttt{HISTOGRAM} avec l'option \texttt{/ kernel}. Le degré de lissage peut
+être contrôlé à l'aide de l'option \texttt{C}.
+\begin{verbatim}
+PROC UNIVARIATE DATA=elderly; VAR taille; HISTOGRAM taille / kernel; RUN;
+\end{verbatim}
+%
+%
+%
+\soln{\ref{exo:8.6}}
+Les données sur les poids à la naissance de Hosmer \& Lemeshow (1989) ont
+été exportées au format texte dans le fichier \texttt{birthwt.dat}, et elles
+peuvent être importées ainsi :
+\begin{verbatim}
+PROC IMPORT OUT= WORK.BIRTHWT
+            DATAFILE= "C:\data\birthwt.dat"
+            DBMS=DLM REPLACE;
+     DELIMITER='20'x;
+     GETNAMES=NO;
+     DATAROW=1;
+RUN;
+
+DATA birthwt1; SET birthwt;
+  low = var1;
+  age = var2;
+  lwt = var3 ;
+  race = var4 ;
+  smoke = var5;
+  ptl = var6 ;
+  ht = var7 ;
+  ui = var8 ;
+  ftw = var9 ;
+  bwt = var10 ;
+  DROP var1-var10;
+RUN;
+\end{verbatim}
+La première étape (\texttt{PROC IMPORT}) consiste à définir les options pour
+l'importation des données : les noms de variables ne figurent pas dans le
+fichier de données (\texttt{GETNAMES=NO}) et la lecture des données doit
+commencer dès la 1\iere\ ligne du fichier (\texttt{DATAROW=1}), sachant que
+les données individuelles sont séparées par des espaces. La seconde étape
+(\texttt{DATA}) consiste à assigner des noms de variables au tableau de
+données \texttt{WORK.BIRTHWT} généré par \SAS. On notera qu'il est
+nécessaire de supprimer les anciens noms de variable après renommage, d'où
+l'usage de la commande \texttt{DROP}.
+
+Pour associer de nouvelles étiquettes aux variables \texttt{low},
+\texttt{race}, \texttt{smoke}, \texttt{ui} et \texttt{ht}, il suffit de
+définir des "labels" et de les associer aux variables en question (cela ne
+change le format de représentation des variables en mémoire, qui restent
+stockées sous forme de nombre).
+\begin{verbatim}
+PROC FORMAT;
+      VALUE  low 1="Poids inférieur à 2.5 Kg"
+                 0="Poids supérieur à 2.5 Kg";
+      VALUE  ethnicite 1="White"
+                       2="Black"
+                       3="Other";
+      VALUE  tabac 1="consommation tabac durant grossesse"
+                   0="Pas de consommation tabac durant grossesse";
+      VALUE  Hypert 1="Antecedent d hypertension"
+                    0="Pas d antecedent d hypertension";
+      VALUE  uterine 1="Manisfestation d irritabilite uterine"
+                     0="Pas de manisfestation d irritabilite uterine";
+RUN;
+\end{verbatim}
+On pourra vérifier que ces modifications ont bien été prises en compte en
+utilisant une comamnde telle que \texttt{PROC FREQ} pour afficher les
+tableaux d'effectifs associés à ces variables qualitatives.
+\begin{verbatim}
+PROC FREQ DATA=birthwt1; 
+  TABLES low race smoke ui ht;
+  FORMAT low low. race ethnicite. smoke tabac. ht hypert. ui uterine.;
+RUN;
+\end{verbatim}
+
+La conversion du poids des mères en \emph{kg} ne pose pas de problème
+particulier, et ici on remplacera directement les données disponibles dans
+une étape \texttt{DATA}.
+\begin{verbatim}
+DATA birthwt2; SET birthwt1;
+  lwt=lwt/2.2; 
+RUN;
+\end{verbatim}
+
+Les indicateurs de tendance centrale et de dispersion relative sont obtenus
+à partir de la commande \texttt{PROC SUMMARY}, en spécifiant les options
+adéqautes. 
+\begin{verbatim}
+PROC SUMMARY DATA=birthwt2 PRINT mean median qrange; VAR lwt; RUN;
+\end{verbatim}
+
+Enfin, un histogramme du poids des mères est construit à l'aide de la
+commande \texttt{PROC GCHART}. Ici, sans autre option un histogramme de
+densité sera construit.
+\begin{verbatim}
+PROC GCHART DATA=birthwt2; Hbar lwt; RUN;
+
+PROC UNIVARIATE DATA=birthwt2;
+  VAR lwt;
+  HISTOGRAM lwt / kernel;
+RUN;
+\end{verbatim}
+
+Concernant la proportion de mères ayant fumé durant la grossesse et
+le calcul de l'intervalle de confiance à 95~\% associé, on peut utiliser la
+commande \texttt{PROC SUMMARY}, qui comme dans le cas de la commande \R
+\texttt{prop.test} suppose de grands échantillons :
+\begin{verbatim}
+PROC SUMMARY DATA=birthwt2 PRINT clm uclm lclm; VAR smoke; RUN;
+\end{verbatim}
+
+Les diagrammes en barres peuvent être affichés, selon une orientation
+verticale ou horizontale, à l'aide de \texttt{PROC GCHART}, avec une syntaxe
+identique au cas des histogrammes pour des variables numériques.
+\begin{verbatim}
+PROC GCHART DATA=birthwt2; Vbar smoke; RUN;
+PROC GCHART DATA=birthwt2; Hbar smoke; RUN;
+\end{verbatim}
+
+Pour générer les terciles, on classera dans un premier temps les
+observations par ordre croissant, puis on découpera les valeurs en trois
+sous-effectifs égaux (de taille $189/3=63$).
+\begin{verbatim}
+/* PROC UNIVARIATE DATA=birthwt2; VAR lwt; RUN; */
+PROC RANK DATA=birthwt2 OUT=ranking; VAR age; RANKS ordre; RUN;
+
+DATA birthwt3; SET ranking;
+age_classe=1;
+IF ordre gt 189/3 THEN age_classe=2; 
+IF ordre gt 2*(189/3) THEN age_classe=3;
+RUN;
+\end{verbatim}
+Le croisement de cette nouvelle variable avec la variable indicatrice de
+sous-poids donne les résultats suivants, exprimées en termes de proportions :
+\begin{verbatim}
+PROC FREQ DATA=birthwt3; TABLE age_classe*low; RUN;
+\end{verbatim}
+
+Un tri à plat de la variable \texttt{race} est effectuée de la même manière
+à partir de la commande \texttt{PROC FREQ}..
+\begin{verbatim}
+PROC FREQ DATA=birthwt3; TABLES race; FORMAT race ethnicite.; RUN;
+\end{verbatim}
+
+Enfin, pour résumer la distribution des variables selon la variable
+indicatrice \texttt{low}, on reprendra la commande \texttt{PROC FREQ} en
+sépcifiant la liste des variables d'intérêt, 
+\verb|(race smoke ui ht age_classe)|, à croiser avec \verb|low| via
+l'opérateur \texttt{*}.
+\begin{verbatim}
+PROC FREQ DATA=birthwt3; 
+  TABLES (race smoke ui ht age_classe)*low;
+  FORMAT low low. race ethnicite. smoke tabac. ht hypert. ui uterine.;
+RUN;
+\end{verbatim}
+
+%---------------------------------------------------------------- Séance 09 --
+\chapter*{Semaine 9\markboth{Corrigés de la semaine 9}{}}
+
+\soln{\ref{exo:9.1}} On rappelle que seuls les valeurs numériques des poids
+à la naissance sont disponibles dans le fichier \texttt{sirds.dat}, et qu'il
+nous faut contruire la variable de groupement (enfants décédés \emph{versus}
+vivants). Une manière de procéder consiste à effectuer deux étapes
+\texttt{DATA} en incluant une variable qualitative indiquant le status, en
+plus des données brutes insérer par copier/coller.
+\begin{verbatim}
+DATA DCD;
+INPUT poids @@;
+deces=1;
+DATALINES;
+1.050 1.175 1.230 1.310 1.500 1.600 1.720 1.750 1.770 2.275
+2.500 1.030 1.100 1.185 1.225 1.262 1.295 1.300 1.550 1.820
+1.890 1.940 2.200 2.270 2.440 2.560 2.730
+;
+RUN;
+
+DATA VIV;
+INPUT poids @@;
+deces=0;
+CARDS;
+1.130 1.575 1.680 1.760 1.930 2.015 2.090 2.600 2.700 2.950
+3.160 3.400 3.640 2.830 1.410 1.715 1.720 2.040 2.200 2.400
+2.550 2.570 3.005
+;
+RUN;
+
+DATA DRIA; SET DCD VIV; RUN;
+\end{verbatim}
+
+Le test de Student est réalisé en utilisant la commande \texttt{PROC TTEST},
+qui par défaut fournit les résultats sous l'hypothèse d'homoskédasticité ou
+d'hétéroskédasticité, ainsi que les résumés descriptifs numériques et
+graphiques pour la distribution du poids selon le status clinique. La
+variable de classification est introduite après l'instruction \texttt{CLASS}
+et la variable réponse après l'instruction \texttt{VAR}. Par défaut, le test
+reporté est bilatéral.
+\begin{verbatim}
+PROC TTEST DATA=DRIA PLOTS=all;
+  CLASS deces;
+  VAR poids;
+RUN;
+\end{verbatim}
+
+\includegraphics{./figs/sas_ttest}
+%
+%
+%
+\soln{\ref{exo:9.2}}
+Les données de l'étude sur le sommeil servant de base à
+l'article de Student peuvent être importées sous \SAS comme à l'exercice
+précédent, c'est-à-dire en combinant les résultats de deux étapes
+\texttt{DATA}. On en profitera lors de la dernière étape pour créer une
+variable auxiliaire pour les scores de différence.
+\begin{verbatim}
+DATA DHH;
+INPUT GMSD @@;
+CARDS;
+0.7 -1.6 -0.2 -1.2 -0.1 3.4 3.7 0.8 0.0 2.0
+;
+RUN;
+
+DATA LHH;
+INPUT GMSL @@;
+CARDS;
+1.9 0.8 1.1 0.1 -0.1 4.4 5.5 1.6 4.6 3.4
+;
+RUN;
+
+DATA HH; MERGE DHH LHH; diff_GMS=GMSL-GMSD; RUN;
+\end{verbatim}
+
+Un résumé numérique pour l'ensemble des variables numériques (\texttt{GMSD},
+\texttt{GMSL}, et \verb|diff_GMS|) peut être obtenu avec \texttt{PROC SUMMARY} 
+de la manière suivante :
+\begin{verbatim}
+PROC SUMMARY DATA=HH PRINT n mean var lclm uclm; VAR GMSD GMSL diff_GMS; RUN;
+\end{verbatim}
+
+Les gains moyens de temps de sommeil pour chaque molécule peuvent être
+représentés à l'aide d'un diagramme en barres grâce à \texttt{PROC GCHART}.
+\begin{verbatim}
+PROC GCHART DATA=hh; Hbar diff_gms / midpoints=(0 0.5 1 1.5 2 2.5 3 3.5 4 4.5 5 5.5 6); RUN;
+\end{verbatim}
+
+Enfin, pour réaliser un test $t$ pour données appariées, on utilisera toujours la
+commande \texttt{PROC TTEST}, mais en spécifiant l'option \texttt{PAIRED},
+comme indiqué ci-après.
+\begin{verbatim}
+PROC TTEST DATA=hh;
+  PAIRED GMSD*GMSL;
+RUN;
+\end{verbatim}
+
+\includegraphics{./figs/sas_ttestpaired}
+%
+%
+%
+\soln{\ref{exo:9.3}}
+Dans les cas des données dites "groupées", ou plus généralement d'un tableau
+de contingence quelconque, on se contente généralement de saisir le tableau
+d'effectif en faisant apparaître distinctement les variables de
+classification et les effectifs associés. Sous \SAS, on peut procéder ainsi :
+\begin{verbatim}
+DATA symptom;
+INPUT regime amelioration effectif;
+CARDS;
+1 1 26
+0 1 21
+1 0 38
+0 0 44
+;
+RUN;
+
+PROC FORMAT; VALUE ouinon 1="Oui" 0="Non"; RUN;
+\end{verbatim}
+
+Ensuite, on peut répondre aux trois questions à partir d'une même commande,
+\texttt{PROC FREQ}, en se rappelant qu'il est nécessaire de renseigner
+l'option \texttt{WEIGHT} pour indiquer une pondération par les effectifs.
+\begin{verbatim}
+PROC FREQ DATA=symptom ORDER=data;
+  TABLES amelioration * regime / chisq;
+  WEIGHT effectif;
+  FORMAT regime amelioration ouinon.;
+RUN;
+\end{verbatim}
+
+\includegraphics{./figs/sas_regime}
+%
+%
+%
+\soln{\ref{exo:9.4}}
+Comme dans l'exercice précédent, le plus simple pour travailler avec ce type
+de tableau à deux entrées est de créer une struture de donnes où l'on fait
+correspondre les effectifs pour chacun des croisement des modalités des deux
+facteurs d'étude (infarctus et traitement) dans une étape \texttt{DATA}.
+\begin{verbatim}
+DATA myocarde;
+INPUT Infractus traitement nombre;
+CARDS;
+1 1 28
+1 2 18
+2 1 656
+2 2 658
+;
+RUN;
+
+PROC FORMAT; 
+  VALUE ouinon 1="Oui" 2 = "Non";
+  VALUE treat 1=" Placebo" 2 = "Aspirine";
+RUN;
+\end{verbatim}
+
+Ensuite, on peut répondre aux trois questions à partir d'une même commande,
+\texttt{PROC FREQ} et l'option \texttt{/ all}, en se rappelant qu'il est
+nécessaire de renseigner l'option \texttt{WEIGHT} pour indiquer une
+pondération par les effectifs.
+\begin{verbatim}
+PROC FREQ DATA=myocarde;
+  TABLES traitement*Infractus / all;
+  WEIGHT nombre;
+  FORMAT Infractus ouinon. traitement treat.;
+RUN;
+\end{verbatim}
+%
+%
+%
+\soln{\ref{exo:9.5}}
+Les données au format \Stata peuvent être importées sous \SAS à l'aide de
+\texttt{PROC IMPORT} en précisant le type de source de données, ici
+\texttt{DBMS=STATA}.
+\begin{verbatim}
+PROC IMPORT OUT= WORK.polymorphism
+            DATAFILE= "C:\data\polymorphism.dta"
+            DBMS=STATA REPLACE;
+RUN;
+\end{verbatim}
+
+
+\begin{verbatim}
+PROC GLM DATA=polymorphism; 
+  CLASS genotype; 
+  MODEL age=genotype; 
+RUN;
+\end{verbatim}
+
+
+\begin{verbatim}
+PROC SORT DATA=polymorphism; BY genotype; RUN;
+
+PROC GCHART DATA=polymorphism; Vbar age; BY genotype; RUN;
+\end{verbatim}
+
+
+\includegraphics{./figs/sas_boxplot}
+
+\begin{verbatim}
+PROC SORT DATA=polymorphism; BY genotype; RUN;
+
+PROC SUMMARY DATA=polymorphism PRINT n mean stddev ucl lcl; VAR age; BY genotype; RUN;
+\end{verbatim}
+
+\begin{verbatim}
+PROC GLM DATA=polymorphism; 
+  CLASS genotype; 
+  MODEL age=genotype;
+  MEANS genotype / BON CLDIFF;
+RUN;
+\end{verbatim}
+
+\begin{verbatim}
+PROC GLM DATA=polymorphism PLOT=MEANPLOT(CLBAND); 
+  CLASS genotype; 
+  MODEL age=genotype;
+  MEANS genotype / BON CLM;
+RUN;
+\end{verbatim}
