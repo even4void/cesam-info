@@ -649,30 +649,55 @@ PROC IMPORT OUT= WORK.polymorphism
 RUN;
 \end{verbatim}
 
-
+La commande \texttt{PROC GLM} est utilisée pour les modèles linéaires
+(ANOVA, régression linéaire simple ou multiple, ANCOVA). Dans le cas d'une
+ANOVA, on indique le facteur de classification après l'instruction
+\texttt{CLASS} et le modèle d'ANOVA après l'instruction \texttt{MODEL}. Un
+modèle d'ANOVA à un facteur s'écrira donc \texttt{y=g} où \texttt{y} désigne
+la variable réponse et \texttt{g} le facteur d'étude. 
 \begin{verbatim}
 PROC GLM DATA=polymorphism; 
   CLASS genotype; 
   MODEL age=genotype; 
 RUN;
 \end{verbatim}
+Le tableau de variance retourné par la commande inclut les sommes de carrés
+pour le facteur (\texttt{Model}) et la résiduelle (\texttt{Error}), ainsi
+que la somme de carrés totale et le coefficient de détermination ($\eta^2$)
+reflétant la part de variance expliquée par le modèle. On notera que \SAS
+fournit par défaut deux estimations des sommes de carrés pour le facteur
+d'étude (type I et III), mais celles-ci sont identiques dans le cas d'un
+plan complet équilibré.
 
+La commande \texttt{PROC GLM} fournit également des sorties graphiques,
+incluant une représentation de la distribution de l'âge selon le génotype
+sous forme de boîtes à moustaches.
 
+\includegraphics{./figs/sas_boxplot}
+
+Il est également possible de représenter la distribution des âges selon le
+génotype sous forme de diagramme en barres
 \begin{verbatim}
 PROC SORT DATA=polymorphism; BY genotype; RUN;
 
 PROC GCHART DATA=polymorphism; Vbar age; BY genotype; RUN;
 \end{verbatim}
 
+\includegraphics{./figs/sas_genotype}
 
-\includegraphics{./figs/sas_boxplot}
-
+Les moyennes de groupes, avec leur intervalles de confiance à 95~\%, peuvent
+être obtenues grâce à \texttt{PROC SUMMARY}. La variable de conditionnement
+est spécifiée après l'instruction \texttt{BY}.
 \begin{verbatim}
 PROC SORT DATA=polymorphism; BY genotype; RUN;
 
 PROC SUMMARY DATA=polymorphism PRINT n mean stddev ucl lcl; VAR age; BY genotype; RUN;
 \end{verbatim}
 
+En ce qui concerne les comparaisons multiples, on utilise toujours
+\texttt{PROC GLM}, en ajoutant cette fois l'option 
+\verb|MEANS genotype / BON CLDIFF| qui fournit les tests corrigés par la
+méthode de Bonferroni (également appelé tests de Dunn sous \SAS). 
 \begin{verbatim}
 PROC GLM DATA=polymorphism; 
   CLASS genotype; 
@@ -680,11 +705,180 @@ PROC GLM DATA=polymorphism;
   MEANS genotype / BON CLDIFF;
 RUN;
 \end{verbatim}
-
+L'option
+\texttt{CLDIFF} permet de représenter les résultats portant sur les
+différences de moyennes sous forme d'intervalles de confiance, alors que
+\texttt{CLM} fait de même pour les moyennes de groupe (intervalles de
+confiance simultanés).
 \begin{verbatim}
 PROC GLM DATA=polymorphism PLOT=MEANPLOT(CLBAND); 
   CLASS genotype; 
   MODEL age=genotype;
   MEANS genotype / BON CLM;
+RUN;
+\end{verbatim}
+%
+%
+%
+\soln{\ref{exo:9.6}}
+Pour importer le tableau de données sous \SAS, on procèdera comme dans les
+exercices précédents : création de deux tableaux de données dans des étapes
+\texttt{DATA} et association entre les deux à l'aide de la commande
+\texttt{MERGE}.
+\begin{verbatim}
+DATA bio1;
+INPUT pb @@;
+CARDS;
+19.8       15.9        15.4
+20.5       19.7        17.1
+23.7       20.8        18.2
+27.1       21.7        18.5
+29.6       22.5        19.3
+29.9       24.0        21.2
+;
+RUN;
+
+DATA bio2;
+INPUT groupe $ @@;
+CARDS;
+A           B           C
+A           B           C
+A           B           C
+A           B           C
+A           B           C
+A           B           C
+;
+RUN;
+
+DATA biologie; MERGE bio1 bio2; RUN;
+\end{verbatim}
+
+À la place de \texttt{PROC GLM}, on peut utiliser la commande \texttt{ANOVA}
+pour réaliser une ANOVA à un facteur, la syntaxe générale étant similaire
+dans les deux cas (utilisation des instructions \texttt{CLASS} et
+\texttt{MODEL}). 
+\begin{verbatim}
+PROC ANOVA DATA=biologie; 
+  CLASS groupe; 
+  MODEL pb=groupe;
+RUN;
+\end{verbatim}
+
+Pour comparer les paires de moyennes entre elles, on rajoutera une
+instructions \texttt{MEANS}, en spécifiant l'option \verb|/ BON| pour
+travailler avec une correction de type Bonferroni.
+\begin{verbatim}
+PROC ANOVA DATA=biologie; 
+  CLASS groupe; 
+  MODEL pb=groupe;
+  MEANS groupe / BON;
+RUN;
+\end{verbatim}
+
+Enfin, si l'on remet en cause la normalité des distributions parentes, la
+comparaison des trois groupes peut être effectuée par une ANOVA sur les
+rangs (Kruskal-Wallis) à partir de la commande \texttt{PROC NPAR1WAY} dans
+laquelle on indique le facteur de classification (\texttt{CLASS}) et la
+variable réponse (\texttt{VAR}).
+\begin{verbatim}
+PROC NPAR1WAY DATA=biologie; 
+  CLASS groupe; 
+  VAR pb; 
+RUN;
+\end{verbatim}
+%
+%
+%
+\soln{\ref{exo:9.7}}
+Le fichier contenant les données, \texttt{weights.sav}, a été exporté depuis
+R au format \Stata à l'aide des commandes suivantes :
+\begin{verbatim}
+library(foreign)
+weights <- read.spss("weights.sav", to.data.frame=TRUE)
+write.dta(weights, file="weights.dta")
+\end{verbatim}
+On peut donc l'importer avec \texttt{PROC IMPORT}, en renseignant le type de
+source de données (\texttt{DBMS=STATA}), comme on l'a fait pour l'exercice~9.5.
+\begin{verbatim}
+PROC IMPORT OUT= WORK.weight
+            DATAFILE= "C:\data\weights.dta"
+            DBMS=STATA REPLACE;
+
+RUN;
+\end{verbatim}
+
+Le tableau d'effectifs et de fréquences relatives pour la variable
+\texttt{parity} s'obtient à partir de la commande \texttt{PROC FREQ} en
+spécifiant l'instruction \texttt{TABLES} pour la variable d'intérêt :
+\begin{verbatim}
+PROC CONTENTS DATA=weight; RUN;
+
+PROC FREQ DATA=weight; TABLES parity; RUN;
+\end{verbatim}
+
+Les moyennes et écarts-type du poids selon la taille de la fratrie
+s'obtiennent ainsi :
+\begin{verbatim}
+PROC SORT DATA=weight; BY parity; RUN;
+
+PROC SUMMARY DATA=weight PRINT n mean stddev min max; VAR weight; BY parity; RUN;
+\end{verbatim}
+
+L'ANOVA à un facteur se réalise comme dans les exercices précédents, à
+l'aide par exemple de la commande \texttt{PROC GLM} et en fournissant la
+variable réponse et la variable qualitative décrivant les groupes à
+comparer.
+\begin{verbatim}
+PROC GLM DATA=weight; 
+  CLASS parity; 
+  MODEL weight=parity; 
+RUN;
+\end{verbatim}
+
+Pour tester l'homogénéité des variance, il est nécessaire de rajouter
+l'option \verb|/ HOVTEST| dans une instruction \texttt{MEANS}, comme indiqué
+ci-dessous :
+\begin{verbatim}
+PROC GLM DATA=weight; 
+  CLASS parity; 
+  MODEL weight=parity;
+  MEANS parity / HOVTEST;
+RUN;
+\end{verbatim}
+Par défaut, le test utilisé est un test de Levene. Pour obtenir un test de
+Bartlett, il suffit de modifier l'option ainsi : \verb|HOVTEST=BARTLETT|.
+
+Pour le recodage de la variable \texttt{parity} en 3 classes, voici une
+solution possible sous \SAS :
+\begin{verbatim}
+DATA weight1; SET weight; Newparity=parity+1-1; RUN;
+
+PROC FREQ DATA=weight1; TABLES newparity; RUN;
+
+DATA weight2; SET weight1;
+  Nparity=newparity; 
+  IF newparity GE 3 THEN Nparity=3;
+RUN;
+
+PROC FREQ DATA=weight2; TABLES Nparity; RUN;
+\end{verbatim}
+
+Le modèle d'analyse de variance peut être à nouveau estimé sur ces nouvelles
+données (\texttt{weight2}) avec \texttt{PROC GLM}.
+\begin{verbatim}
+PROC GLM DATA=weight2; 
+  CLASS Nparity; 
+  MODEL weight=Nparity;
+  MEANS Nparity / HOVTEST;
+RUN;
+\end{verbatim}
+
+Le test de tendance linéaire peut être réalisé à partir d'une régression
+linéaire simple. On peut utiliser \texttt{PROC GLM}, comme dans le cas de
+l'ANOVA, mais en omettant l'instruction \texttt{CLASS} qui indique à \SAS de
+traiter la variable explicative comme une variable qualitative.
+\begin{verbatim}
+PROC GLM DATA=weight2;  
+  MODEL weight=Nparity;
 RUN;
 \end{verbatim}

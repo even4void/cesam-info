@@ -1009,7 +1009,7 @@ problème puisque les données sont déjà disponibles au format \Stata.
          age |        16      50.375    10.63877         33         72
 \end{verbatim}
 Les intervalles de confiance reportés ci-dessus ne sont pas calculés à
-partir de l'ANOVA réalisée ci-après, mais en considérant une approximation à
+partir de l'ANOVA réalisée ci-après, mais en considérant une approximation par
 la loi normale. On peut en revanche obtenir un résumé descriptif plus
 détaillé en ajoutant l'option \texttt{detail}: 
 \begin{verbatim}
@@ -1057,7 +1057,7 @@ sommes de carrés, carrés moyens et degrés de liberté associés. On notera
 également que \Stata fournit le résultat d'un test de Bartlett concernant
 l'hypothèse d'homogénéité des variances. Le test de Levene pour tester
 l'homogénéité des variances peut être obtenu à l'aide d'une approche un peu
-différente : la commande \verb|- robvar -| qui fournit un ensemble de tests
+différente : la commande \verb|robvar| qui fournit un ensemble de tests
 robustes pour l'égalité des variances.
 \begin{verbatim}
 . robvar age, by(genotype)
@@ -1163,7 +1163,7 @@ intervalles de confiance à 95~\% pour chaque moyenne de groupe :
 ------------------------------------------------------------------------------
 \end{verbatim}
 
-\soln{\ref{exo:4.2}}
+\soln{\ref{exo:9.6}}
 Les données peuvent être saisies manuellement dans \Stata (ou à l'aide de
 l'éditeur de données, ou \texttt{Data Editor}), comme présentées dans le
 tableau de l'énoncé, c'est-à-dire trois variables organisées en colonnes :
@@ -1308,7 +1308,7 @@ Ho: pb(tx==2) = pb(tx==3)
     Prob = 0.058424 (NS)
 \end{verbatim}
 
-\soln{\ref{exo:4.3}}
+\soln{\ref{exo:9.7}}
 Il n'existe pas de solution très commode pour importer un fichier SPSS sous
 \Stata directement, sauf lorsque l'on travaille sous Windows (voir la
 commande \texttt{usespss}). Le fichier contenant les données,
@@ -1548,7 +1548,7 @@ régression, ici le coefficient \texttt{PARITY2}.
 %---------------------------------------------------------------- Séance 10 --
 \chapter*{Semaine 10\markboth{Corrigés de la semaine 10}{}}
 
-\soln{\ref{exo:5.1}}
+\soln{\ref{exo:10.1}}
 Les données tabulées sont disponibles dans un fichier texte que l'on peut
 importer à l'aide de la commande \texttt{insheet}. Toutefois, on peut
 également importer les données avec \texttt{infile} qui a l'avantage de
@@ -1663,9 +1663,6 @@ Pour les corrélations de Spearman, on remplacera \texttt{pwcorr} par
        PEmax |   0.5198   0.5920   0.4881   0.2224   0.3140  -0.3089  -0.3835  -0.1482   1.0000
 \end{verbatim}
 
-% FIXME:
-% filtrage correlations elevees à faire.
-
 La corrélation partielle entre les variables \texttt{PEmax} et
 \texttt{Weight} en tenant compte de \texttt{Age} est obtenue à l'aide de la
 commande \texttt{pcorr} ; la variable d'intérêt doit être située en première
@@ -1704,12 +1701,12 @@ classe de \texttt{Age3} qui nous intéressent (1 et 3, en l'occurence).
 
 \includegraphics{./figs/stata_tercile}
 
-\soln{\ref{exo:5.2}}
+\soln{\ref{exo:10.2}}
 Le chargement des données ne pose pas de difficultés particulières car
 celles-ci ont été exportées depuis Excel et sont au format CSV. On veillera
 cependant à préciser le type de délimiteur de champ, ici un point-virgule/
 \begin{verbatim}
-. insheet using "/Users/chl/Documents/Tutors/cesam-r/tex/quetelet.csv", delim(";") clear
+. insheet using "quetelet.csv", delim(";") clear
 (5 vars, 32 obs)
 . describe
 
@@ -1855,12 +1852,12 @@ précdente, il suffit d'ajouter une option \texttt{if tab == 1} :
 ------------------------------------------------------------------------------
 \end{verbatim}
 
-\soln{\ref{exo:5.3}}
+\soln{\ref{exo:10.3}}
 Puisque les données sont disponibles au format CSV \og classique\fg\
 (utilisant la virgule comme séparateur de champ), on peut les importer très
 simplement à l'aide de la commande \texttt{insheet}. 
 \begin{verbatim}
-. insheet using "/Users/chl/Documents/Tutors/cesam-r/tex/Framingham.csv"
+. insheet using "Framingham.csv"
 (10 vars, 4699 obs)
 . describe, simple
 sex       sbp       dbp       scl       chdfate   followup  age       bmi   month     id
@@ -2012,7 +2009,7 @@ directement fournis dans le tableau de résultats renvoyés par \Stata.
 ------------------------------------------------------------------------------
 \end{verbatim}
 
-\soln{\ref{exo:6.1}}
+\soln{\ref{exo:10.4}}
 Dans un premier temps, il est nécessaire de construire le tableau
 d'effectifs donné dans l'énoncé. On s'inspirera de la méthode manuelle vue à
 l'exercice~\ref{exo:3.5stata} (p.~\pageref{exo:3.5stata}). Par contre, on va
@@ -2248,7 +2245,7 @@ Test of homogeneity (M-H)      chi2(2) =     0.47  Pr>chi2 = 0.7898
 %
 %
 %
-\soln{\ref{exo:6.3}}
+\soln{\ref{exo:10.5}}
 Pour le chargement des données qui se présentent sous la forme de données
 tabulées dans un fichier texte sans ligne d'en-tête, on utilisera la
 commande \texttt{infile} en spécificiant le nom des variables. On notera que
@@ -2395,35 +2392,38 @@ Correctly classified                        91.39%
 --------------------------------------------------
 \end{verbatim}
 
-\begin{verbatim}
-. estat classification, cutoff(.15)
+% \begin{verbatim}
+% . estat classification, cutoff(.15)
 
-Logistic model for infct
+% Logistic model for infct
 
-              -------- True --------
-Classified |         D            ~D  |      Total
------------+--------------------------+-----------
-     +     |       228            42  |        270
-     -     |         2            88  |         90
------------+--------------------------+-----------
-   Total   |       230           130  |        360
+%               -------- True --------
+% Classified |         D            ~D  |      Total
+% -----------+--------------------------+-----------
+%      +     |       228            42  |        270
+%      -     |         2            88  |         90
+% -----------+--------------------------+-----------
+%    Total   |       230           130  |        360
 
-Classified + if predicted Pr(D) >= .15
-True D defined as infct != 0
---------------------------------------------------
-Sensitivity                     Pr( +| D)   99.13%
-Specificity                     Pr( -|~D)   67.69%
-Positive predictive value       Pr( D| +)   84.44%
-Negative predictive value       Pr(~D| -)   97.78%
---------------------------------------------------
-False + rate for true ~D        Pr( +|~D)   32.31%
-False - rate for true D         Pr( -| D)    0.87%
-False + rate for classified +   Pr(~D| +)   15.56%
-False - rate for classified -   Pr( D| -)    2.22%
---------------------------------------------------
-Correctly classified                        87.78%
---------------------------------------------------
-\end{verbatim}
+% Classified + if predicted Pr(D) >= .15
+% True D defined as infct != 0
+% --------------------------------------------------
+% Sensitivity                     Pr( +| D)   99.13%
+% Specificity                     Pr( -|~D)   67.69%
+% Positive predictive value       Pr( D| +)   84.44%
+% Negative predictive value       Pr(~D| -)   97.78%
+% --------------------------------------------------
+% False + rate for true ~D        Pr( +|~D)   32.31%
+% False - rate for true D         Pr( -| D)    0.87%
+% False + rate for classified +   Pr(~D| +)   15.56%
+% False - rate for classified -   Pr( D| -)    2.22%
+% --------------------------------------------------
+% Correctly classified                        87.78%
+% --------------------------------------------------
+% \end{verbatim}
+
+%% FIXME:
+%% Write me!
 
 ROC curve
 \begin{verbatim}
@@ -2447,7 +2447,7 @@ Sensibilité/spécificité
 % 
 %
 %
-\soln{\ref{exo:6.5}}
+\soln{\ref{exo:10.6}}
 Les données ont été sauvegardées dans un format compact (3 colonnes
 indiquant la présence ou non d'un cancer, le niveau de consommation
 d'alcool, et les effectifs associés).
@@ -2613,7 +2613,7 @@ Log likelihood =  -453.2224                       Pseudo R2       =     0.0962
 %---------------------------------------------------------------- Séance 11 --
 \chapter*{Semaine 11\markboth{Corrigés de la semaine 11}{}}
 
-\soln{\ref{exo:7.1}}
+\soln{\ref{exo:11.1}}
 Le format texte du fichier de données \texttt{prostate.dat} est identique à
 celui du fichier \texttt{pbc.txt} de l'exercice précédent, à ceci près que
 les champs sont séparés par un simple espace. On utilisera donc la commande
@@ -2720,7 +2720,7 @@ Total     |         6           6.00
                 Pr>chi2 =     0.0355
 \end{verbatim}
 
-\soln{\ref{exo:7.3}}
+\soln{\ref{exo:11.2}}
 Le fichier de données est un fichier texte avec des tabulations comme
 séparateur de champ. On peut l'importer sous \Stata en utilisant la commande
 \texttt{insheet}. Pour afficher le nom des variables après importation, il
