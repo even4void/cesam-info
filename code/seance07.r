@@ -72,9 +72,9 @@ summary(coxph(Surv(years, status) ~ rx, data=pb))
 
 
 placebo.time <- c(1,1,2,2,3,4,4,5,5,8,8,8,8,11,11,12,12,15,17,22,23)
-placebo.status <- rep(0, length(placebo.time))
+placebo.status <- rep(1, length(placebo.time))
 mp.time <- c(6,6,6,6,7,9,10,10,11,13,16,17,19,20,22,23,25,32,32,34,35)
-mp.status <- c(0,0,0,1,0,1,0,1,1,0,0,1,1,1,0,0,1,1,1,1,1)
+mp.status <- c(1,1,1,0,1,0,1,0,0,1,1,0,0,0,1,1,0,0,0,0,0)
 mp <- data.frame(tx=rep(c("Placebo","6-MP"), c(21,21)),
                  time=c(placebo.time, mp.time), 
                  status=c(placebo.status, mp.status))
@@ -84,7 +84,7 @@ summary(mp)
 with(mp, Surv(time, status))
 
 
-s <- survfit(Surv(time, status) ~ tx, data=mp, subset=tx=="6-MP")
+s <- survfit(Surv(time, status) ~ tx, data=mp)
 summary(s)
 
 

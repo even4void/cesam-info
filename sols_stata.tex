@@ -661,7 +661,7 @@ distinctes prises par cette variable. Par exemple,
 
 Il est possible d'obtenir un résumé numérique de la variable \texttt{poids}
 pour chaque modalité de la variable \texttt{status} nouvellement créée à
-l'aide de la commande \verb|- summarize -|.
+l'aide de la commande \verb|summarize|.
 \begin{verbatim}
 . by status, sort: summarize poids
 
@@ -677,6 +677,12 @@ l'aide de la commande \verb|- summarize -|.
     Variable |       Obs        Mean    Std. Dev.       Min        Max
 -------------+--------------------------------------------------------
        poids |        23    2.307391    .6647229       1.13       3.64
+\end{verbatim}
+Une manière équivalente de procéder, si l'on souhaite uniquement obtenir la
+moyenne et l'écart-type, consiste à utiliser \texttt{tabstat} ou à combiner
+les commandes \texttt{tabulate} et \texttt{summarize}, par exemple :
+\begin{verbatim}
+. tabulate status, summarize(poids)
 \end{verbatim}
 
 Pour réaliser un histogramme de la distribution des poids à la naissance en
@@ -807,6 +813,8 @@ stockera les résultats dans une nouvelle variable comme indiqué ci-après.
         sdif |      1.58  1.229995
 ----------------------------------
 \end{verbatim}
+De manière équivalente, on pourrait utiliser \verb|summarize sdif|.
+
 Enfin, pour afficher la distribution des scores de différences sous forme
 d'un histogramme en imposant des intervalles de classe de 0.5 heure, il
 faudra ajouter les options \texttt{bin(8)} (8 intervalles au total) et
@@ -934,13 +942,25 @@ dans le format attendu.
      +---------------------------+
 \end{verbatim}
 
-Les diagrammes en barres sont prouits avec la commande \verb|- graph bar -|.
+Avec ce type de représentation, la commande \texttt{summarize} présente peu
+d'intérêt, et on préférera généralement utiliser \texttt{tabulate}, par
+exemple 
+\begin{verbatim}
+. tabulate infarctus traitement [fweight=N]
+\end{verbatim}
+Notons l'usage de l'option \verb|[fweight=N]| qui permet de pondérer les
+cellules du tableau de contingence par les effectifs donnés dans la variable
+\texttt{N}. La commande précédente fournit également l'effectif total, que
+l'on peut retrouver à partir d'une commande \texttt{egen} avec la fonction
+\texttt{total}. 
+
+Les diagrammes en barres sont produits avec la commande \verb|graph bar|.
 \begin{verbatim}
 . graph bar (asis) N, over(infarctus) asyvars over(traitement) legend(title("Infarctus"))
 \end{verbatim}
 L'option \texttt{asyvars} insérée entre les deux variables de classification
 est indispensable si l'on souhaite que les barres aient des couleurs
-différentes selon le type de variable considéré.
+différentes selon le type de variable considéré. 
 
 \includegraphics{./figs/stata_infarctus}
 % FIXME:
@@ -957,20 +977,24 @@ représentation graphique des données catégorielles. Son usage est le suivant 
 
 \includegraphics{./figs/stata_infarctus2}
 
+On pourrait également utiliser une option comme \texttt{percent} après
+\texttt{asyvars} avec la commande \texttt{graph bar} (utilisation de
+pourcentages au lieu d'effectifs). 
+
 On verra dans le chapitre consacré aux données épidémiologiques comment
 estimer l'odds-ratio et son intervalle de confiance à partir de la commande
-\texttt{cc}. Dans le cas présent, on se contentera d'utiliser
-\texttt{tabodds} qui fournit une estimation des odds et de
+\texttt{cc} (ou \texttt{cci}). Dans le cas présent, on se contentera
+d'utiliser \texttt{tabodds} qui fournit une estimation des odds et de
 l'odds-ratio. Pour ce dernier, il faut préciser l'option \texttt{or} comme
 indiqué ci-après ainsi que la catégorie de référence (\texttt{base}).
 \begin{verbatim}
 . tabodds infarctus traitement [fweight=N], or base(2)
 
 ---------------------------------------------------------------------------
-   infarctus |  Odds Ratio       chi2       P>chi2     [95% Conf. Interval]
+  traitement |  Odds Ratio       chi2       P>chi2     [95% Conf. Interval]
 -------------+-------------------------------------------------------------
-         Non |           .          .           .              .          .
-         Oui |           .          .           .              .          .
+     Placebo |    1.560298       2.13       0.1446      0.854078   2.850478
+    Aspirine |    1.000000          .           .              .          .
 ---------------------------------------------------------------------------
 Test of homogeneity (equal odds): chi2(1)  =     2.13
                                   Pr>chi2  =   0.1446

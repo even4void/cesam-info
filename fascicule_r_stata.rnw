@@ -208,13 +208,13 @@ set.seed(101)
   logistique & Cours 6 & Corrigés pp.~\pageref{start:sol6}–\pageref{stop:sol6}\\
   Sem. 26/03 & Données de survie & Cours 7 & Corrigés pp.~\pageref{start:sol7}–\pageref{stop:sol7}\\
 \hline
-  \multicolumn{4}{|c|}{Module Stata} \\
-\hline
-  Sem. 02/04 & Élements du langage et statistiques descriptives & &\\
-  Sem. 09/04 & Mesures d'association et comparaison de deux variables & &\\
-  Sem. 16/04 & Régression linéaire et logistique & &\\
-  Sem. 23/04 & Données de survie & &\\
-\hline
+%%   \multicolumn{4}{|c|}{Module Stata} \\
+%% \hline
+%%   Sem. 02/04 & Élements du langage et statistiques descriptives & &\\
+%%   Sem. 09/04 & Mesures d'association et comparaison de deux variables & &\\
+%%   Sem. 16/04 & Régression linéaire et logistique & &\\
+%%   Sem. 23/04 & Données de survie & &\\
+%% \hline
 \end{tabular}
 \end{center}
 
@@ -331,22 +331,22 @@ données de survie sous forme numérique, à leur résumé numérique (médiane 
 survie) et graphique (courbe de Kaplan-Meier) et à la mise en \oe uvre des
 tests courants. 
 
-Les \textbf{séances 8 à 11} reprennent essentiellement les mêmes idées, en
-utilisant \Stata au lieu de \R : importation et recodage de données,
-description numérique et graphique des variables quantitatives et
-qualitatives, mesures d'association entre une variable quantitative ou
-qualitative et une variable qualitative, analyse de la variance, association
-entre deux variables quantitatives (corrélation linéaire et de rangs) et
-régression linéaire, régression logistique et analyse de données de survie
-par le modèle de Cox et le test du log-rank. L'illustration des commandes
-\Stata permettant de répondre à ces questions est basée sur une partie des
-exercices des 7 premières séances sert de base, ce qui permet d'éviter
-d'avoir à se familiariser avec de nouveaux exemples ou cas d'utilisation.
+%% Les \textbf{séances 8 à 11} reprennent essentiellement les mêmes idées, en
+%% utilisant \Stata au lieu de \R : importation et recodage de données,
+%% description numérique et graphique des variables quantitatives et
+%% qualitatives, mesures d'association entre une variable quantitative ou
+%% qualitative et une variable qualitative, analyse de la variance, association
+%% entre deux variables quantitatives (corrélation linéaire et de rangs) et
+%% régression linéaire, régression logistique et analyse de données de survie
+%% par le modèle de Cox et le test du log-rank. L'illustration des commandes
+%% \Stata permettant de répondre à ces questions est basée sur une partie des
+%% exercices des 7 premières séances sert de base, ce qui permet d'éviter
+%% d'avoir à se familiariser avec de nouveaux exemples ou cas d'utilisation.
 
-Après chaque séance (à l'exception de la première), il est proposé un devoir
-composé d'une quinzaine de questions et permettant à l'étudiant de
-s'auto-évaluer. Les questions se limitent strictement aux éléments vus en
-cours et durant les exercices dirigés.
+Après chaque séance (à l'exception de la première), il est proposé un
+\textbf{devoir} composé d'une quinzaine de questions et permettant à
+l'étudiant de s'auto-évaluer. Les questions se limitent strictement aux
+éléments vus en cours et durant les exercices dirigés.
 
 \part*{Module R}
 
@@ -1365,10 +1365,10 @@ permettant de répondre aux questions suivantes :
 \item[\bf 1.1]  Quel est le poids moyen des bébés dont la mère est âgée de 20 ans ou
   moins ?   \marginpar{1.1 $\square$}
   \begin{description}
-  \item[A.] \verb|birthwt$lwt & birthwt$age < 20|
-  \item[B.] \verb|birthwt$lwt[birthwt$age <= 20]|
-  \item[C.] \verb|birthwt$lwt[age <= 20]|
-  \item[D.] \verb|birthwt$lwt[birthwt$age < 20]|
+  \item[A.] \verb|mean(birthwt$lwt & birthwt$age < 20)|
+  \item[B.] \verb|mean(birthwt$lwt[birthwt$age <= 20])|
+  \item[C.] \verb|mean(birthwt$lwt[age <= 20])|
+  \item[D.] \verb|mean(birthwt$lwt[birthwt$age < 20])|
   \item[E.] Je ne sais pas.
   \end{description}
 \item[\bf 1.2] Combien de bébés ont une mère ayant eu des antécédents
@@ -1490,43 +1490,32 @@ supposera indépendantes :
   différence $X_1-X_2$ (en utilisant une loi de Student). \marginpar{2.3
     $\square$} 
   \begin{description}
-  \item[A.] \verb|t.test(x1-x2)|
+  \item[A.] \verb|t.test(x1,x2)|
   \item[B.] \verb|(x1-x2) + c(-1,1) * qt(0.975, 28)*sd(x1-x2)/sqrt(length(c(x1,x2)))|
   \item[C.] \verb|(x1-x2) + c(-1,1) * qt(0.975, 28)*sd(x1-x2)/sqrt(length(c(x1,x2)))/2-2|
   \item[D.] Je ne sais pas.
   \end{description}
-\item[\bf 2.4] Convertir ces deux variables numériques en variables
-  qualitatives à 4 classes équilibrées et indiquer la ou les classes modales
-  dans chacun des deux cas. \marginpar{2.4 $\square$}
+\item[\bf 2.4] On suppose que ces deux variables numériques ont été
+  converties en variables qualitatives à 4 classes équilibrées de la manière
+  suivante :
+\begin{verbatim}
+> x1b <- cut(x1, breaks=quantile(x1), include.lowest=TRUE)
+> x2b <- cut(x2, breaks=quantile(x2), include.lowest=TRUE) 
+\end{verbatim}  
+  Indiquer la ou les classes modales dans chacun des deux cas. \marginpar{2.4 $\square$}
   \begin{description}
-  \item[A.] 
-\begin{verbatim}
-> x1b <- cut(x1, breaks=quantile(x1))
-> x2b <- cut(x2, breaks=quantile(x2))
-> which.max(table(x1b))
-> which.max(table(x2b))
-\end{verbatim}
-  \item[B.] 
-\begin{verbatim}
-> x1b <- cut(x1, breaks=quantile(x1), include.lowest=TRUE)
-> x2b <- cut(x2, breaks=quantile(x2), include.lowest=TRUE)
-> which.max(table(x1b))
-> which.max(table(x2b))
-\end{verbatim}
-  \item[C.]
-\begin{verbatim}
-> x1b <- cut(x1, breaks=quantile(x1), include.lowest=TRUE)
-> x2b <- cut(x2, breaks=quantile(x2), include.lowest=TRUE)
-> max(table(x1b, x2b))
-\end{verbatim}
+  \item[A.] \verb|which.max(table(x1b)); which.max(table(x2b))|
+  \item[B.] \verb|max(table(x1b, x2b))|
+  \item[C.] \verb|which.max(table(x1b, x2b))|
   \item[D.] Je ne sais pas.
   \end{description}
-\item[\bf 2.5] Que permettent de produire les commandes suivantes ?
+\item[\bf 2.5] Soit la série de commandes suivantes :
   \marginpar{2.5 $\square$}
 \begin{verbatim}
 > x3 <- factor((x1-x2)>0, labels=c("+","-"))
 > table(x3)["+"]
 \end{verbatim}
+  Quel est le résultat renvoyé ?
 \begin{description}
 \item[A.] La somme des différences $X_1-X_2$ positives.
 \item[B.] Le nombre de différences $X_1-X_2$ positives.
@@ -1945,7 +1934,10 @@ Aspirine & 18 & 658 & 676 \\
   groupes de patients.
 \item[(b)] Représenter graphiquement le tableau précédent sous forme d'un
   diagramme en barres ou d'un diagramme en points ("dotplot" de Cleveland).
-\item[(c)] Indiquer la valeur de l'odds-ratio ainsi que du risque relatif.
+\item[(c)] Indiquer la valeur de l'odds-ratio ainsi que du risque
+  relatif. Pour l'odds-ratio, on considérera comme catégories de référence
+  les modalités représentées par la première ligne et la première colonne
+  du tableau. 
 \item[(d)] À partir de l'intervalle de confiance à 95~\% pour l'odds, quelle
   conclusion peut-on tirer sur l'effet de l'aspirine dans la prévention d'un
   infarctus du myocarde ?
@@ -2012,7 +2004,7 @@ On peut calculer l'odds-ratio et le risque relatif comme on l'a fait plus
 haut, c'est-à-dire en travaillant directement avec les valeurs des cellules
 extraites du tableau \texttt{aspirine}. Par exemple, pour le risque relatif
 <<ex3-5h>>=
-(aspirine["Aspirine","Oui"]/sum(aspirine["Aspirine",])) / (aspirine["Placebo","Oui"]/sum(aspirine["Placebo",]))
+(aspirine["Placebo","Oui"]/sum(aspirine["Placebo",])) / (aspirine["Aspirine","Oui"]/sum(aspirine["Aspirine",]))
 @ 
 Toutefois, il existe des librairies spécialisées pour effectuer ce genre de
 calcul, et fournir une estimation de la précision de ces estimateurs sous
@@ -2226,7 +2218,7 @@ Veuillez indiquer les commandes permettant de répondre aux questions suivantes 
   \item[A.] \verb|tapply(BWEIGHT ~ GENDER, data=babies, FUN=mean)|
   \item[B.] \verb|with(babies, tapply(BWEIGHT, GENDER, mean))|
   \item[C.] \verb|with(babies, tapply(GENDER, BWEIGHT, mean))|
-  \item[D.] \verb|by(babies$GENDER, mean(babies$BWEIGHT)|
+  \item[D.] \verb|by(babies$GENDER, babies$BWEIGHT, mean)|
   \item[E.] Je ne sais pas.
   \end{description}  
 \end{description}
@@ -5558,6 +5550,12 @@ précédent :
 s
 @
 
+On utilisera la commande \texttt{plot} pour obtenir les courbes de survie
+correspondantes. 
+<<ex7-1oo, fig=TRUE>>=
+plot(s)
+@ 
+
 Le test du log-rank se réalise à partir de la commande \texttt{survdiff},
 avec les mêmes notations que dans le cas du calcul de la médiane de survie.
 <<ex7-1p>>=
@@ -5585,7 +5583,7 @@ survdiff(Surv(years, status) ~ rx + strata(agec), data=pb)
 Enfin, concernant le modèle de Cox, c'est la commande \texttt{coxph} qu'il
 faut utiliser.
 <<ex7-1t>>=
-summary(coxph(Surv(years, status) ~ rx, data=pb))
+summary(coxph(Surv(years, status) ~ rx + strata(agec), data=pb))
 @ 
 \end{sol}
 %
@@ -5595,7 +5593,7 @@ summary(coxph(Surv(years, status) ~ rx, data=pb))
 \begin{exo}\label{exo:7.2}
 Ci-dessous figurent les durées de rémission en semaines dans un essai
 comparant 6-MP à un placebo.\autocite{freireich63} Les observations
-censurées (sujet dans rechute aux dernières nouvelles) sont signalées par
+censurées (sujet sans rechute aux dernières nouvelles) sont signalées par
 une astérisque.
 \vskip1em
 
@@ -5626,9 +5624,9 @@ données brutes, dans lequel on reportera le traitement, la durée de survie
 et la censure (0=vivant/1=décédé).
 <<ex7-2a>>=
 placebo.time <- c(1,1,2,2,3,4,4,5,5,8,8,8,8,11,11,12,12,15,17,22,23)
-placebo.status <- rep(0, length(placebo.time))
+placebo.status <- rep(1, length(placebo.time))
 mp.time <- c(6,6,6,6,7,9,10,10,11,13,16,17,19,20,22,23,25,32,32,34,35)
-mp.status <- c(0,0,0,1,0,1,0,1,1,0,0,1,1,1,0,0,1,1,1,1,1)
+mp.status <- c(1,1,1,0,1,0,1,0,0,1,1,0,0,0,1,1,0,0,0,0,0)
 mp <- data.frame(tx=rep(c("Placebo","6-MP"), c(21,21)),
                  time=c(placebo.time, mp.time), 
                  status=c(placebo.status, mp.status))
@@ -5642,21 +5640,22 @@ with(mp, Surv(time, status))
 @ 
 
 Le tableau des événements dans le groupe 6-MP peut être construit à l'aide
-de la commande \texttt{survfit}, en limitant les observations aux seuls
-membres du groupe 6-MP à l'aide de l'option \texttt{subset}.
+de la commande \texttt{survfit}. On pourrait également limiter les calculs
+aux seules observations du groupe 6-MP à l'aide de l'option \texttt{subset}.
 <<ex7-2c>>=
-s <- survfit(Surv(time, status) ~ tx, data=mp, subset=tx=="6-MP")
+s <- survfit(Surv(time, status) ~ tx, data=mp)
 summary(s)
 @ 
 On utilisera le même résultat, contenu dans la variable \texttt{s} pour
 afficher la courbe de survie correspondante. Par défaut, lorsqu'il n'y a
 qu'un groupe \R affiche automatiquement l'intervalle de confiance à 95~\%.
 <<ex7-2d, fig=TRUE>>=
-plot(s)
+plot(survfit(Surv(time, status) ~ tx, data=mp, subset=tx=="6-MP"))
 @ 
 
 Pour afficher la fonction de risque cumulée, on ajoutera l'option
-\verb|fun="cumhaz"| à la commande graphique précédente, soit :
+\verb|fun="cumhaz"| à la commande graphique précédente, soit en considérant
+les deux groupes :
 <<ex7-2e, fig=TRUE>>=
 plot(s, fun="cumhaz")
 @ 
@@ -5666,8 +5665,6 @@ La médiane de survie est simplement obtenue en affichant la variable
 <<ex7-2f>>=
 s
 @
-
-
 \end{sol}
 \end{exo}
 % 
@@ -5720,7 +5717,9 @@ l'utilisera ainsi :
 <<ex7-3c>>=
 survfit(Surv(Time, Status) ~ 1, data=prostate)
 @
-Pour stratifier l'analyse selon le traitement, on utilisera en revanche :
+
+Pour prendre en compte le facteur traitement dans l'analyse, on utilisera en
+revanche : 
 <<ex7-3d>>=
 survfit(Surv(Time, Status) ~ Treatment, data=prostate)
 @ 
@@ -5737,6 +5736,7 @@ courbes de survie à partir de l'estimateur de Kaplan-Meier.
 <<ex7-3f>>=
 survdiff(Surv(time=Time, event=Status) ~ Treatment, data=prostate)
 @ 
+
 L'autre solution consiste à utiliser une régression de Cox
 <<ex7-3f>>=
 summary(coxph(Surv(time=Time, event=Status) ~ Treatment, data=prostate))
@@ -5772,24 +5772,207 @@ Fumeurs    & 21* 4 25 8 23 18 \\
 
 Les données ont été enregistrées sous \R de la même manière qu'à
 l'exercice~7.2, c'est-à-dire sous la forme d'un tableau à 3 colonnes :
-fumeur (oui/non), temps et statut (0=vivant, 1=censure). Voici un aperçu de
+fumeur (oui/non), temps et statut (en 0/1). Voici un aperçu de
 ces données sous \R :
 \begin{verbatim}
 > head(sfmhs)
-  fumeur temps statut
-1    non     2      1
-2    non    42      1
-3    non    27      1
-4    non    22      0
-5    non    26      1
-6    non    16      0
+  fumeur temps status
+1    non     2      0
+2    non    42      0
+3    non    27      0
+4    non    22      1
+5    non    26      0
+6    non    16      1
 \end{verbatim}
 \begin{description}
-\item[\bf 1.1] Construire le tableau des événements pour le groupe des non-fumeurs.
-\item[\bf 1.2] Afficher la courbe de survie.
+\item[\bf 1.1] La commande suivante permet-elle d'indiquer la proportion de
+  sujets fumeurs encore en vie à la fin de l'étude ? \marginpar{1.1 $\square$}
+\begin{verbatim}
+> with(sfmhs, sum(status[fumeur=="oui"])) 
+\end{verbatim}
+  \begin{description}
+  \item[A.] Oui.
+  \item[B.] Non.
+  \item[C.] Je ne sais pas.
+  \end{description}
+\item[\bf 1.2] On souhaite afficher la table de mortalité des
+  non-fumeurs. Quelle commande doit-on utiliser ? \marginpar{1.2 $\square$} 
+  \begin{description}
+  \item[A.] \verb|summary(Surv(temps, status) ~ fumeur, data=sfmhs)|
+  \item[B.] \verb|summary(Surv(status, temps) ~ fumeur, data=sfmhs)|
+  \item[C.] \verb|summary(survfit(Surv(temps, status) ~ fumeur, data=sfmhs))|
+  \item[D.] \verb|summary(survfit(Surv(status, temps) ~ fumeur, data=sfmhs))|
+  \item[E.] Je ne sais pas.
+  \end{description}
+\item[\bf 1.3] En notant \texttt{st} la variable dans laquelle on a stocké
+  les données de survie enregistrées au format \R via la commande
+  \texttt{Surv}, la commande suivante permet de fournir le même résultat que
+  la commande de l'exercice~1.2 ?  \marginpar{1.3 $\square$}
+\begin{verbatim}
+> summary(survfit(st ~ 1, data=sfmhs, subset=fumeur=="non"))
+\end{verbatim}  
+  \begin{description}
+  \item[A.] Vrai.
+  \item[B.] Faux.
+  \item[C.] Je ne sais pas.
+  \end{description}
+\item[\bf 1.4] Pour afficher la courbe de survie du groupe des patients
+  non-fumeurs, sans intervalles de confiance, quelle commande peut-on
+  utiliser ? On supposera que la table de mortalité a été stockée dans une
+  variable appelée \texttt{stab}. \marginpar{1.4 $\square$}
+  \begin{description}
+  \item[A.] \verb|plot(stab)|
+  \item[B.] \verb|plot(stab, confint=0)|
+  \item[C.] \verb|plot(stab, conf.int=FALSE)|    
+  \item[D.] Je ne sais pas.
+  \end{description}
+\item[\bf 1.5] À quelle procédure de test correspond la commande suivante ?
+  \marginpar{1.5 $\square$}
+\begin{verbatim}
+> survdiff(st ~ fumeur, data=sfmhs, rho=1)
+\end{verbatim}
+  \begin{description}
+  \item[A.] Un test du log-rank.
+  \item[B.] Un test de Wilcoxon.
+  \item[C.] Un test du coefficient de régression d'un modèle de Cox.
+  \item[D.] Je ne sais pas.
+  \end{description}  
 \end{description}
-\section*{Exercice 2}
 
+\section*{Exercice 2}
+Dans une étude clinique réalisée chez des patients AML, on s'intéresse à
+deux facteurs pronostic, l'âge ($< 50$ et $\ge 50$ ans) et le type de
+cellularité de la moelle (100~\% ou moins), sur la survie des patients
+\citep[p.~275]{lee03}. Les données des 30 patients sont présentées dans le
+tableau suivant. Les variables $x_1$ et $x_2$ correspondent à l'âge et la
+cellularité, avec $x_1=0$ si le patient a moins de 50 ans et $x_2=0$ lorsque
+la cellularité est inférieure à 100~\%. Les censures (patients décédés à la
+fin de la période de suivie) sont indiquées par le symbole \texttt{+}, et
+les durées sont reportées en mois.
+\vskip1em
+
+\begin{tabular}{lcc|lcc}
+  \toprule
+  Survie & $x_1$ & $x_2$ & Survie & $x_1$ & $x_2$ \\
+  \midrule
+  18 & 0 & 0 & 8 & 1 & 0 \\
+  9 & 0 & 1 & 2 & 1 & 1 \\
+  28+ & 0 & 0 & 26+ & 1 & 0 \\
+  31 & 0 & 1 & 10 & 1 & 1 \\
+  39+ & 0 & 1 & 4 & 1 & 0 \\
+  19+ & 0 & 1 & 3 & 1 & 0 \\
+  45+ & 0 & 1 & 4 & 1 & 0 \\
+  6 & 0 & 1 & 18 & 1 & 1 \\
+  8 & 0 & 1 & 8 & 1 & 1 \\
+  15 & 0 & 1 & 3 & 1 & 1 \\
+  23 & 0 & 0 & 14 & 1 & 1 \\
+  28+ & 0 & 0 & 3 & 1 & 0 \\
+  7 & 0 & 1 & 13 & 1 & 1 \\
+  12 & 1 & 0 & 13 & 1 & 1 \\
+  9 & 1 & 0 & 35+ & 1 & 0 \\
+  \bottomrule
+\end{tabular}
+\vskip1em
+
+Voici un aperçu du fichier de données, \texttt{aml.dat}, dans lequel les
+données ont été stockées :
+\begin{verbatim}
+18 0 0 0
+8 0 1 0
+9 0 0 1
+2 0 1 1
+28 1 0 0
+18 0 0 0
+8 0 1 0
+9 0 0 1
+28 1 0 0
+26 1 1 0
+\end{verbatim}
+Chaque ligne correspond à un individu. La première colonne correspond au
+nombre de mois indiqué dans le tableau précédent, la deuxième colonne
+correspond à la présence d'une censure (censure = 1), la troisième colonne à
+la variable indicatrice codant pour l'âge ($\ge 50$ = 0) et la quatrième et
+dernière colonne correspond à la variable indicatrice codant pour la
+cellularité (100~\% = 1). Une valeur de 1 pour $x_1$ ou $x_2$ est considérée
+comme un indicateur de risque.
+\begin{description}
+\item[\bf 2.1] Quelle solution peut-on proposer pour importer ces données
+  sous \R ? \marginpar{2.1 $\square$}
+  \begin{description}
+  \item[A.] \verb|read.csv("aml.dat", header=TRUE, colnames=c("temps","status","age","cell"))|
+  \item[B.] \verb|read.csv("aml.dat", colnames=c("temps","status","age","cell"), sep=" ")|
+  \item[C.] \verb|read.table("aml.dat", col.names=c("temps","status","age","cell"))|
+  \item[D.] Je ne sais pas.
+  \end{description}
+\item[\bf 2.2] On supposera par la suite que les données ont été importées
+  et stockées dans une variable appelée \texttt{aml}. Pour travailler avec
+  ces données sous \R, il est nécessaire de recoder la variable
+  \texttt{status} de façon à ce que les valeurs 0 soient transformées en 1
+  et, réciproquement, les valeurs 1 en 0. Quelle commande ou combinaison de
+  commandes permet de réaliser cette opération ? \marginpar{2.2 $\square$}
+  \begin{description}
+  \item[A.] \verb|aml$status[aml$status==0] <- 1; aml$status[aml$status==1] <- 0|
+  \item[B.] \verb|aml$status <- abs(aml$status-1)|
+  \item[C.] \verb|aml$status <- aml$status-1|
+  \item[D.] Je ne sais pas.
+  \end{description}
+\item[\bf 2.3]  Que produit la commande suivante ? \marginpar{2.3 $\square$}
+\begin{verbatim}
+> with(aml, table(age, cell))[2,2]
+\end{verbatim}
+  \begin{description}
+  \item[A.] Le nombre d'individus à risque pour $x_1$ (\texttt{age}).
+  \item[B.] Le nombre d'individus à risque pour $x_2$ (\texttt{cell}).
+  \item[C.] Le nombre d'individus à risque pour $x_1$ et $x_2$.
+  \item[D.] Je ne sais pas.
+  \end{description}
+\item[\bf 2.4] Le nombre de données censurées par groupe d'âge peut être
+  représenté graphiquement sous forme d'un diagramme en points à l'aide de
+  la commande : \marginpar{2.4 $\square$} 
+  \begin{description}
+  \item[A.] \verb|dotplot(status ~ age, data=aml)|
+  \item[B.] \verb|dotchart(status ~ age, data=aml)|
+  \item[C.] \verb|dotplot(xtabs(status ~ age, data=aml))|
+  \item[D.] \verb|dotplot(xtabs(~ status + age, data=aml))|
+  \item[E.] Je ne sais pas.
+  \end{description}  
+\item[\bf 2.5] On souhaite effectuer une régression de Cox pour étudier
+  l'effet du facteur âge. Quelle commande est la plus appropriée ?
+  \marginpar{2.5 $\square$}
+  \begin{description}
+  \item[A.] \verb|coxph(status ~ age, data=aml)|
+  \item[B.] \verb|coxph(Surv(status, temps) ~ age, data=aml)|
+  \item[C.] \verb|coxph(Surv(event=status, time=temps) ~ age, data=aml)|
+  \item[D.] Je ne sais pas.
+  \end{description}
+\item[\bf 2.6] Voici les résultats retournés par \R pour un modèle de Cox
+  incluant les deux prédicteurs :  \marginpar{2.6 $\square$}
+\begin{verbatim}
+      coef exp(coef) se(coef)     z     p
+age  1.046      2.85    0.458 2.284 0.022
+cell 0.359      1.43    0.440 0.815 0.420
+\end{verbatim}
+  Lorsque l'on considère simultanément les deux cofacteurs, le risque
+  relatif pour un individu âgé de 50 ans ou plus et ayant une cellularité de
+  100~\% est de :
+  \begin{description}
+  \item[A.] $1.05 + 0.36$
+  \item[B.] $2.85 + 1.43$
+  \item[C.] $\exp(1.05 + 0.36)$
+  \item[D.] $\exp(2.85 + 1.43)$    
+  \item[E.] Je ne sais pas.
+  \end{description}
+\item[\bf 2.7] La commande \texttt{confint}, appliquée directement sur le
+  modèle \texttt{coxph(...)} renverra : \marginpar{2.7 $\square$}
+  \begin{description}
+  \item[A.] Les intervalles de confiance associés aux coefficients de
+    régression. 
+  \item[B.] Les intervalles de confiance associés aux risques relatifs.
+  \item[C.] Je ne sais pas.
+  \end{description}  
+\end{description}
+
+%-------------------------------------- Stata only ---------------------------
 \part*{Module Stata}
 \include{exos_stata}
 
@@ -5800,7 +5983,8 @@ ces données sous \R :
 
 \thispagestyle{empty}
 
-\centerline{\small Centre d'Enseignement de la Statistique Appliquée, à la Médecine et à la Biologie Médicale}
+\centerline{\small Centre d'Enseignement de la Statistique Appliquée, à la
+  Médecine et à la Biologie Médicale} 
 \vspace*{5cm}
 \begin{center}
 \begin{minipage}{.75\textwidth}
@@ -5890,7 +6074,7 @@ ou par Courriel à : \url{cesam@upmc.fr}
 \include{sols_stata}
 
 \blankpage
-\part*{Module Stata}
+\part*{Module SAS}
 \blankpage
 \include{sols_sas}
 
