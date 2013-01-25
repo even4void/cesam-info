@@ -5973,7 +5973,81 @@ cell 0.359      1.43    0.440 0.815 0.420
 \end{description}
 
 %-------------------------------------- Stata only ---------------------------
+\blankpage
+\blankpage
+
+\thispagestyle{empty}
+\centerline{\small Centre d'Enseignement de la Statistique Appliquée, à la Médecine et à la Biologie Médicale}
+\vspace*{5cm}
+\begin{center}
+\begin{minipage}{.75\textwidth}
+\begin{mdframed}[style=titlep]
+\centerline{\Huge Initiation aux logiciels R et Stata}
+\vskip1em
+\centerline{\LARGE Programme de travail}
+\vskip2em
+\centerline{\includegraphics[scale=.35]{cesam}}
+\end{mdframed}
+\end{minipage}
+\end{center}
+\vskip5em
+\begin{center}
+  \begin{tabular}{ll}
+    \textbf{Responsables :} & \\
+    Christophe LALANNE & \url{ch.lalanne@gmail.com} \\
+    Pr Mounir MESBAH   & \url{mounir.mesbah@upmc.fr}
+  \end{tabular}
+\end{center}
+\vskip3em
+\centerline{\Large \url{http://www.cesam.upmc.fr}}
+\vskip3em
+\centerline{\LARGE Année Universitaire 2012–2013}
+\vfill
+\begin{center}
+\begin{minipage}{.6\textwidth}
+\centering
+Adresser toute correspondance à :\\
+Université Pierre et Marie Curie – Paris 6
+Secrétariat du CESAM – Les Cordeliers
+Service Formation Continue, esc. B, 4ème étage,
+15 rue de l’école de médecine,
+75006 PARIS\\
+ou par Courriel à : \url{cesam@upmc.fr}
+\end{minipage}
+\end{center}  
+
+\blankpage
+
+\chapter*{Calendrier}
+\thispagestyle{empty}
+\vskip3em
+
+\begin{center}
+\begin{tabular}{|l|p{10cm}|l|l|}
+\hline
+%%   \multicolumn{4}{|c|}{Module R} \\
+%% \hline
+%%   Sem. 05/02 & Éléments du langage, gestion de données & Cours 1 & Corrigés pp.~\pageref{start:sol1}–\pageref{stop:sol1} \\
+%%   Sem. 12/02 & Statistiques descriptives et estimation & Cours 2 & Corrigés pp.~\pageref{start:sol2}–\pageref{stop:sol2}\\
+%%   Sem. 19/02 & Comparaisons de deux variables & Cours 3 & Corrigés pp.~\pageref{start:sol3}–\pageref{stop:sol3}\\
+%%   Sem. 26/02 & Analyse de variance et plans d'expérience & Cours 4 & Corrigés pp.~\pageref{start:sol4}–\pageref{stop:sol4}\\
+%%   Sem. 12/03 & Corrélation et régression linéaire & Cours 5 & Corrigés pp.~\pageref{start:sol5}–\pageref{stop:sol5}\\
+%%   Sem. 19/03 & Mesures d'association en épidémiologie et régression
+%%   logistique & Cours 6 & Corrigés pp.~\pageref{start:sol6}–\pageref{stop:sol6}\\
+%%   Sem. 26/03 & Données de survie & Cours 7 & Corrigés pp.~\pageref{start:sol7}–\pageref{stop:sol7}\\
+%% \hline
+  \multicolumn{4}{|c|}{Module Stata} \\
+\hline
+  Sem. 02/04 & Élements du langage et statistiques descriptives & &\\
+  Sem. 09/04 & Mesures d'association et comparaison de deux variables & &\\
+  Sem. 16/04 & Régression linéaire et logistique & &\\
+  Sem. 23/04 & Données de survie & &\\
+\hline
+\end{tabular}
+\end{center}
+
 \part*{Module Stata}
+\setcounter{page}{1}
 \include{exos_stata}
 
 \cleardoublepage
@@ -6068,14 +6142,67 @@ ou par Courriel à : \url{cesam@upmc.fr}
 \input{solutions7} 
 \label{stop:sol7}
 
-\blankpage
-\part*{Module Stata}
-\blankpage
-\include{sols_stata}
+\cleardoublepage
 
 \blankpage
-\part*{Module SAS}
 \blankpage
-\include{sols_sas}
+
+\thispagestyle{empty}
+
+\centerline{\small Centre d'Enseignement de la Statistique Appliquée, à la
+  Médecine et à la Biologie Médicale} 
+\vspace*{5cm}
+\begin{center}
+\begin{minipage}{.75\textwidth}
+\begin{mdframed}[style=titlep]
+\centerline{\Huge Initiation aux logiciels R et Stata}
+\vskip1em
+\centerline{\LARGE Corrigés des exercices}
+\vskip2em
+\centerline{\includegraphics[scale=.35]{cesam}}
+\end{mdframed}
+\end{minipage}
+\end{center}
+\vskip5em
+\begin{center}
+  \begin{tabular}{ll}
+    \textbf{Responsables :} & \\
+    Christophe LALANNE & \url{ch.lalanne@gmail.com} \\
+    Pr Mounir MESBAH   & \url{mounir.mesbah@upmc.fr}
+  \end{tabular}
+\end{center}
+\vskip3em
+\centerline{\Large \url{http://www.cesam.upmc.fr}}
+\vskip3em
+\centerline{\LARGE Année Universitaire 2012–2013}
+\vfill
+\begin{center}
+\begin{minipage}{.6\textwidth}
+\centering
+Adresser toute correspondance à :\\
+Université Pierre et Marie Curie – Paris 6
+Secrétariat du CESAM – Les Cordeliers
+Service Formation Continue, esc. B, 4ème étage,
+15 rue de l’école de médecine,
+75006 PARIS\\
+ou par Courriel à : \url{cesam@upmc.fr}
+\end{minipage}
+\end{center}  
+
+\blankpage
+
+% remove chapter prefix because we no longer want chapter name.
+\titleformat{\chapter}
+  {\normalfont\huge\bfseries}{}{20pt}{\huge}
+  
+\part*{Module Stata}
+\blankpage
+\setcounter{page}{1}
+\include{sols_stata}
+
+%% \blankpage
+%% \part*{Module SAS}
+%% \blankpage
+%% \include{sols_sas}
 
 \end{document}

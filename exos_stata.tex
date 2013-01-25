@@ -1535,46 +1535,79 @@ ci-dessus :
 
 \begin{description}
 \item[\bf 3.1] De quelle manière est-il le plus naturel et le plus simple de
-  saisir ces données sours \Stata ? \marginpar{3.1 $\square$}
+  saisir ces données sous \Stata afin de réaliser une régression logistique
+  en considérant comme variable réponse la réponse au traitement et comme
+  variable explicative n'importe lequel des autres facteurs d'étude) ?
+  \marginpar{3.1 $\square$} 
 \begin{description}
-\item[A.] Une liste de deux variables représentant le croisement des
-  variables \texttt{phase} et \texttt{duree} et les effectifs associés pour
-  chaque cellule du tableua de contingence.
-\item[B.] Une liste de quatre variables représentant chaque combinaison
-  \texttt{phase} $\times$ \texttt{duree} (1/0–90, 1/91–180, etc.), avec les
-  proportions de répondeurs dans chacun des traitements.
-\item[C.] 
+\item[A.] Une liste de 4 variables, \texttt{phase}, \texttt{duree},
+  \texttt{rt-PA} et \texttt{Placebo} contenant les effectifs (nombre de
+  répondeurs) tels que présentés dans le tableau précédent.
+\item[B.] Une liste de 4 variables, \texttt{phase}, \texttt{duree},
+  \texttt{rt-PA} et \texttt{Placebo} contenant les fréquences (nombre de
+  répondeurs rapporté au total par strate) tels que présentés dans le
+  tableau précédent. 
+\item[C.] Une liste de 4 variables, \texttt{phase}, \texttt{duree}, type
+  de traitement, et les effectifs (nombre de répondeurs) tels que
+  présentés dans le tableau précédent.
+\item[D.] Une liste de 5 variables, \texttt{phase}, \texttt{duree}, type
+  de traitement, et les effectifs (nombre de répondeurs) ainsi que les
+  effectifs totaux par strates tels que présentés dans le tableau précédent.
 \item[D.] Je ne sais pas.
 \end{description}
-\item[\bf 3.2] Considérons les patients traité par rt-PA présentant un signe
-  d'amélioration. Quelle commande permet de retrouver le nombre total de ces
-  patients ? \marginpar{3.2 $\square$}
+\item[\bf 3.2] Supposons que l'on ait choisi la représentation suivante :
+\begin{verbatim}
+. list
+
+     +---------------------------------------+
+     | phase    duree        tx    N   Total |
+     |---------------------------------------|
+  1. |     1     0-90   Placebo   31      68 |
+  2. |     1     0-90     rt-PA   36      71 |
+  3. |     1   91-180   Placebo   26      79 |
+  4. |     1   91-180     rt-PA   31      73 |
+  5. |     2     0-90   Placebo   30      77 |
+     |---------------------------------------|
+  6. |     2     0-90     rt-PA   51      86 |
+  7. |     2   91-180   Placebo   35      88 |
+  8. |     2   91-180     rt-PA   29      82 |
+     +---------------------------------------+
+\end{verbatim}
+  où \texttt{N} représentent le nombre de répondeurs pour chacune des
+  strates considérées dans l'énoncé, et considérons les patients traité par
+  rt-PA présentant un signe d'amélioration. Quelle commande permet de
+  retrouver le nombre total de ces patients ? \marginpar{3.2 $\square$}
 \begin{description}
-\item[A.] \verb||
-\item[B.] \verb||
-\item[C.] \verb||
+\item[A.] \verb|tabulate N tx|
+\item[B.] \verb|tabulate N if tx=="rt-PA"|
+\item[C.] \verb|tabulate tx [fw=N]|
 \item[D.] Je ne sais pas.
 \end{description}
 \item[\bf 3.3] Avec le même échantillon qu'à l'exercice précédent, on
   souhaite combiner les effets du traitement entre les différentes strates
   définie par la phase et la durée. Pour cela, on propose de vérifier
-  l'homogénéité des odds-ratio entre les strates. Quelle commande permet de
-  répondre à cette question ?  \marginpar{3.3 $\square$}
-\item[\bf 3.4] Quelle est la valeur de l'odds-ratio commun ? 
-  \marginpar{3.4 $\square$} 
-\item[\bf 3.5] À présent, on souhaite modéliser la relation entre la réponse
+  l'homogénéité des odds-ratio entre les strates. Quelle commande permettrait de
+  répondre à cette question (en supposant que la structure de données le
+  permet) ?  \marginpar{3.3 $\square$}
+\begin{description}
+\item[A.] \verb|tabulate|
+\item[B.] \verb|tab2|
+\item[C.] \verb|cc|
+\item[D.] Je ne sais pas.
+\end{description}
+\item[\bf 3.4] À présent, on souhaite modéliser la relation entre la réponse
   au traitement (en 0/1, telle que définie dans l'énoncé) et le traitement
   (rt-PA ou placebo). Quelle commande peut-on utiliser pour effectuer la
-  régression logistique ? \marginpar{3.5 $\square$}
+  régression logistique ? \marginpar{3.4 $\square$}
 \begin{description}
 \item[A.] \verb|logistic|
 \item[B.] \verb|logistic| avec l'option \texttt{or}
 \item[C.] \verb|blogit|
 \item[D.] Je ne sais pas.
 \end{description}
-\item[\bf 3.6] Voici les résultats d'une régression logistique dans laquelle
+\item[\bf 3.5] Voici les résultats d'une régression logistique dans laquelle
   en plus de l'effet traitement on prend en considération la phase (0–90=1,
-  91–180=2). \marginpar{3.6 $\square$}
+  91–180=2). \marginpar{3.5 $\square$}
 \begin{verbatim}
 Logistic regression for grouped data              Number of obs   =        624
                                                   LR chi2(2)      =       4.14
@@ -1589,7 +1622,13 @@ Log likelihood = -424.51098                       Pseudo R2       =     0.0048
        _cons |  -.8238462   .3577782    -2.30   0.021    -1.525079   -.1226138
 ------------------------------------------------------------------------------
 \end{verbatim}
-Quelle commande 
+Les valeurs reportées sous la colonne intitulée \texttt{Coef.} représentent
+les odds-ratio ajustés associés aux deux facteurs \texttt{tx} et \texttt{phase}.
+\begin{description}
+\item[A.] Vrai.
+\item[B.] Faux.
+\item[C.] Je ne sais pas.
+\end{description}
 \end{description}
 
 
@@ -1698,12 +1737,81 @@ On dispose donc des données sur la durée (en mois) avant évolution du cancer
 l'observation (\texttt{censored}). Le stade du cancer est reporté dans la
 variable \texttt{grade} (\texttt{low}=II, \texttt{high}=IIIA).
 \begin{description}
-\item[\bf 1.1]  \marginpar{1.1 $\square$}
-\item[\bf 1.2]  \marginpar{1.2 $\square$}
-\item[\bf 1.3]  \marginpar{1.3 $\square$}
-\item[\bf 1.4]  \marginpar{1.4 $\square$}
-\item[\bf 1.5]  \marginpar{1.5 $\square$}
-\item[\bf 1.6]  \marginpar{1.6 $\square$}
+\item[\bf 1.1] Pour convertir les données au format données de survie sous
+  \Stata, on peut utiliser la commande : \marginpar{1.1 $\square$}
+\begin{verbatim}
+. ftset time, failure(censored)
+\end{verbatim}
+\begin{description}
+\item[A.] Vrai.
+\item[B.] Faux.
+\item[C.] Je ne sais pas.
+\end{description}
+\item[\bf 1.2] Supposons que l'on souhaite convertir les valeurs prises par
+  la variable \texttt{censored} en 1/2 (au lieu de
+  \texttt{yes}/\texttt{no}), et stocker ces nouveaux résultats dans une
+  variable appelée \texttt{cens}. Quelle commande peut-on utiliser ?
+\marginpar{1.2 $\square$}
+\begin{description}
+\item[A.] \verb|mvencode censored, mv("yes"=1 \ "no"=2)|
+\item[B.] \verb|encode censored, generate(cens)|
+\item[C.] \verb|recode censored ("yes"=1) ("no"=2), generate(cens)|
+\item[D.] \verb|label drop censored| suivi de \verb|gen cens = censored|
+\item[E.] Je ne sais pas.
+\end{description}
+\item[\bf 1.3] On suppose par la suite que les informations de censure sont
+  accessibles dans la nouvelle variable \texttt{cens} créée à l'exercice
+  précédent, et que l'on a supprimé les anciennes variables de survie
+  générées à l'exercice~1.1. Quelle commande peut-on utiliser pour convertir
+  les données en données de survie en utilisant la variable \texttt{cens}
+  comme indicateur de censure ? \marginpar{1.3 $\square$} 
+\begin{description}
+\item[A.] \verb|ftset time, failure(cens)|
+\item[B.] \verb|ftset time, failure(cens 1)|
+\item[C.] \verb|ftset time, failure(cens = 1)|
+\item[D.] Je ne sais pas.
+\end{description}
+\item[\bf 1.4] Quelle commande permet d'afficher une table de mortalité pour
+  le jeu de données, dans chacun des deux groupes de patients définis par la
+  variable \texttt{grade} ? \marginpar{1.4 $\square$} 
+\begin{description}
+\item[A.] \verb|sts list|
+\item[B.] \verb|sts list, over(grade)|
+\item[C.] \verb|sts list, by(grade)|
+\item[D.] Je ne sais pas.
+\end{description}
+\item[\bf 1.5] Quelle commande permet d'afficher la courbe de survie avec un
+  intervalle de confiance à 90~\% pour les patients atteints d'un cancer en
+  stade II ? \marginpar{1.5 $\square$}
+\begin{description}
+\item[A.] \verb|sts graph if grade == 1, ci level(.90)|
+\item[B.] \verb|sts graph if grade == 1, ci level(90)|
+\item[C.] \verb|sts graph if grade == "low", ci level(.90)|
+\item[D.] \verb|sts graph if grade == "low", ci level(90)|
+\item[E.] Je ne sais pas.
+\end{description}
+\item[\bf 1.6] La commande suivante \marginpar{1.6 $\square$}
+\begin{verbatim}
+. sts test grade, w
+\end{verbatim}
+renvoit le résultat d'un test statistique. Lequel ?
+\begin{description}
+\item[A.] Test du log-rank.
+\item[B.] Test de Wilcoxon.
+\item[C.] Test de Tarone-Ware.
+\item[D.] Je ne sais pas.
+\end{description}
+\item[\bf 1.7] Quelle commande a permis de produire la figure suivante
+  (indépedemment du rapport hauteur/largeur et de la couleur) ?
+  \marginpar{1.7 $\square$}
+  \begin{center}
+    \includegraphics{./figs/dev10_cumhaz}
+  \end{center}
+\begin{description}
+\item[A.] \verb|sts graph, cumhaz|
+\item[B.] \verb|sts graph, haz|
+\item[C.] Je ne sais pas.
+\end{description}
 \end{description}
 
 \section*{Exercice 2}
@@ -1772,11 +1880,27 @@ variable \texttt{age} et 17 valeurs manquantes pour la variable
   \end{center}
 \begin{description}
 \item[A.] \verb|sts graph, by(treat) cens|
-\item[B.] \verb|sts graph, over(reat) cens ci|
+\item[B.] \verb|sts graph, over(treat) cens ci|
 \item[C.] \verb|sts graph, by(treat) ci|
 \item[D.] Je ne sais pas.
 \end{description}
-\item[\bf 2.4] \marginpar{2.4 $\square$}
-\item[\bf 2.5] \marginpar{2.5 $\square$}
-\item[\bf 2.6] \marginpar{2.6 $\square$}
+\item[\bf 2.4] On souhaite réaliser une régression de Cox pour étudier
+  l'effet de la consommation d'héroïne ou de cocaïne et afficher le
+  coefficient de régression et son intervalle de confiance à 95~\%. Quelle
+  commande doit-on utiliser ? \marginpar{2.4 $\square$}
+\begin{description}
+\item[A.] \verb|sts cox herco|
+\item[B.] \verb|stcox herco, nohr|
+\item[C.] \verb|stcox herco, noshow|
+\item[D.] Je ne sais pas.
+\end{description}
+\item[\bf 2.5] Quelle commande pourrait-on utiliser pour vérifier si
+  l'hypothèse de risque proportionnels est vérifiée dans le modèle précédent
+  ? \marginpar{2.5 $\square$}
+\begin{description}
+\item[A.] \verb|predict double cs, csnell|
+\item[B.] \verb|estat concordance|
+\item[C.] \verb|sts graph, by(herco)|
+\item[D.] Je ne sais pas.
+\end{description}
 \end{description}
