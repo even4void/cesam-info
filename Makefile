@@ -1,12 +1,9 @@
 all:
-#	xelatex hw.tex
-	R --no-save --no-restore -e "require(cacheSweave); setCacheDir('./cache'); Sweave('full.rnw', driver=cacheSweaveDriver, encoding='utf8')"
-#	R CMD Stangle full.rnw
-#	pygmentize -O full,style=emacs -l splus -o full.html full.R
+	R --no-save --no-restore -e "require(cacheSweave); setCacheDir('./cache'); Sweave('fascicule_r_stata.rnw', driver=cacheSweaveDriver, encoding='utf8')"
 #	./hw_crop.sh
-	xelatex full.tex
-	bibtex full
-	xelatex full.tex
-	makeindex full
-	xelatex full.tex
-	rm *.{aux,bbl,blg,log,run.xml}
+	xelatex fascicule_r_stata.tex
+	bibtex fascicule_r_stata
+	xelatex fascicule_r_stata.tex
+#	makeindex full
+	xelatex fascicule_r_stata.tex
+	rm *.{aux,bbl,blg,run.xml}
