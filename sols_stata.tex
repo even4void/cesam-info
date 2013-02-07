@@ -1728,7 +1728,7 @@ classe de \texttt{Age3} qui nous intéressent (1 et 3, en l'occurence).
 \soln{\ref{exo:10.2}}
 Le chargement des données ne pose pas de difficultés particulières car
 celles-ci ont été exportées depuis Excel et sont au format CSV. On veillera
-cependant à préciser le type de délimiteur de champ, ici un point-virgule/
+cependant à préciser le type de délimiteur de champ, ici un point-virgule.
 \begin{verbatim}
 . insheet using "quetelet.csv", delim(";") clear
 (5 vars, 32 obs)
@@ -1791,7 +1791,7 @@ Enfin, le résumé numérique des variable s'obtient avec la commande \texttt{su
 Comme la variable \texttt{tab} est internellement codée en 0/1, la moyenne
 correspond à la fréquence relative des fumeurs, soit 53~\%.
 
-Le coefficeint de corrélation liénaire entre les variables \texttt{pas} et
+Le coefficient de corrélation liénaire entre les variables \texttt{pas} et
 \texttt{qtt} peut être estimé, ainsi que son intervalle de confiance, avec
 la commande \texttt{corrci} (p.~\pageref{cmd:corrci}). L'option
 \texttt{level(90)} permet de spécifier le niveau de confiance.
@@ -2637,113 +2637,6 @@ Log likelihood =  -453.2224                       Pseudo R2       =     0.0962
 %---------------------------------------------------------------- Séance 11 --
 \chapter*{Semaine 11\markboth{Corrigés de la semaine 11}{}}
 
-\soln{\ref{exo:11.1}}
-Le format texte du fichier de données \texttt{prostate.dat} est identique à
-celui du fichier \texttt{pbc.txt} de l'exercice précédent, à ceci près que
-les champs sont séparés par un simple espace. On utilisera donc la commande
-\texttt{insheet} :
-\begin{verbatim}
-. insheet using "prostate.dat", delimiter(" ")
-(7 vars, 38 obs)
-. list in 1/5
-
-     +--------------------------------------------------------+
-     | treatm~t   time   status   age   haem   size   gleason |
-     |--------------------------------------------------------|
-  1. |        1     65        0    67   13.4     34         8 |
-  2. |        2     61        0    60   14.6      4        10 |
-  3. |        2     60        0    77   15.6      3         8 |
-  4. |        1     58        0    64   16.2      6         9 |
-  5. |        2     51        0    65   14.1     21         9 |
-     +--------------------------------------------------------+
-\end{verbatim}
-Le nombre de patients vivants à la date de point est obtenu à partir de
-\texttt{tabulate} :
-\begin{verbatim}
-. tabulate status
-
-     Status |      Freq.     Percent        Cum.
-------------+-----------------------------------
-          0 |         32       84.21       84.21
-          1 |          6       15.79      100.00
-------------+-----------------------------------
-      Total |         38      100.00
-\end{verbatim}
-soit 32 personnes encore en vie à la fin de la durée de suivi.
-
-Comme dans l'exercice~7.1, il est nécessaire d'indiquer à \Stata quelle
-variable sert à identifier les événements (\texttt{status}) et le temps
-(\texttt{time}). On utilisera la commande \texttt{stset} de la manière
-suivante :
-\begin{verbatim}
-. stset time, failure(status)
-
-     failure event:  status != 0 & status < .
-obs. time interval:  (0, time]
- exit on or before:  failure
-
-------------------------------------------------------------------------------
-       38  total obs.
-        0  exclusions
-------------------------------------------------------------------------------
-       38  obs. remaining, representing
-        6  failures in single record/single failure data
-     1890  total analysis time at risk, at risk from t =         0
-                             earliest observed entry t =         0
-                                  last observed exit t =        70
-\end{verbatim}
-
-La médiane de survie selon le traitement est disponible à partir de la
-commande \texttt{stci}, en précisant le percentile d'intérêt (ici,
-\texttt{p(50)}). 
-\begin{verbatim}
-. stci, by(treatment) p(50)
-
-         failure _d:  status
-   analysis time _t:  time
-
-             |    no. of 
-treatment    |  subjects         50%     Std. Err.     [95% Conf. Interval]
--------------+-------------------------------------------------------------
-           1 |        18          69      .3043484           42          .
-           2 |        20           .             .            .          .
--------------+-------------------------------------------------------------
-       total |        38           .             .           69          .
-\end{verbatim}
-
-Pour afficher les courbes de survie pour chacun des bras de traitement, on
-utilisera la commande \texttt{sts graph} en spécifiant le facteur de
-classification à l'aide de l'option \texttt{by}. L'affichage des données
-censurées se fait à l'aide de l'option \texttt{censored}.
-\begin{verbatim}
-. sts graph, by(treatment) censored(s)
-\end{verbatim}
-
-\includegraphics{./figs/stata_ststwoway}
-
-Le test du log-rank s'effectue avec la commande \texttt{sts test}. Notons
-que l'on n'a besoin de spécifier que le facteur traitement.
-\begin{verbatim}
-. sts test treatment
-
-         failure _d:  status
-   analysis time _t:  time
-
-
-Log-rank test for equality of survivor functions
-
-          |   Events         Events
-treatment |  observed       expected
-----------+-------------------------
-1         |         5           2.47
-2         |         1           3.53
-----------+-------------------------
-Total     |         6           6.00
-
-                chi2(1) =       4.42
-                Pr>chi2 =     0.0355
-\end{verbatim}
-
 \soln{\ref{exo:11.2}}
 Le fichier de données est un fichier texte avec des tabulations comme
 séparateur de champ. On peut l'importer sous \Stata en utilisant la commande
@@ -2802,7 +2695,7 @@ l'aide de tris simple et croisé. Pour le tri croisé, on ajoutera l'option
 \end{verbatim}
 
 Pour afficher la distribution des temps de suivi, on utilisera un simple
-diagramme de dispersion comme on l'a vu dans le cas de R. Pour faire
+diagramme de dispersion comme on l'a vu dans le cas de \R. Pour faire
 appraître distinctement les observations selon le status (0 ou 1), on
 pourrait très bien superposer deux séries de points sur le même graphique
 (cf. exercice~5.2, p.~\pageref{para:twoway}). Voici une autre manière de
@@ -2929,3 +2822,117 @@ L'option \texttt{ci} permet d'afficher l'intervalle de confiance à 95~\%
 pour l'estimateur de KM.
 
 \includegraphics{./figs/stata_stsgraph}
+
+% FIXME:
+% finish me: (f)-(i)
+
+\soln{\ref{exo:11.2}}
+Le format texte du fichier de données \texttt{prostate.dat} est identique à
+celui du fichier \texttt{pbc.txt} de l'exercice précédent, à ceci près que
+les champs sont séparés par un simple espace. On utilisera donc la commande
+\texttt{insheet} :
+\begin{verbatim}
+. insheet using "prostate.dat", delimiter(" ")
+(7 vars, 38 obs)
+. list in 1/5
+
+     +--------------------------------------------------------+
+     | treatm~t   time   status   age   haem   size   gleason |
+     |--------------------------------------------------------|
+  1. |        1     65        0    67   13.4     34         8 |
+  2. |        2     61        0    60   14.6      4        10 |
+  3. |        2     60        0    77   15.6      3         8 |
+  4. |        1     58        0    64   16.2      6         9 |
+  5. |        2     51        0    65   14.1     21         9 |
+     +--------------------------------------------------------+
+\end{verbatim}
+Le nombre de patients vivants à la date de point est obtenu à partir de
+\texttt{tabulate} :
+\begin{verbatim}
+. tabulate status
+
+     Status |      Freq.     Percent        Cum.
+------------+-----------------------------------
+          0 |         32       84.21       84.21
+          1 |          6       15.79      100.00
+------------+-----------------------------------
+      Total |         38      100.00
+\end{verbatim}
+soit 32 personnes encore en vie à la fin de la durée de suivi.
+
+Comme dans l'exercice~7.1, il est nécessaire d'indiquer à \Stata quelle
+variable sert à identifier les événements (\texttt{status}) et le temps
+(\texttt{time}). On utilisera la commande \texttt{stset} de la manière
+suivante :
+\begin{verbatim}
+. stset time, failure(status)
+
+     failure event:  status != 0 & status < .
+obs. time interval:  (0, time]
+ exit on or before:  failure
+
+------------------------------------------------------------------------------
+       38  total obs.
+        0  exclusions
+------------------------------------------------------------------------------
+       38  obs. remaining, representing
+        6  failures in single record/single failure data
+     1890  total analysis time at risk, at risk from t =         0
+                             earliest observed entry t =         0
+                                  last observed exit t =        70
+\end{verbatim}
+
+La médiane de survie selon le traitement est disponible à partir de la
+commande \texttt{stci}, en précisant le percentile d'intérêt (ici,
+\texttt{p(50)}). 
+\begin{verbatim}
+. stci, by(treatment) p(50)
+
+         failure _d:  status
+   analysis time _t:  time
+
+             |    no. of 
+treatment    |  subjects         50%     Std. Err.     [95% Conf. Interval]
+-------------+-------------------------------------------------------------
+           1 |        18          69      .3043484           42          .
+           2 |        20           .             .            .          .
+-------------+-------------------------------------------------------------
+       total |        38           .             .           69          .
+\end{verbatim}
+
+% FIXME:
+% différence proportion survie à 50 mois (b)
+
+Pour afficher les courbes de survie pour chacun des bras de traitement, on
+utilisera la commande \texttt{sts graph} en spécifiant le facteur de
+classification à l'aide de l'option \texttt{by}. L'affichage des données
+censurées se fait à l'aide de l'option \texttt{censored}.
+\begin{verbatim}
+. sts graph, by(treatment) censored(s)
+\end{verbatim}
+
+\includegraphics{./figs/stata_ststwoway}
+
+Le test du log-rank s'effectue avec la commande \texttt{sts test}. Notons
+que l'on n'a besoin de spécifier que le facteur traitement.
+\begin{verbatim}
+. sts test treatment
+
+         failure _d:  status
+   analysis time _t:  time
+
+
+Log-rank test for equality of survivor functions
+
+          |   Events         Events
+treatment |  observed       expected
+----------+-------------------------
+1         |         5           2.47
+2         |         1           3.53
+----------+-------------------------
+Total     |         6           6.00
+
+                chi2(1) =       4.42
+                Pr>chi2 =     0.0355
+\end{verbatim}
+
