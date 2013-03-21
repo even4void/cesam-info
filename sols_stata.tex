@@ -1,6 +1,6 @@
 %---------------------------------------------------------------- Séance 08 --
 \chapter*{Semaine 8\markboth{Corrigés de la semaine 8}{}}
-
+\label{start:sol1stata}
 \soln{\ref{exo:8.1}} \Stata dispose d'un éditeur de données qui se présente
 sous la forme d'un tableur (à l'image d'Excel), mais on peut saisir
 dirctement des données à l'aide de la commande \texttt{input}. Après avoir
@@ -640,12 +640,13 @@ Puis, on procède de même avec les variables qualitatives :
 \begin{verbatim}
 . by low, sort: tab1 race smoke ht ui
 \end{verbatim}
+\label{stop:sol1stata}
 
 
 %---------------------------------------------------------------- Séance 09 --
 \chapter*{Semaine 9\markboth{Corrigés de la semaine 9}{}}
-
-\soln{\ref{exo:9.1}} On rappelle que seuls les valeurs numériques des poids
+\label{start:sol2stata}
+\soln{\ref{exo:9.1}} On rappelle que seules les valeurs numériques des poids
 à la naissance sont disponibles dans le fichier \texttt{sirds.dat}, et qu'il
 nous faut contruire la variable de groupement (enfants décédés \emph{versus}
 vivants). Une manière de procéder consiste à générer une variable prenant
@@ -896,6 +897,9 @@ d'ajustement à une loi donnée).
            Fisher's exact =                 0.364
    1-sided Fisher's exact =                 0.212
 \end{verbatim}
+L'option \verb|expected| permet de fournir les effectifs théoriques, en même
+temps que les effectifs observées.
+
 \emph{À noter} : \Stata ne fournit pas de correction de continuité de Yates pour ce
 type de test parmi les commandes de base.  
 %
@@ -1006,7 +1010,12 @@ Score test for trend of odds:     chi2(1)  =     2.13
 %
 %
 \soln{\ref{exo:9.5}} Le chargement des données ne pose pas vraiment de
-problème puisque les données sont déjà disponibles au format \Stata.
+problème puisque les données sont déjà disponibles au format \Stata. Pour
+fournir un résumé numérique de la variable \texttt{age} pour chacun des
+génotypes, on peut utiliser une combinaison des commandes \verb|by| et
+\verb|summarize|. On verra plus tard que la commande \verb|tabstat| permet
+de renvoyer des résultats simplifiés, par exemple juste la moyenne et
+l'écart-type. 
 \begin{verbatim}
 . use polymorphism.dta
 . by genotype: summarize age
@@ -1567,10 +1576,12 @@ Pour l'approche par régression linéaire simple, la commande est plus simple :
 \end{verbatim}
 Le test de tendance correspond au test associé à la pente de la droite de
 régression, ici le coefficient \texttt{PARITY2}.
+\label{stop:sol2stata}
 
 
 %---------------------------------------------------------------- Séance 10 --
 \chapter*{Semaine 10\markboth{Corrigés de la semaine 10}{}}
+\label{start:sol3stata}
 
 \soln{\ref{exo:10.1}}
 Les données tabulées sont disponibles dans un fichier texte que l'on peut
@@ -1624,9 +1635,10 @@ PEmax  Weight      0.636    0.322    0.824
 \end{verbatim}
 
 Pour tester ce coefficient de corrélation contre l'alternative $H_0:
-\rho=0.3$, il faut
-% FIXME:
-% change to compute test against H_0: \rho=0.3
+\rho=0$, on peut utiliser la commande \verb|pwcorr| avec l'option
+\verb|sig|. Cette commande permet également de calculer des matrices de
+corrélation dans le cas de plusieurs variables numériques, comme on va le
+voir juste après.
 \begin{verbatim}
 . pwcorr PEmax Weight, sig
 
@@ -1803,6 +1815,8 @@ la commande \texttt{corrci} (p.~\pageref{cmd:corrci}). L'option
           correlation and 90% limits
 pas qtt      0.742    0.571    0.851
 \end{verbatim}
+On utilisera \verb|pwcorr|, comme à l'exercice précédent, si l'on souhaite
+tester la nullité de la corrélation.
 
 La commande \texttt{regress} permet d'effectuer une régression linéaire
 pour une variable réponse (placée en premier dans la liste des variables) et
@@ -2036,7 +2050,7 @@ directement fournis dans le tableau de résultats renvoyés par \Stata.
 \soln{\ref{exo:10.4}}
 Dans un premier temps, il est nécessaire de construire le tableau
 d'effectifs donné dans l'énoncé. On s'inspirera de la méthode manuelle vue à
-l'exercice~\ref{exo:3.5stata} (p.~\pageref{exo:3.5stata}). Par contre, on va
+l'exercice~\ref{exo:9.4} (p.~\pageref{exo:9.4}). Par contre, on va
 saisir directement les labels des variables et non des codes
 numériques. Pour cela, il est nécessaire d'indiquer à \Stata quel est le
 format de ces labels à l'aide de l'instruction \texttt{str} que l'on suffixe
@@ -2290,15 +2304,28 @@ somme de l'ensemble de ces valeurs pour avoir l'effectif total :
 . display ntot
 360
 \end{verbatim}
+Les instructions ci-dessus ne sont pas vraiment optimales, et en règle
+générale on préfèrera utiliser de simple \og variable\fg\ de type
+\verb|scalar| pour stocker ce genre de résultat intermédiaire ou des
+constantes (ici, \verb|generate| crée une nouvelle variable prenant toujours
+la même valeur), comme dans l'illustration suivante.
 
-%% Concernant la représentation des fréquences relatives des variables
-%% \texttt{pres} et \texttt(abs}, il est nécessaire de \og construire\fg\ deux
-%% nouvelles variables. Voici une solution possible :
-%% \begin{verbatim}
-%% . quietly: summarize pres
-%% . scalar npres = r(sum)
-%% . gen ppres = pres / npres
-%% \end{verbatim}
+Concernant la représentation des fréquences relatives des variables
+\texttt{pres} et \texttt{abs}, il est nécessaire de \og construire\fg\ deux
+nouvelles variables. Voici une solution possible dans le cas de la variable
+\texttt{pres} :
+\begin{verbatim}
+. quietly: summarize pres
+. scalar npres = r(sum)
+. gen ppres = pres / npres
+\end{verbatim}
+La commande \verb|quietly| permet de ne pas afficher le résultat de
+\verb|summarize pres|, mais de pouvoir tout de même accéder aux valeurs
+calculées par cette commande. On peut d'ailleurs voir tout ce que cette
+commande calcule en tapant simplement \verb|return list|. On a besoin
+uniquement de la somme, accessible via \verb|r(sum)|, pour calculer les
+fréquences relatives et générer pour chaque observation la fréquence
+correpsondante (d'où l'utilisation de \verb|generate|).
 
 Il existe plusieurs commandes pour construire un modèle de régression
 logistique sous \Stata. Dans le cas des données dites "groupées", on peut
@@ -2501,6 +2528,13 @@ utiliser la commande suivante :
 . display ntot
 975
 \end{verbatim}
+Encore une fois, cette commande n'est pas optimale et on préfèrera des
+solutions reposant sur l'usage de \verb|scalar| et l'exploitation des
+résultats renvoyés par des commandes telles que \verb|summarize| ou
+\verb|tabulate|. On peut supprimer la variable \texttt{ntot} en tapant 
+\begin{verbatim}
+. drop ntot
+\end{verbatim}
 
 La proportion d'individus à risque, c'est-à-dire ayant une consommation
 journalière d'alcool $\ge 80$ g s'obtient à partir d'un simple tableau
@@ -2597,18 +2631,18 @@ Le modèle de régression logistique, comme les autres modèles de régression
 sous \Stata, se formule ainsi : 
 
 \begin{verbatim}
-. logistic alcohol cancer [freq=patients]
+. logistic cancer alcohol [freq=patients]
 
 Logistic regression                               Number of obs   =        975
                                                   LR chi2(1)      =      96.43
                                                   Prob > chi2     =     0.0000
-Log likelihood =  -453.2224                       Pseudo R2       =     0.0962
+Log likelihood = -446.52782                       Pseudo R2       =     0.0975
 
 ------------------------------------------------------------------------------
-     alcohol | Odds Ratio   Std. Err.      z    P>|z|     [95% Conf. Interval]
+      cancer | Odds Ratio   Std. Err.      z    P>|z|     [95% Conf. Interval]
 -------------+----------------------------------------------------------------
-      cancer |   5.640085   .9883492     9.87   0.000     4.000589    7.951467
-       _cons |   .1636637   .0169104   -17.52   0.000     .1336604    .2004018
+     alcohol |   5.640085   .9883492     9.87   0.000     4.000589    7.951467
+       _cons |   .1561562   .0164646   -17.61   0.000     .1270022    .1920025
 ------------------------------------------------------------------------------
 \end{verbatim}
 
@@ -2617,27 +2651,29 @@ d'odds-ratio, avec leurs intervalles de confiance associés. Si l'on souhaite
 obtenir directement les coefficients de régression (sur l'échelle du log
 odds), il faut utiliser la commande \texttt{logit} après avoir utilisé
 \texttt{logistic}. On pourrait également utiliser directement une commande de
-type \verb|logistic alcohol cancer [freq=patients]|.
+type \verb|logit cancer alcohol [freq=patients]|.
 \begin{verbatim}
 . logit
 
 Logistic regression                               Number of obs   =        975
                                                   LR chi2(1)      =      96.43
                                                   Prob > chi2     =     0.0000
-Log likelihood =  -453.2224                       Pseudo R2       =     0.0962
+Log likelihood = -446.52782                       Pseudo R2       =     0.0975
 
 ------------------------------------------------------------------------------
-     alcohol |      Coef.   Std. Err.      z    P>|z|     [95% Conf. Interval]
+      cancer |      Coef.   Std. Err.      z    P>|z|     [95% Conf. Interval]
 -------------+----------------------------------------------------------------
-      cancer |   1.729899   .1752366     9.87   0.000     1.386442    2.073356
-       _cons |  -1.809942   .1033238   -17.52   0.000    -2.012453   -1.607431
+     alcohol |   1.729899   .1752366     9.87   0.000     1.386442    2.073356
+       _cons |  -1.856899   .1054366   -17.61   0.000    -2.063551   -1.650247
 ------------------------------------------------------------------------------
 \end{verbatim}
+\label{stop:sol3stata}
 
 %---------------------------------------------------------------- Séance 11 --
 \chapter*{Semaine 11\markboth{Corrigés de la semaine 11}{}}
+\label{start:sol4stata}
 
-\soln{\ref{exo:11.2}}
+\soln{\ref{exo:11.1}}
 Le fichier de données est un fichier texte avec des tabulations comme
 séparateur de champ. On peut l'importer sous \Stata en utilisant la commande
 \texttt{insheet}. Pour afficher le nom des variables après importation, il
@@ -2823,9 +2859,140 @@ pour l'estimateur de KM.
 
 \includegraphics{./figs/stata_stsgraph}
 
-% FIXME:
-% finish me: (f)-(i)
+On obtient la médiane de survie à l'aide de la commande \verb|stci|. Sans
+autre précision, \Stata calcule la médiane de survie et son intervalle de
+confiance à 95~\% pour l'ensemble des observations. On ajoutera une option
+\verb|by()| pour obtenir la médiane de survie par groupe de traitement.
+\begin{verbatim}
+. stci, by(rx)
+         failure _d:  status
+   analysis time _t:  years
 
+             |    no. of 
+rx           |  subjects         50%     Std. Err.     [95% Conf. Interval]
+-------------+-------------------------------------------------------------
+     Placebo |       158      8.9856      1.059689       6.9541    11.4743
+        DPCA |       154      9.3854      .6958011         8.46    10.5489
+-------------+-------------------------------------------------------------
+       total |       312       9.295      .4154789        8.449    10.5106
+\end{verbatim}
+
+De même, il est possible d'afficher les deux courbes de survie
+correspondantes à l'aide de \verb|sts graph| en conservant l'option
+\verb|by()|.
+\begin{verbatim}
+. sts graph, by(rx) cen(single)
+\end{verbatim}
+
+\includegraphics{./figs/stata_stsgraph_rx}
+
+En ce qui concerne le test du log-rank, il faut utiliser la commande
+\verb|sts test|, l'option \verb|logrank| étant l'option par défaut. On se
+contente d'indiquer la variable de classification considérée pour tester
+l'égalité des fonctions de survie, soit
+\begin{verbatim}
+. sts test rx
+
+         failure _d:  status
+   analysis time _t:  years
+
+
+Log-rank test for equality of survivor functions
+
+        |   Events         Events
+rx      |  observed       expected
+--------+-------------------------
+Placebo |        65          63.22
+DPCA    |        60          61.78
+--------+-------------------------
+Total   |       125         125.00
+
+              chi2(1) =       0.10
+              Pr>chi2 =     0.7498
+\end{verbatim}
+On ajoutera l'option \verb|wilcoxon| pour obtenir le test de
+Wilcoxon. L'option \verb|noshow| permet de simplifier la sortie texte en
+enlevant les informations relatives aux variables \verb|sts|.
+\begin{verbatim}
+. sts test rx, wilcoxon noshow
+
+
+Wilcoxon (Breslow) test for equality of survivor functions
+
+        |   Events         Events        Sum of
+rx      |  observed       expected        ranks
+--------+--------------------------------------
+Placebo |        65          63.22          -52
+DPCA    |        60          61.78           52
+--------+--------------------------------------
+Total   |       125         125.00            0
+
+              chi2(1) =       0.00
+              Pr>chi2 =     0.9664
+\end{verbatim}
+
+La même commande peut être utilisée si l'on souhaite inclure un facteur de
+stratification, grâce à l'option \verb|strata|. Dans un premier temps, on
+recode la variable \texttt{age} en une variable qualitative à 4 classes en
+utilisant \verb|egen|.
+\begin{verbatim}
+. egen agec = cut(age), at(26,40,55,79)
+. sts test rx, strata(agec) noshow
+
+
+Stratified log-rank test for equality of survivor functions
+
+        |   Events         Events
+rx      |  observed    expected(*)
+--------+-------------------------
+Placebo |        65          65.04
+DPCA    |        60          59.96
+--------+-------------------------
+Total   |       125         125.00
+
+(*) sum over calculations within agec
+
+              chi2(1) =       0.00
+              Pr>chi2 =     0.9949
+\end{verbatim}
+
+Enfin, pour réaliser un modèle de régression de Cox, avec stratification sur
+le facteur \verb|agec|, on utilise la commande 
+\begin{verbatim}
+. stcox rx, strata(agec)
+
+         failure _d:  status
+   analysis time _t:  years
+
+Iteration 0:   log likelihood = -518.84846
+Iteration 1:   log likelihood = -518.84844
+Refining estimates:
+Iteration 0:   log likelihood = -518.84844
+
+Stratified Cox regr. -- Breslow method for ties
+
+No. of subjects =          312                     Number of obs   =       312
+No. of failures =          125
+Time at risk    =  1713.854099
+                                                   LR chi2(1)      =      0.00
+Log likelihood  =   -518.84844                     Prob > chi2     =    0.9949
+
+------------------------------------------------------------------------------
+          _t | Haz. Ratio   Std. Err.      z    P>|z|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+          rx |    1.00116   .1811868     0.01   0.995     .7021917    1.427418
+------------------------------------------------------------------------------
+                                                            Stratified by agec
+\end{verbatim}
+Par défaut, les résultats renvoyés par \Stata sont exprimés en terme de
+risque (\verb|Haz. Ratio|). Si l'on souhaite obtenir les coefficients de
+régression, il est nécessaire de rajouter l'option \verb|nohr|.
+\begin{verbatim}
+. stcox rx, strata(agec) nohr
+\end{verbatim}
+%
+%
+%
 \soln{\ref{exo:11.2}}
 Le format texte du fichier de données \texttt{prostate.dat} est identique à
 celui du fichier \texttt{pbc.txt} de l'exercice précédent, à ceci près que
@@ -2836,15 +3003,15 @@ les champs sont séparés par un simple espace. On utilisera donc la commande
 (7 vars, 38 obs)
 . list in 1/5
 
-     +--------------------------------------------------------+
-     | treatm~t   time   status   age   haem   size   gleason |
-     |--------------------------------------------------------|
-  1. |        1     65        0    67   13.4     34         8 |
-  2. |        2     61        0    60   14.6      4        10 |
-  3. |        2     60        0    77   15.6      3         8 |
-  4. |        1     58        0    64   16.2      6         9 |
-  5. |        2     51        0    65   14.1     21         9 |
-     +--------------------------------------------------------+
+     +------------------------------------------------------------------------------+
+     | treatm~t   time   status   age   haem   size   gleason   _st   _d   _t   _t0 |
+     |------------------------------------------------------------------------------|
+  1. |        1     65        1    67   13.4     34         8     1    1   65     0 |
+  2. |        2     61        1    60   14.6      4        10     1    1   61     0 |
+  3. |        2     60        1    77   15.6      3         8     1    1   60     0 |
+  4. |        1     58        1    64   16.2      6         9     1    1   58     0 |
+  5. |        2     51        1    65   14.1     21         9     1    1   51     0 |
+     +------------------------------------------------------------------------------+
 \end{verbatim}
 Le nombre de patients vivants à la date de point est obtenu à partir de
 \texttt{tabulate} :
@@ -2853,12 +3020,12 @@ Le nombre de patients vivants à la date de point est obtenu à partir de
 
      Status |      Freq.     Percent        Cum.
 ------------+-----------------------------------
-          0 |         32       84.21       84.21
-          1 |          6       15.79      100.00
+          0 |          6       15.79       15.79
+          1 |         32       84.21      100.00
 ------------+-----------------------------------
       Total |         38      100.00
 \end{verbatim}
-soit 32 personnes encore en vie à la fin de la durée de suivi.
+soit 6 personnes encore en vie à la fin de la durée de suivi.
 
 Comme dans l'exercice~7.1, il est nécessaire d'indiquer à \Stata quelle
 variable sert à identifier les événements (\texttt{status}) et le temps
@@ -2876,7 +3043,7 @@ obs. time interval:  (0, time]
         0  exclusions
 ------------------------------------------------------------------------------
        38  obs. remaining, representing
-        6  failures in single record/single failure data
+       32  failures in single record/single failure data
      1890  total analysis time at risk, at risk from t =         0
                              earliest observed entry t =         0
                                   last observed exit t =        70
@@ -2894,14 +3061,11 @@ commande \texttt{stci}, en précisant le percentile d'intérêt (ici,
              |    no. of 
 treatment    |  subjects         50%     Std. Err.     [95% Conf. Interval]
 -------------+-------------------------------------------------------------
-           1 |        18          69      .3043484           42          .
-           2 |        20           .             .            .          .
+           1 |        18          59      5.338271           43         65
+           2 |        20          60      4.295346           51         66
 -------------+-------------------------------------------------------------
-       total |        38           .             .           69          .
+       total |        38          59      2.234071           52         65
 \end{verbatim}
-
-% FIXME:
-% différence proportion survie à 50 mois (b)
 
 Pour afficher les courbes de survie pour chacun des bras de traitement, on
 utilisera la commande \texttt{sts graph} en spécifiant le facteur de
@@ -2914,12 +3078,10 @@ censurées se fait à l'aide de l'option \texttt{censored}.
 \includegraphics{./figs/stata_ststwoway}
 
 Le test du log-rank s'effectue avec la commande \texttt{sts test}. Notons
-que l'on n'a besoin de spécifier que le facteur traitement.
+que l'on a besoin de ne spécifier que le facteur traitement, la notion de
+variable réponse étant gérée depuis le début par \verb|stset|.
 \begin{verbatim}
-. sts test treatment
-
-         failure _d:  status
-   analysis time _t:  time
+. sts test treatment, noshow
 
 
 Log-rank test for equality of survivor functions
@@ -2927,12 +3089,41 @@ Log-rank test for equality of survivor functions
           |   Events         Events
 treatment |  observed       expected
 ----------+-------------------------
-1         |         5           2.47
-2         |         1           3.53
+1         |        13          11.99
+2         |        19          20.01
 ----------+-------------------------
-Total     |         6           6.00
+Total     |        32          32.00
 
-                chi2(1) =       4.42
-                Pr>chi2 =     0.0355
+                chi2(1) =       0.15
+                Pr>chi2 =     0.6956
 \end{verbatim}
+
+Quant au modèle de Cox, on utilisera la commande \verb|stcox| comme dans
+l'exercice précédent, en se rappelant que par défaut \Stata fournit la
+valeur estimée pour le risque, et non le coefficient de régression (utiliser
+\verb|nohr|). 
+\begin{verbatim}
+. stcox treatment, noshow
+
+Iteration 0:   log likelihood = -86.383802
+Iteration 1:   log likelihood = -86.312596
+Iteration 2:   log likelihood = -86.312586
+Refining estimates:
+Iteration 0:   log likelihood = -86.312586
+
+Cox regression -- Breslow method for ties
+
+No. of subjects =           38                     Number of obs   =        38
+No. of failures =           32
+Time at risk    =         1890
+                                                   LR chi2(1)      =      0.14
+Log likelihood  =   -86.312586                     Prob > chi2     =    0.7059
+
+------------------------------------------------------------------------------
+          _t | Haz. Ratio   Std. Err.      z    P>|z|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+   treatment |   .8691877   .3217818    -0.38   0.705     .4207174    1.795712
+------------------------------------------------------------------------------
+\end{verbatim}
+\label{stop:sol4stata}
 

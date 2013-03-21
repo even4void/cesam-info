@@ -264,7 +264,7 @@ modalité de \texttt{z}. \marginpar{1.2 $\square$}
 \end{description}
 \section*{Exercice 2}
 Considérons les données traitées à l'exercice~\ref{exo:8.3} (décrites
-p.~\pageref{exo:1.5}), sans aucune transformation sur les valeurs
+p.~\pageref{exo:8.3}), sans aucune transformation sur les valeurs
 numériques. 
 \begin{verbatim}
 . list in 1/5
@@ -281,8 +281,8 @@ numériques.
 \end{verbatim}
 \begin{description}
 \item[\bf 2.1] Supposons que des étiquettes aient été attribuées à chacun
-  des trois groupes : \texttt{th. cpt} (initialement \texttt{g1}),
-  \texttt{th. fam.} (\texttt{g2}), \texttt{ctl} (\texttt{g3}). On souhaite
+  des trois groupes : \texttt{th.cpt} (initialement \texttt{g1}),
+  \texttt{th.fam} (\texttt{g2}), \texttt{ctl} (\texttt{g3}). On souhaite
   identifier les patientes du groupe contrôle ayant un poids initial
   inférieur à 36 kg. Quelle commande doit-on utiliser ?
   \marginpar{2.1 $\square$} 
@@ -362,8 +362,8 @@ therapie  | mean(Before)   mean(After)
 --------------------------------------
 \end{verbatim}
   \begin{description}
-  \item[A.] \verb|by Groupe: summarize Before After, meanonly|
-  \item[B.] \verb|by Groupe, sort: summarize Before After, meanonly|
+  \item[A.] \verb|by Group: summarize Before After, meanonly|
+  \item[B.] \verb|by Group, sort: summarize Before After, meanonly|
   \item[C.] \verb|table Group, contents(mean Before mean After)|
   \item[D.] Je ne sais pas.
   \end{description}
@@ -385,16 +385,16 @@ Ce fichier concerne les données d'un essai clinique multicentrique de
 pharmacovigilance portant sur un nouveau produit (A) comparé à un placebo
 (B) \citep{chow04}. Le volume total de plaquettes ($\mu$l) a été enregistré
 avant et après traitement, pour les deux traitements. Les colonnes du
-fichier correspondent dans l'ordre au numéro de centre (\texttt{centre}), au
-numéro du patient (\texttt{patient}), au volume de plaquettes avant
-(\texttt{pre}) et après (\texttt{post}) traitement, et au type de traitement
-(\texttt{trt}).
+fichier correspondent dans l'ordre au numéro de centre (\texttt{centre})
+(numéroté 1 à 5), au numéro du patient (\texttt{patient}), au volume de
+plaquettes avant (\texttt{pre}) et après (\texttt{post}) traitement, et au
+type de traitement (\texttt{trt}).
 
 \begin{description}
 \item[\bf 3.1] Quelle commande doit-on utiliser pour importer le fichier de
   données sous \Stata ? \marginpar{3.1 $\square$}
   \begin{description}
-  \item[A.] \verb|insheet centre patient pre post trt using "platelet.txt", clear|
+  \item[A.] \verb|insheet using "platelet.txt", clear|
   \item[B.] \verb|infile centre patient pre post trt using "platelet.txt", clear|
   \item[C.] \verb|infile centre patient pre post str2(trt) using "platelet.txt", clear|
   \item[D.] Je ne sais pas.
@@ -407,7 +407,7 @@ numéro du patient (\texttt{patient}), au volume de plaquettes avant
   \item[B.] \verb|tabstat pre post if centre > 3, by(centre) stat(median) nototal|
   \item[C.] Je ne sais pas.
   \end{description}
-\item[\bf 3.3] Pour obtenir un intervalle de confiance à 95~\% de la moyenne
+\item[\bf 3.3] Pour obtenir un intervalle de confiance à 90~\% de la moyenne
   post-traitement, on utilise la commande : \marginpar{3.3 $\square$}
   \begin{description}
   \item[A.] \verb|ci post, level(90)|
@@ -745,7 +745,7 @@ Total & 5 & 26 & 31 \\
 Les données sous Stata, avant et après assignation d'étiquettes pour les
 deux variables qualitatives, sont reportées dans le listing suivant :
 \begin{verbatim}
-. list
+. list in 1/4
 
      +--------------------+
      | Homme   Femme    N |
@@ -755,8 +755,7 @@ deux variables qualitatives, sont reportées dans le listing suivant :
   3. |     0       1    4 |
   4. |     0       0   22 |
      +--------------------+
-----%<------------
-. list
+. list in 1/4
 
      +----------------------+
      |   Homme   Femme    N |
@@ -908,7 +907,7 @@ des sujets fumeurs et non fumeurs. Quatre catégories sont définies \emph{a
   priori} : les non fumeurs, les anciens fumeurs, les nouveaux fumeurs et
 les fumeurs de longue date. Un ensemble de 6 personnes est tiré au sort dans
 chaque catégorie \citep[p.~34]{mickey04}. Les données présentées dans le
-tableau suivant sont disponibles dans le fichier \texttt{vems.dta}.
+tableau suivant sont disponibles dans un fichier appelé \texttt{vems.dta}.
 \vskip1em
 
 \begin{tabular}{lcccccccc}
@@ -1295,8 +1294,8 @@ Dans une étude clinique portant sur le niveau d'intelligence d'enfants
 souffrant d'une malformation cardiaque, les investigateurs se sont
 intéressés à la variation de QI avant et après une opération
 chirurgicale. Les enfants n'étaient pas tirés au sort pour la chirurgie
-\citep[p.~399]{mickey04}. Les résultats, contenus dans le fichier
-\texttt{chiriq.dat}, sont résumés dans le tableau ci-dessous :
+\citep[p.~399]{mickey04}. Le résumé des données contenues dans le fichier
+\texttt{chiriq.dat} est fourni dans le tableau ci-dessous :
 \vskip1em
 
 \begin{tabular}{lcccc}
@@ -1348,7 +1347,7 @@ variances sont homogènes pour les quatre échantillons.
 \begin{description}
 \item[A.] \verb|by g, sort: ttest x == y|
 \item[B.] \verb|ttest x == y if g == 0|
-\item[C.] \verb|ttest x == y if g == 0, paired|
+\item[C.] \verb|ttest x, by(g)|
 \item[D.] Je ne sais pas.
 \end{description}
 \item[\bf 1.3] On souhaite afficher les QI individuels en début et fin
@@ -1417,7 +1416,7 @@ Quel résultat la série de commandes suivante permet-elle d'obtenir ?
 \item[\bf 1.7] La commande suivante permet de renvoyer la valeurs des
   résidus du modèle de régression précédent. \marginpar{1.7 $\square$}
 \begin{verbatim}
-. predict, residaals
+. predict, residuals
 \end{verbatim}
 \begin{description}
 \item[A.] Vrai.
@@ -1553,7 +1552,7 @@ ci-dessus :
 \item[D.] Une liste de 5 variables, \texttt{phase}, \texttt{duree}, type
   de traitement, et les effectifs (nombre de répondeurs) ainsi que les
   effectifs totaux par strates tels que présentés dans le tableau précédent.
-\item[D.] Je ne sais pas.
+\item[E.] Je ne sais pas.
 \end{description}
 \item[\bf 3.2] Supposons que l'on ait choisi la représentation suivante :
 \begin{verbatim}
@@ -1606,8 +1605,8 @@ ci-dessus :
 \item[D.] Je ne sais pas.
 \end{description}
 \item[\bf 3.5] Voici les résultats d'une régression logistique dans laquelle
-  en plus de l'effet traitement on prend en considération la phase (0–90=1,
-  91–180=2). \marginpar{3.5 $\square$}
+  en plus de l'effet traitement on prend en considération la
+  phase. \marginpar{3.5 $\square$} 
 \begin{verbatim}
 Logistic regression for grouped data              Number of obs   =        624
                                                   LR chi2(2)      =       4.14
@@ -1717,7 +1716,7 @@ question. Lorsque vous ne savez pas répondre, cochez la case correspondante.
 Le fichier \texttt{ovarian.csv} contient les données d'une étude sur des
 patientes atteintes d'un cancer des ovaires en stade II ou IIIA. L'objectif
 de l'étude était de déterminer si le stade était lié ou non à la progression
-de la maladie \cite[p.~389]{chow04}. Les données sous \Stata sont reportées
+de la maladie. Les données sous \Stata sont reportées
 ci-dessous :
 \begin{verbatim}
 . list in 1/5
@@ -1766,9 +1765,9 @@ variable \texttt{grade} (\texttt{low}=II, \texttt{high}=IIIA).
   les données en données de survie en utilisant la variable \texttt{cens}
   comme indicateur de censure ? \marginpar{1.3 $\square$} 
 \begin{description}
-\item[A.] \verb|ftset time, failure(cens)|
-\item[B.] \verb|ftset time, failure(cens 1)|
-\item[C.] \verb|ftset time, failure(cens = 1)|
+\item[A.] \verb|stset time, failure(cens)|
+\item[B.] \verb|stset time, failure(cens 1)|
+\item[C.] \verb|stset time, failure(cens = 1)|
 \item[D.] Je ne sais pas.
 \end{description}
 \item[\bf 1.4] Quelle commande permet d'afficher une table de mortalité pour
@@ -1802,7 +1801,7 @@ renvoit le résultat d'un test statistique. Lequel ?
 \item[D.] Je ne sais pas.
 \end{description}
 \item[\bf 1.7] Quelle commande a permis de produire la figure suivante
-  (indépedemment du rapport hauteur/largeur et de la couleur) ?
+  (indépendemment du rapport hauteur/largeur et de la couleur) ?
   \marginpar{1.7 $\square$}
   \begin{center}
     \includegraphics{./figs/dev10_cumhaz}
@@ -1858,6 +1857,9 @@ variable \texttt{age} et 17 valeurs manquantes pour la variable
 \item[\bf 2.1] On souhaite dénombrer les événements (\texttt{censor}) dans
   chacun des deux sites, pour les personnes âgées de plus de 25 ans. La
   commande suivante est-elle correctement spécifiée ? \marginpar{2.1 $\square$}
+\begin{verbatim}
+. tabulate censor site if age > 25
+\end{verbatim}
 \begin{description}
 \item[A.] Oui.
 \item[B.] Non.

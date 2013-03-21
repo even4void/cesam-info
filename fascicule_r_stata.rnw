@@ -6061,10 +6061,12 @@ ou par Courriel à : \url{cesam@upmc.fr}
 %% \hline
   \multicolumn{4}{|c|}{Module Stata} \\
 \hline
-  Sem. 02/04 & Élements du langage et statistiques descriptives & &\\
-  Sem. 09/04 & Mesures d'association et comparaison de deux variables & &\\
-  Sem. 16/04 & Régression linéaire et logistique & &\\
-  Sem. 23/04 & Données de survie & &\\
+  Sem. 02/04 & Élements du langage et statistiques descriptives & Cours 8 &
+  Corrigés pp.~\pageref{start:sol1stata}–\pageref{stop:sol1stata}\\
+  Sem. 09/04 & Mesures d'association et comparaison de deux variables &
+  Cours 9 & Corrigés pp.~\pageref{start:sol2stata}–\pageref{stop:sol2stata}\\
+  Sem. 16/04 & Régression linéaire et logistique & Cours 10 & Corrigés pp.~\pageref{start:sol3stata}–\pageref{stop:sol3stata}\\
+  Sem. 23/04 & Données de survie & Cours 11 & Corrigés pp.~\pageref{start:sol4stata}–\pageref{stop:sol4stata}\\
 \hline
 \end{tabular}
 \end{center}
