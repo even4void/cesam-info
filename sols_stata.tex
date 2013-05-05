@@ -691,7 +691,8 @@ fonction du status clinique, on peut procéder ainsi :
 \begin{verbatim}
 . histogram poids, frequency by(status)
 \end{verbatim}
-\includegraphics{./figs/stata_sirds}
+
+\includegraphics{./figs/stata_sirds_r}
 
 Enfin, le test de Student est réalisé en utilisant la commande
 \texttt{ttest}, qui par défaut suppose l'homogénéité des variances vérifiée :
@@ -854,7 +855,8 @@ chaque molécule à l'aide d'un diagramme en barres.
 \begin{verbatim}
 . graph hbar DHH LHH, bargap(20)
 \end{verbatim}
-\includegraphics{./figs/stata_student}
+
+\includegraphics{./figs/stata_student_r}
 
 Ici, on a choisi de représenter les données sous forme de barres
 horizontales (\texttt{hbar} au lieu de \texttt{bar}), sachant que par défaut
@@ -966,7 +968,7 @@ L'option \texttt{asyvars} insérée entre les deux variables de classification
 est indispensable si l'on souhaite que les barres aient des couleurs
 différentes selon le type de variable considéré. 
 
-\includegraphics{./figs/stata_infarctus}
+\includegraphics{./figs/stata_infarctus_r}
 % FIXME:
 % display as percent
 % catplot infarctus traitement [fw=N], percent recast(bar)
@@ -979,7 +981,7 @@ représentation graphique des données catégorielles. Son usage est le suivant 
 . catplot infarctus traitement [fw=N] if infarctus==1, percent
 \end{verbatim}
 
-\includegraphics{./figs/stata_infarctus2}
+\includegraphics{./figs/stata_infarctus2_r}
 
 On pourrait également utiliser une option comme \texttt{percent} après
 \texttt{asyvars} avec la commande \texttt{graph bar} (utilisation de
@@ -1055,7 +1057,7 @@ génotypes à l'aide de boites à moustaches.
 . graph box age, over(genotype)
 \end{verbatim}
 
-\includegraphics{./figs/stata_polymsm}
+\includegraphics{./figs/stata_polymsm_r}
 
 Si l'on souhaite représenter la distribution des âges à l'aide
 d'histogrammes, on peut utiliser la commande \texttt{histogram} de la
@@ -2371,7 +2373,7 @@ nécessaire de calculer ces deux quantités.
 . graph twoway (line pred ck) (scatter prop ck), ytitle("Probabilité")
 \end{verbatim}
 
-\includegraphics{./figs/stata_sck}
+\includegraphics{./figs/stata_sck_r}
 
 La commande \texttt{predict} comprend le nom dela variable (\texttt{pred}
 dans laquelle on souhaite stocker les résultats, et le type de prédictions
@@ -2486,14 +2488,14 @@ number of observations =      360
 area under ROC curve   =   0.9593
 \end{verbatim}
 
-\includegraphics{./figs/stata_sck2}
+\includegraphics{./figs/stata_sck2_r}
 
 Sensibilité/spécificité
 \begin{verbatim}
 . lsens
 \end{verbatim}
 
-\includegraphics{./figs/stata_sck3}
+\includegraphics{./figs/stata_sck3_r}
 
 % 
 %
@@ -2651,7 +2653,11 @@ d'odds-ratio, avec leurs intervalles de confiance associés. Si l'on souhaite
 obtenir directement les coefficients de régression (sur l'échelle du log
 odds), il faut utiliser la commande \texttt{logit} après avoir utilisé
 \texttt{logistic}. On pourrait également utiliser directement une commande de
-type \verb|logit cancer alcohol [freq=patients]|.
+type 
+\begin{verbatim}
+logit cancer alcohol [freq=patients]
+\end{verbatim}
+
 \begin{verbatim}
 . logit
 

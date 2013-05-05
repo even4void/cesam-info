@@ -56,6 +56,9 @@ s <- survfit(Surv(years, status) ~ rx, data=pb)
 s
 
 
+plot(s)
+
+
 survdiff(Surv(years, status) ~ rx, data=pb)
 
 
@@ -68,7 +71,7 @@ agec <- cut(pb$age, c(26, 40, 55, 79))
 survdiff(Surv(years, status) ~ rx + strata(agec), data=pb)
 
 
-summary(coxph(Surv(years, status) ~ rx, data=pb))
+summary(coxph(Surv(years, status) ~ rx + strata(agec), data=pb))
 
 
 placebo.time <- c(1,1,2,2,3,4,4,5,5,8,8,8,8,11,11,12,12,15,17,22,23)
@@ -88,7 +91,7 @@ s <- survfit(Surv(time, status) ~ tx, data=mp)
 summary(s)
 
 
-plot(s)
+plot(survfit(Surv(time, status) ~ tx, data=mp, subset=tx=="6-MP"))
 
 
 plot(s, fun="cumhaz")

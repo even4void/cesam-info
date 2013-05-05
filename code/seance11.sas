@@ -112,7 +112,9 @@ DATA pbc;
     age_classe=1;
     IF age GT 40 THEN age_classe=2;
     IF age GT 55 THEN age_classe=3;
-    PRC print;
+RUN;
+
+PROC print;
     VAR age age_classe;
 RUN;
 
@@ -130,12 +132,12 @@ RUN;
 PROC IMPORT OUT=WORK.Prostate
     DATAFILE= "C:\data\prostate.dat"
     DBMS=DLM REPLACE;
-    DELIMITER='00'x;
+    DELIMITER=' 'x;
     GETNAMES=YES;
     DATAROW=2;
 RUN;
 
-PROC LIFETEST DATA==prostate;
+PROC LIFETEST DATA=prostate;
    TIME time*status(0);
 RUN;
 

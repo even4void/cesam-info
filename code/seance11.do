@@ -4,21 +4,8 @@
  *
  */
 
+
 /* Exercice 11.1 */
-insheet using "prostate.dat", delimiter(" ")
-list in 1/5
-
-tabulate status
-
-stset time, failure(status)
-
-stci, by(treatment) p(50)
-
-sts graph, by(treatment) censored(s)
-
-sts test treatment
-
-/* Exercice 11.2 */
 insheet using "pbc.txt", tab
 describe, simple
 
@@ -52,3 +39,35 @@ stset years, failure(status)
 sts list
 
 sts graph, ci censored(single)
+
+stci, by(rx)
+
+sts graph, by(rx) cen(single)
+
+sts test rx
+
+sts test rx, wilcoxon noshow
+
+egen agec = cut(age), at(26,40,55,79)
+sts test rx, strata(agec) noshow
+
+stcox rx, strata(agec)
+
+stcox rx, strata(agec) nohr
+
+
+/* Exercice 11.2 */
+insheet using "prostate.dat", delimiter(" ")
+list in 1/5
+
+tabulate status
+
+stset time, failure(status)
+
+stci, by(treatment) p(50)
+
+sts graph, by(treatment) censored(s)
+
+sts test treatment, noshow
+
+stcox treatment, noshow

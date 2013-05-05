@@ -2150,65 +2150,76 @@ Pour représenter graphiquement les variations de la pression artérielle
 (\texttt{sbp} en fonction de l'IMC (\texttt{bmi}), on peut utiliser un
 diagramme de dispersion grâce à \texttt{PROC SGPLOT}.
 \begin{verbatim}
-PROC SGPLOT DATA=FRAMINGHAM;
+PROC SGPLOT DATA=framingham;
   SCATTER x=bmi y=sbp / group=sex;
   REG  x=bmi y=sbp ;
- /* scatter x=bmi y=dbp / group=sex;
-  REG  x=bmi  y=dbp ;   */
+ /* scatter x=bmi y=sbp / group=sex;
+  REG  x=bmi  y=sbp ;   */
 RUN;
 \end{verbatim}
 
 \includegraphics{./figs/sas_scattersbp}
 
-Les analyses présentées ci-dessus se basent sur une approche par analyse de
+Les analyses présentées ci-dessous se basent sur une approche par analyse de
 covariance, où plusieurs modèles sont étudiés (modèle avec interaction entre
-sexe et IMC, modèle sans interaction). Le modèle avec interaction s'exprime
-de la manière suivante dans \texttt{PROC GLM} : \verb|sbp=bmi sex bmi*sex|,
-le terme à gauche du signe \texttt{=} correspond à la variable réponse, et
-les variables à à droite sont les variables explicatives du modèle,
-l'interaction entre deux variables étant symbolisée par le symbole
-\texttt{*}.
+sexe et IMC, modèle sans interaction).
+Dans un premier temps, on transformera les deux variables \texttt{bmi} et
+\texttt{sbp} à l'aide d'une transformation logarithmique dans une étape
+\texttt{DATA}.
+\begin{verbatim}
+DATA framingham;
+SET framingham;
+logBMI = Log(bmi);
+Logsbp = Log(sbp);
+RUN;
+\end{verbatim}
+
+Le modèle avec interaction s'exprime de la manière suivante dans
+\texttt{PROC GLM} : \verb|sbp=bmi sex bmi*sex|, le terme à gauche du signe
+\texttt{=} correspond à la variable réponse, et les variables à à droite
+sont les variables explicatives du modèle, l'interaction entre deux
+variables étant symbolisée par le symbole \texttt{*}.
 \begin{verbatim}
 PROC GLM DATA=framingham; CLASS sex;
-MODEL  sbp=bmi sex bmi*sex;
+MODEL  Logsbp=logBMI sex logBMI*sex;
 RUN;
 \end{verbatim}
 
 \begin{verbatim}
                                        The GLM Procedure
 
-Dependent Variable: sbp
+Dependent Variable: Logsbp
 
                                            Somme des         Moyenne     Valeur
       Source                     DDL          carrés     quadratique          F    Pr > F
 
-      Model                        3      275024.910       91674.970     198.53    <.0001
+      Model                        3      14.6615562       4.8871854     213.28    <.0001
 
-      Error                     4686     2163851.865         461.769
+      Error                     4686     107.3769013       0.0229144
 
-      Corrected Total           4689     2438876.775
+      Corrected Total           4689     122.0384574
 
 
                                      Coef de
-                       R-carré           Var    Racine MSE    sbp Moyenne
+                       R-carré           Var    Racine MSE    Logsbp Moyenne
 
-                      0.112767      16.18638      21.48882       132.7586
+                      0.120139      3.105104      0.151375          4.875039
 
 
                                                              Moyenne     Valeur
       Source                     DDL       Type I SS     quadratique          F    Pr > F
 
-      bmi                          1     262347.4071     262347.4071     568.13    <.0001
-      sex                          1       5295.2077       5295.2077      11.47    0.0007
-      bmi*sex                      1       7382.2953       7382.2953      15.99    <.0001
+      logBMI                       1     14.09242303     14.09242303     615.00    <.0001
+      sex                          1    ￼ 0.19026910      0.19026910       8.30    0.0040
+      bmi*sex                      1    ￼ 0.37886405      0.37886405      16.53    <.0001
 
 
                                                              Moyenne     Valeur
       Source                     DDL     Type III SS     quadratique          F    Pr > F
 
-      bmi                          1     192559.0940     192559.0940     417.00    <.0001
-      sex                          1       5541.3582       5541.3582      12.00    0.0005
-      bmi*sex                      1       7382.2953       7382.2953      15.99    <.0001
+      logBMI                       1     10.76099758     10.76099758      469.62    <.0001
+      sex                          1      0.35458038    ￼ 0.35458038       15.47    <.0001
+      bmi*sex                      1      0.37886405      0.37886405       16.63    <.0001
 \end{verbatim}
 
 \includegraphics{./figs/sas_sbpancova}
@@ -2217,44 +2228,10 @@ Le modèle sans interaction est spécifié sur le même principe, en omettant le
 terme \texttt{bmi*sex}.
 \begin{verbatim}
 PROC GLM DATA=framingham; CLASS sex;
-MODEL sbp=bmi sex;
+MODEL LOgsbp=logBMI sex;
 RUN;
 \end{verbatim}
 
-\begin{verbatim}
-                                       The GLM Procedure
-
-Dependent Variable: sbp
-
-                                           Somme des         Moyenne     Valeur
-      Source                     DDL          carrés     quadratique          F    Pr > F
-
-      Model                        2      267642.615      133821.307     288.88    <.0001
-
-      Error                     4687     2171234.160         463.246
-
-      Corrected Total           4689     2438876.775
-
-
-                                     Coef de
-                       R-carré           Var    Racine MSE    sbp Moyenne
-
-                      0.109740      16.21224      21.52315       132.7586
-
-
-                                                             Moyenne     Valeur
-      Source                     DDL       Type I SS     quadratique          F    Pr > F
-
-      bmi                          1     262347.4071     262347.4071     566.32    <.0001
-      sex                          1       5295.2077       5295.2077      11.43    0.0007
-
-
-                                                             Moyenne     Valeur
-      Source                     DDL     Type III SS     quadratique          F    Pr > F
-
-      bmi                          1     266251.1866     266251.1866     574.75    <.0001
-      sex                          1       5295.2077       5295.2077      11.43    0.0007
-\end{verbatim}
 
 \includegraphics{./figs/sas_sbpancova2}
 
@@ -2264,15 +2241,16 @@ confiance pour les pentes avec une commande séparée car ceux-ci sont
 directement fournis dans le tableau de résultats renvoyés par \SAS.
 \begin{verbatim}
 PROC SORT DATA=framingham; BY sex; RUN;
-PROC REG DATA=framingham; MODEL sbp=bmi/clb; BY sex; RUN;
+PROC REG DATA=framingham; MODEL Logsbp=logBMI/clb; BY sex; RUN;
 \end{verbatim}
 
+Voici les résultats produits par \SAS pour le premier niveau de la variable \texttt{sex} :
 \begin{verbatim}
 -------------------------------------------- sex=1 --------------------------------------------
 
                                          Procédure REG
                                         Modèle : MODEL1
-                                  Variable dépendante : sbp
+                                  Variable dépendante : Logsbp
 
                    Nombre d'observations lues                           2049
                    Nombre d'observations utilisées                      2047
@@ -2284,50 +2262,14 @@ PROC REG DATA=framingham; MODEL sbp=bmi/clb; BY sex; RUN;
                                               Somme des        Moyenne     Valeur
     Source                           DDL         carrés    quadratique          F    Pr > F
 
-    Modèle                             1          44504          44504     121.09    <.0001
-    Erreur                          2045         751572      367.51688
-    Total sommes corrigées          2046         796076
+    Modèle                             1        2.59013        2.59013     137.93    <.0001
+    Erreur                          2045       38.40260        0.01878
+    Total sommes corrigées          2046       40.99272
 
 
-                 Root MSE                 19.17073    R carré           0.0559
-                 Moyenne dépendante      132.13972    R car. ajust.     0.0554
-                 Coeff Var                14.50792
-
-
-                               Valeurs estimées des paramètres
-
-                  Valeur estimée       Erreur     Valeur             Intervalle de confiance
-  Variable   DDL  des paramètres         type  du test t  Pr > |t|           à 95 %
-
-  Intercept    1        96.43061      3.27257      29.47    <.0001     90.01269    102.84853
-  bmi          1         1.37595      0.12504      11.00    <.0001      1.13074      1.62117
-
-                                        Le Système SAS       19:38 Saturday, April 16, 2011  92
-
--------------------------------------------- sex=2 --------------------------------------------
-
-                                         Procédure REG
-                                        Modèle : MODEL1
-                                  Variable dépendante : sbp
-
-                   Nombre d'observations lues                           2650
-                   Nombre d'observations utilisées                      2643
-                   Nombre d'observations avec valeurs manquantes           7
-
-
-                                      Analyse de variance
-
-                                              Somme des        Moyenne     Valeur
-    Source                           DDL         carrés    quadratique          F    Pr > F
-
-    Modèle                             1         229129         229129     428.48    <.0001
-    Erreur                          2641        1412280      534.75193
-    Total sommes corrigées          2642        1641409
-
-
-                 Root MSE                 23.12470    R carré           0.1396
-                 Moyenne dépendante      133.23799    R car. ajust.     0.1393
-                 Coeff Var                17.35594
+                 Root MSE                  0.13704    R carré           0.0632
+                 Moyenne dépendante      ￼ 4.87353    R car. ajust.     0.0627
+                 Coeff Var                ￼2.81183
 
 
                                Valeurs estimées des paramètres
@@ -2335,9 +2277,10 @@ PROC REG DATA=framingham; MODEL sbp=bmi/clb; BY sex; RUN;
                   Valeur estimée       Erreur     Valeur             Intervalle de confiance
   Variable   DDL  des paramètres         type  du test t  Pr > |t|           à 95 %
 
-  Intercept    1        81.30435      2.54891      31.90    <.0001     76.30629     86.30241
-  bmi          1         2.04597      0.09884      20.70    <.0001      1.85215      2.23978
+  Intercept    1         3.98804      0.07546      52.85    <.0001      3.84006      4.13603
+  bmi          1         0.27265      0.02322      11.74    <.0001      0.22712      0.31817
 \end{verbatim}
+
 
 \soln{\ref{exo:10.4}} Dans un premier temps, il est nécessaire de construire
 le tableau d'effectifs donné dans l'énoncé. Cela peut être réalisé à l'aide
@@ -3100,8 +3043,296 @@ PROC SUMMARY DATA=pbc_transplant PRINT median; VAR years_J; RUN;
 \end{verbatim}
 
 % FIXME:
-% not the same results as Stata or R?
+% not the same results as Stata or R? N=10 !!
+
+La table de mortalité avec l'estimateur de la fonction de survie de
+Kaplan-Meier s'obtient grâce à la commande \verb|PROC LIFETEST|.
+\begin{verbatim}
+PROC LIFETEST DATA=pbc;
+ time years*status(0);
+RUN;
+\end{verbatim}
+Voici un aperçu partiel des résultats fournis par \SAS :
+\begin{verbatim}
+                       Procédure LIFETEST
+
+              Estimations de survie de Kaplan-Meier
+
+                                       Erreur
+                                      type de        Nombre
+    years     Survie    Défaillance    survie     ayant échoué
+
+   0.0000      1.0000           0            0          0
+   0.1123      0.9968     0.00321      0.00320          1
+   0.1396      0.9936     0.00641      0.00452          2
+   0.1944      0.9904     0.00962      0.00552          3
+   0.2108      0.9872      0.0128      0.00637          4
+   0.3012      0.9840      0.0160      0.00711          5
+\end{verbatim}
+
+La survie médiane est présentée sous la forme du 2\ieme\ quartile
+(Pourcentage 50), avec son intervalle de confiance à 95~\%.
+\begin{verbatim}
+      Statistiques descriptives pour variable temps years
+
+                     Estimations du quartile
+
+                                 Valeur estimée
+                 Pourcentage       du point
+
+                          75              .
+                          50             9.2950
+                          25             4.0712
+
+                     Estimations du quartile
+
+                 Intervalle de confiance à 95 %
+           Transformation    [Inférieur    Supérieur)
+
+           LOGLOG               11.4743         .
+           LOGLOG                8.4490       10.5106
+           LOGLOG                3.2033        5.2704
+\end{verbatim}
+
+La courbe de survie s'obtient quant à elle à l'aide en ajoutant une option
+\verb|plot| à la commande précédente.
+\begin{verbatim}
+PROC LIFETEST DATA=pbc PLOT=survival(cl);
+ time years*status(0);
+RUN;
+\end{verbatim}
 
 \includegraphics{./figs/sas_kmyears}
 
+L'analyse stratifiée par groupe de traitement suit le même principe, et il
+suffit d'ajouter une instruction \verb|strata| lors de l'appel à la commande
+\verb|PROC LIFETEST|, comme indiqué ci-après.
+\begin{verbatim}
+PROC LIFETEST DATA=pbc PLOT=survival(cl);
+ time years*status(0);
+ strata rx;
+RUN;
+\end{verbatim}
+Les résultats produits par \SAS sont affichés pour chacun des deux niveaux
+de la variable \texttt{rx}. Voici un aperçu pour le cas \texttt{rx=1}.
+\begin{verbatim}
+                       Procédure LIFETEST
+
+                       Strate 1 : rx = 1
+
+              Estimations de survie de Kaplan-Meier
+
+                                       Erreur
+                                      type de        Nombre
+    years     Survie    Défaillance    survie     ayant échoué
+
+   0.0000      1.0000           0            0          0
+   0.1123      0.9937     0.00633      0.00631          1
+   0.1944      0.9873      0.0127      0.00889          2
+   0.3587      0.9810      0.0190       0.0109          3
+   0.3833      0.9747      0.0253       0.0125          4
+   0.4901      0.9684      0.0316       0.0139          5
+\end{verbatim}
+Voici les résultats concernant les médianes de survie pour les deux
+groupes. Pour le groupe \texttt{rx=1} (Placebo) :
+\begin{verbatim}
+      Statistiques descriptives pour variable temps years
+
+                     Estimations du quartile
+
+                                 Valeur estimée
+                 Pourcentage       du point
+
+                          75              .
+                          50             8.9856
+                          25             4.3149
+
+                     Estimations du quartile
+
+                 Intervalle de confiance à 95 %
+           Transformation    [Inférieur    Supérieur)
+
+           LOGLOG               11.1677         .
+           LOGLOG                6.9541       11.4743
+           LOGLOG                3.1540        5.6975
+\end{verbatim}
+Pour le groupe \texttt{rx=2} (DPCA) :
+\begin{verbatim}
+      Statistiques descriptives pour variable temps years
+
+                     Estimations du quartile
+
+                                 Valeur estimée
+                 Pourcentage       du point
+
+                          75              .
+                          50             9.3854
+                          25             3.9069
+
+                     Estimations du quartile
+
+                 Intervalle de confiance à 95 %
+           Transformation    [Inférieur    Supérieur)
+
+           LOGLOG               10.5489         .
+           LOGLOG                8.4600       10.5489
+           LOGLOG                2.4367        6.7515
+\end{verbatim}
+
+Les courbes de Kaplan-Meier correspondantes sont reproduites ci-dessous.
+
+\includegraphics{./figs/sas_kmyears2}
+
+Concernant le test du log-rank, il est fourni par la même commande
+\verb|PROC LIFETEST| en ajoutant l'option \verb|test| suivi du facteur
+d'intérêt.
+\begin{verbatim}
+PROC LIFETEST DATA=pbc PLOT=survival(cl);
+ time years*status(0);
+ test rx;
+RUN;
+\end{verbatim}
+Par défaut, \SAS affiche le résultat du test du log-rank, mais également du
+test de Gehan-Wilcoxon :
+\begin{verbatim}
+          Test d'égalité sur niveaux de discrétisation
+
+                                              Pr >
+           Test        Khi-2        DDL      Khi-2
+
+           Log-rang      0.1017       1      0.7498
+           Wilcoxon      0.0018       1      0.9664
+           -2Log(LR)     0.0634       1      0.8013
+\end{verbatim}
+
+Pour recoder la variable \texttt{age} en variable qualitative à 3 classes,
+on peut utiliser une simple étape \verb|DATA|, comme indiqué ci-après.
+\begin{verbatim}
+DATA pbc; SET pbc;
+   age_classe=1; IF age GT 40 THEN age_classe=2; IF age GT 55 THEN age_classe=3;
+PROC PRINT; VAR age age_classe; RUN;
+\end{verbatim}
+La commande \verb|PROC PRINT| permet de vérifier que les valeurs numériques
+ont bien associées à la bonne classe pour la nouvelle variable
+\verb|age_classe|. Le test du log-rank s'obtient en utilisant le même
+principe que celui exposé plus haut, c'est-à-dire en ajoutant une
+instruction \verb|test| dans \verb|PROC LIFETEST| suivi du facteur de
+stratification \verb|strata|.
+
+Enfin, le modèle de Cox se réalise grâce à la commande \verb|PROC PHREG|. 
+Comme dans le cas des autres modèles de régression, l'option
+\verb|model| permet de spécifier la relation entre la variable réponse (ici,
+des données de survie représentées par l'instruction \verb|years*status(0)|)
+et la ou les variables explicatives, ici \texttt{rx}. Dans le modèle
+ci-dessous, on n'inclut pas la variable de stratification \verb|age_classe|.
+\begin{verbatim}
+PROC PHREG data=pbc; MODEL years*status(0) = rx; RUN;
+\end{verbatim}
+Les résultats renvoyés par \SAS sont reportés ci-dessous.
+\begin{verbatim}
+                      The PHREG Procedure
+
+                  Informations sur le modèle
+
+               Data Set                 WORK.PBC
+               Dependent Variable       years
+               Censoring Variable       status
+               Censoring Value(s)       0
+               Ties Handling            BRESLOW
+
+
+            Number of Observations Read         312
+            Number of Observations Used         312
+
+
+  Récapitulatif du nombre d'événements et de valeurs censurées
+
+                                             Pourcentage
+          Total    Evénement     Censuré         censuré
+
+            312          125         187           59.94
+
+
+                       Etat de convergence
+
+         Convergence criterion (GCONV=1E-8) satisfied.
+
+
+              Statistiques d'ajustement du modèle
+
+                                Sans            Avec
+            Critère      covariables     covariables
+
+            -2 LOG L        1279.960        1279.858
+            AIC             1279.960        1281.858
+            SBC             1279.960        1284.686
+
+
+          Test de l'hypothèse nulle globale : BETA=0
+
+    Test                      Khi-2      DDL     Pr > Khi-2
+
+    Likelihood Ratio         0.1017        1         0.7498
+    Score                    0.1017        1         0.7498
+    Wald                     0.1015        1         0.7500
+
+
+     Estimations par l'analyse du maximum de vraisemblance
+
+               Valeur estimée     Erreur
+ Paramètre DDL des paramètres       type      Khi-2 Pr > Khi-2
+
+ rx          1       -0.05709    0.17916     0.1015     0.7500
+
+     Estimations par l'analyse du maximum de vraisemblance
+
+                                  Rapport
+                      Paramètre de risque
+
+                      rx            0.945
+\end{verbatim}
+%
+%
+%
+\soln{\ref{exo:11.2}} 
+Pour importer les données, il est nécessaire de bien indiquer le type de
+séparateur de champs dans la procédure d'importation. Ici, il s'agit
+d'espaces, donc il faut indiquer \verb|DELIMITER=' 'x|.
+\begin{verbatim}
+PROC IMPORT OUT= WORK.Prostate
+            DATAFILE= "C:\data\prostate.dat"
+            DBMS=DLM REPLACE;
+     DELIMITER=' 'x;
+     GETNAMES=YES;
+     DATAROW=2;
+RUN;
+\end{verbatim}
+Le reste des commandes est à peu près comparable à celles utilisées dans
+l'exercice précédent. La commande \verb|PROC LIFETEST| permet de fournir une
+estimation de la fonction de survie, en spécifiant via l'option \verb|TIME|
+les informations permettant d'identifier les variables de durée
+(\texttt{time}) et le status (\texttt{status}).
+\begin{verbatim}
+PROC LIFETEST DATA=prostate;
+ TIME time*status(0);
+RUN;
+\end{verbatim}
+
+En présence d'une variable de stratification, on ajoute l'option
+\verb|STRATA|, suivie du nom de la variable de stratification.
+\begin{verbatim}
+PROC LIFETEST DATA=prostate;
+ TIME time*status(0);
+ STRATA treatment;
+RUN;
+\end{verbatim}
+
+Enfin, pour afficher la courbe de survie, on ajoute l'option
+\verb|PLOT=survival(cl)|. 
+\begin{verbatim}
+PROC LIFETEST DATA=prostate  plot=survival(cl) /*conftype=linear*/;
+ TIME time*status (0);
+ STRATA treatment;
+RUN;
+\end{verbatim}
 \label{stop:sol11b}

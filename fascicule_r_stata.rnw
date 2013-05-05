@@ -17,6 +17,7 @@
 \usepackage{wasysym}
 \usepackage{enumitem}  % iterable item list
 \usepackage{fancyvrb}
+\usepackage{pdfpages}
 
 \usepackage[noae,nogin]{Sweave}
 \SweaveOpts{prefix.string=figs,strip.white=all,keep.source=TRUE}
@@ -6300,6 +6301,9 @@ ou par Courriel à : \url{cesam@upmc.fr}
 \hline
 \end{tabular}
 \end{center}
+
+\titleformat{\chapter}
+  {\normalfont\huge\bfseries}{\chaptertitlename\ \thechapter.}{20pt}{\huge}
 
 \setcounter{page}{1}
 \setcounter{chapter}{7}

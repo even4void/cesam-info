@@ -74,14 +74,20 @@ PROC SGPLOT DATA=FRAMINGHAM;
   REG x=bmi y=sbp;
 RUN;
 
-PROC GLM DATA=framingham;
-    CLASS sex;
-    MODEL sbp=bmi sex bmi*sex;
+DATA framingham;
+    SET framingham;
+    logBMI = Log(bmi);
+    Logsbp = Log(sbp);
 RUN;
 
 PROC GLM DATA=framingham;
     CLASS sex;
-    MODEL sbp=bmi sex;
+    MODEL Logsbp=LogBMI sex LogBMI*sex;
+RUN;
+
+PROC GLM DATA=framingham;
+    CLASS sex;
+    MODEL Logsbp=logBMI sex;
 RUN;
 
 PROC SORT DATA=framingham;
@@ -194,7 +200,7 @@ RUN;
 
 PROC LOGISTIC DATA=sck2;
     MODEL pres/particip=ck;
-   SCORE OUT=score1;
+    SCORE OUT=score1;
 RUN;
 
 PROC LOGISTIC DATA=sck2 OUTMODEL=sasuser.ckmodel;
