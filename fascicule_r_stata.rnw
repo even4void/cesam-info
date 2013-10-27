@@ -146,13 +146,14 @@
   \begin{tabular}{ll}
     \textbf{Responsables :} & \\
     Christophe LALANNE & \url{christophe.lalanne@inserm.fr} \\
+    Yassin Mazroui     & \url{yassin.mazroui@upmc.fr} \\
     Pr Mounir MESBAH   & \url{mounir.mesbah@upmc.fr}
   \end{tabular}
 \end{center}
 \vskip3em
 \centerline{\Large \url{http://www.cesam.upmc.fr}}
 \vskip3em
-\centerline{\LARGE Année Universitaire 2012–2013}
+\centerline{\LARGE Année Universitaire 2013–2014}
 \vfill
 \begin{center}
 \begin{minipage}{.6\textwidth}
@@ -203,20 +204,20 @@ set.seed(101)
 \hline
   \multicolumn{5}{|c|}{Introduction au logiciel R} \\
 \hline
-  Sem. 05/02 & Éléments du langage, gestion de données & Cours 1 & Corrigés
+  Sem. 05/11 & Éléments du langage, gestion de données & Cours 1 & Corrigés
   pp.~\pageref{start:sol1}–\pageref{stop:sol1} & \\
-  Sem. 12/02 & Statistiques descriptives et estimation & Cours 2 & Corrigés
+  Sem. 12/11 & Statistiques descriptives et estimation & Cours 2 & Corrigés
   pp.~\pageref{start:sol2}–\pageref{stop:sol2} & Devoir \no 1\\
-  Sem. 19/02 & Comparaisons de deux variables & Cours 3 & Corrigés
+  Sem. 19/11 & Comparaisons de deux variables & Cours 3 & Corrigés
   pp.~\pageref{start:sol3}–\pageref{stop:sol3} & Devoir \no 2\\
-  Sem. 26/02 & Analyse de variance et plans d'expérience & Cours 4 &
+  Sem. 26/11 & Analyse de variance et plans d'expérience & Cours 4 &
   Corrigés pp.~\pageref{start:sol4}–\pageref{stop:sol4} & Devoir \no 3\\
-  Sem. 12/03 & Corrélation et régression linéaire & Cours 5 & Corrigés
+  Sem. 03/12 & Corrélation et régression linéaire & Cours 5 & Corrigés
   pp.~\pageref{start:sol5}–\pageref{stop:sol5} & Devoir \no 4\\
-  Sem. 19/03 & Mesures d'association en épidémiologie et régression
+  Sem. 10/12 & Mesures d'association en épidémiologie et régression
   logistique & Cours 6 & Corrigés
   pp.~\pageref{start:sol6}–\pageref{stop:sol6} & Devoir \no 5\\
-  Sem. 26/03 & Données de survie & Cours 7 & Corrigés
+  Sem. 17/12 & Données de survie & Cours 7 & Corrigés
   pp.~\pageref{start:sol7}–\pageref{stop:sol7} & Devoir \no 6\\
 \hline
 \end{tabular}}
@@ -1026,7 +1027,7 @@ median(s)
 Pour déterminer le nombre de patients avec une survie $\le 900$ jours, il
 suffit d'effectuer un test :
 <<ex2-2c>>=
-table(s <= 900)
+table(s < 900)
 @
 \cmd{table}
 La colonne libellée \texttt{TRUE} indique le nombre d'observations vérifiant
@@ -1382,10 +1383,10 @@ permettant de répondre aux questions suivantes :
 \item[\bf 1.1] \marginpar{\phantom{text}1.1 $\square$} Quel est le poids moyen des bébés
   dont la mère est âgée de 20 ans ou moins ?
   \begin{description}
-  \item[A.] \verb|mean(birthwt$lwt & birthwt$age < 20)|
-  \item[B.] \verb|mean(birthwt$lwt[birthwt$age <= 20])|
-  \item[C.] \verb|mean(birthwt$lwt[age <= 20])|
-  \item[D.] \verb|mean(birthwt$lwt[birthwt$age < 20])|
+  \item[A.] \verb|mean(birthwt$bwt & birthwt$age < 20)|
+  \item[B.] \verb|mean(birthwt$bwt[birthwt$age <= 20])|
+  \item[C.] \verb|mean(birthwt$bwt[age <= 20])|
+  \item[D.] \verb|mean(birthwt$bwt[birthwt$age < 20])|
   \item[E.] Je ne sais pas.
   \end{description}
 \item[\bf 1.2] \marginpar{\phantom{text}1.2 $\square$} Combien de bébés ont une mère ayant
@@ -1447,7 +1448,7 @@ mean of x
  2944.587 
 \end{Verbatim}
   \begin{description}
-  \item[A.] \verb|T.test(birthwt$bwt)|
+  \item[A.] \verb|t.test(birthwt$bwt)|
   \item[B.] \verb|t.test(birthwt$bwt, alternative=0)|
   \item[C.] \verb|t.test(bwt, data=birthwt)|
   \item[D.] \verb|t.test(birthwt$bwt, correct=FALSE)|
@@ -1459,7 +1460,7 @@ mean of x
 \item[\bf 1.6] \marginpar{\phantom{text}1.6 $\square$} Soit l'histogramme de fréquences
   suivant :
 <<exo1-1-6, echo=FALSE, fig=TRUE>>=
-histogram(~ bwt, data=birthwt, type="percent", xlab="Poids des bébés (kg)")
+histogram(~ bwt, data=birthwt, type="percent", xlab="Poids des bébés (g)")
 @
 
 Quelle commande permet de reproduire cette figure (indépendemment du rapport
@@ -1506,7 +1507,7 @@ supposera indépendantes :
 \item[\bf 2.3] \marginpar{\phantom{text}2.3 $\square$} Donner un intervalle de confiance à
   95~\% pour la différence $X_1-X_2$ (en utilisant une loi de Student).
   \begin{description}
-  \item[A.] \verb|t.test(x1,x2)|
+  \item[A.] \verb|t.test(x1 - x2)|
   \item[B.] \verb|(x1-x2) + c(-1,1) * qt(0.975, 28)*sd(x1-x2)/sqrt(length(c(x1,x2)))|
   \item[C.] \verb|(x1-x2) + c(-1,1) * qt(0.975, 28)*sd(x1-x2)/sqrt(length(c(x1,x2)))/2-2|
   \item[D.] Je ne sais pas.
@@ -1528,7 +1529,7 @@ supposera indépendantes :
 \item[\bf 2.5] \marginpar{\phantom{text}2.5 $\square$} Soit la série de commandes
   suivantes :  
 \begin{verbatim}
-> x3 <- factor((x1-x2)>0, labels=c("+","-"))
+> x3 <- factor((x1-x2)>0, labels=c("-","+"))
 > table(x3)["+"]
 \end{verbatim}
   Quel est le résultat renvoyé ?
@@ -1920,6 +1921,14 @@ fisher.test(regime)
 @ 
 % FIXME:
 % finir commentaires
+
+Les proportions d'intérêt sont 26/64=0.41 (régime) et 21/65=0.32 (pas de
+régime), d'où le test de proportion qui donne l'intervalle de confiance à
+95~\% pour la différence recherchée. 
+<<ex3-4d>>=
+prop.test(c(26,21), c(64,65))
+@ 
+
 \end{sol}
 \end{exo}
 %
@@ -1996,6 +2005,12 @@ D'où les proportions demandées :
 round(aspirine[,"Oui"]/sum(aspirine[,"Oui"]) * 100, 2)
 @ 
 \cmd{round}
+
+La solution proposée donne la répartition des infarctus (en~\%) entre les deux traitements. Si l'on conditionne sur le traitement, les proportions d'intérêt sont 28/684=0.04 (placebo) et 18/676=0.03 (aspirine) et la commande R à utiliser est alors : 
+<<ex3-5ebis, eval=FALSE>>=
+round(aspirine["Placebo","Oui"]/sum(aspirine["Placebo",])*100, 2)
+@ 
+ou plus simplement \texttt{prop.table(aspirine, margin=1)[,"Oui"]}.
 
 La distribution des effectifs peut être visualisée sous forme de diagramme
 en barres comme ceci :
@@ -2228,7 +2243,7 @@ Veuillez indiquer les commandes permettant de répondre aux questions suivantes 
   \item[E.] Je ne sais pas.
   \end{description}  
 \item[\bf 1.4] \marginpar{\phantom{text}1.4 $\square$} Le poids moyen des bébés à la
-  naissance, exprimé en grammes, chez les sujets des deux sexes peut être
+  naissance, exprimé en kilogrammes, chez les sujets des deux sexes peut être
   obtenu de la manière suivante
   \begin{description}
   \item[A.] \verb|tapply(BWEIGHT ~ GENDER, data=babies, FUN=mean)|
@@ -2344,9 +2359,9 @@ Veuillez indiquer les commandes permettant de répondre aux questions suivantes 
 \item[\bf 2.3] \marginpar{\phantom{text}2.3 $\square$} Le nombre total d'individus peut
   être obtenu à l'aide de la commande
   \begin{description}
-  \item[A.] \verb|sum(table(smoke))|
-  \item[B.] \verb|length(table(smoke))|
-  \item[C.] \verb|dim(table(smoke))|
+  \item[A.] \verb|sum(smoke)|
+  \item[B.] \verb|length(smoke)|
+  \item[C.] \verb|dim(smoke)|
   \item[D.] Je ne sais pas.
   \end{description}
 \end{description}
@@ -3075,7 +3090,7 @@ question. Lorsque vous ne savez pas répondre, cochez la case correspondante.
 Dans une étude d'obstétrique, on s'est intéressé à la relation entre le
 poids d'un bébé à la naissance et le gain de poids de la mère durant sa
 grossesse. Les mères ont été regroupées en quatre classes selon leur gain de
-poids : faible (< 11 kg), normal (11-16 kg), modéré (16-22 kg) et extrême (>
+poids : faible ($\leq$ 11 kg), normal (11-16 kg), modéré (16-22 kg) et extrême (>
 22 kg). Les bornes inférieures des intervalles sont exclues, les bornes
 supérieures sont inclues. Le poids du bébé à la naissance est mesuré en
 kilogrammes. Au total, on dispose des données de 59 dyades. Voici un aperçu
@@ -3144,9 +3159,9 @@ Residuals   55 20.980  0.3815
 \end{verbatim}
 Quelle est la part de variance expliquée par ce modèle ? 
 \begin{description}
-\item[A.] 8.6~\%.  % SSG/SSE
+\item[A.] 7.9~\%.  % SSG/SSE
 \item[B.] 21.8~\%. % MSG-MSE
-\item[C.] 0.5~\%.  % (SSG*3)/(SSE*55)
+\item[C.] 61.1~\%.  % (SSG*3)/(SSE*55)
 \item[D.] Je ne sais pas.
 \end{description}  
 \item[\bf 1.6] \marginpar{\phantom{text}1.6 $\square$} Les données individuelles sont
@@ -3201,7 +3216,7 @@ minimum et maximum) de la variable réponse selon les niveaux de
 \begin{description}
 \item[A.] \verb|var(d$SBP[d$raceth=3]/var(d$SBP[d$raceth=1]|
 \item[B.] \verb|var(d$SBP[d$raceth==3]/var(d$SBP[d$raceth==1]|
-\item[C.] \verb|var(d$SBP[d$raceth=="3"]/var(d$SBP[d$raceth=="1"]|
+\item[C.] \verb|var(d$SBP[d$raceth="3"]/var(d$SBP[d$raceth="1"]|
 \item[D.] Je ne sais pas.
 \end{description}  
 \item[\bf 2.2] \marginpar{\phantom{text}2.2 $\square$} On souhaite représenter la
@@ -3342,8 +3357,8 @@ Using  as id variables
   spécifié sous forme de deux colonnes, comme indiqué à
   l'exercice~3.2. Quelle commande est la plus appropriée ?
   \begin{description}
-  \item[A.] \verb|striplot(value ~ tx, data=peas, jitter=TRUE)|
-  \item[B.] \verb|striplot(tx ~ value, data=peas, jitter=TRUE)|
+  \item[A.] \verb|stripplot(value ~ tx, data=peas, jitter=TRUE)|
+  \item[B.] \verb|stripplot(tx ~ value, data=peas, jitter=TRUE)|
   \item[C.] \verb|dotplot(value ~ tx, data=peas, jitter=TRUE)|
   \item[D.] Je ne sais pas.
   \end{description}
@@ -3493,7 +3508,7 @@ r.test(25, 0.300, 0.6363)
 Pour afficher l'ensemble des diagrammes de dispersion, on peut utiliser la
 commande de base \texttt{pairs} ou bien la solution suivante :
 <<ex5-1f, fig=TRUE>>=
-splom(cystic[,-3], varname.cex=0.7, cex=.8)
+splom(cystic[,-c(1,3)], varname.cex=0.7, cex=.8)
 @
 \cmd{splom}
 
@@ -4029,6 +4044,8 @@ variables \texttt{age} et \texttt{SBP}.
 \item[\bf 1.2] \marginpar{\phantom{text}1.2 $\square$} On souhaite vérifier l'étendue des
   âges (minimum et maximum) par groupe d'ethnicité (variable
   \texttt{raceth}). Quelle commande permet de répondre à cette question ?
+  (On pourra considérer que R agira bien comme si la variable
+  \texttt{raceth} était un facteur.)
   \begin{description}
   \item[A.] \verb|with(d, tapply(age, raceth, range(x)))|
   \item[B.] \verb|with(d, tapply(age, raceth, function(x) min(x), max(x)))|
@@ -4071,9 +4088,9 @@ d$aged <- cut(d$age, ageq)
     346     304     231     264     276     323     290     289     202     238
 \end{verbatim}
   \begin{description}
-  \item[A.] \verb|with(d, mean(SBP[aged==10]) - mean(SBP[aged==2]))|
-  \item[B.] \verb|with(d, mean(SBP[aged=="10"]) - mean(SBP[aged=="2"]))|
-  \item[C.] \verb|diff(with(d, tapply(SBP, aged, mean))[c(2,10)])|
+  \item[A.] \verb|with(d, mean(SBP[aged==10]) - mean(SBP[aged==1]))|
+  \item[B.] \verb|with(d, mean(SBP[aged=="10"]) - mean(SBP[aged=="1"]))|
+  \item[C.] \verb|diff(with(d, tapply(SBP, aged, mean))[c(1,10)])|
   \item[D.] \verb|diff(mean(d$SBP[d$aged %in% c("[44,58]","(75,79]")]))|
   \item[E.] Je ne sais pas.
   \end{description}  
@@ -4160,7 +4177,9 @@ l'exercice précédent.
   \item[D.] Je ne sais pas.
   \end{description}  
 \item[\bf 2.5] \marginpar{\phantom{text}2.5 $\square$} Quelle hypothèse de la régression
-  linéaire la commande graphique suivante permet-elle de vérifier ?
+  linéaire la commande graphique suivante permet-elle de vérifier ? (Le
+  choix des variables portées sur les horizontal et vertical n'a pas
+  d'importance majeure.)
 \begin{verbatim}
 xyplot(fitted(mod) ~ resid(mod))    
 \end{verbatim}
@@ -4505,39 +4524,45 @@ La valeur de l'odds-ratio ajusté figure à la fin du résultat produit par \R
 l'odds-ratio ajusté peut être considéré comme significativement différent de
 1 (absence d'association).
 
-Le graphique suivant montre les trois odds-ratio et leurs intervalles de
-confiance à 95~\%.
-<<ex1-6m, fig=TRUE>>=
-tab1.or <- oddsratio(tab1, log=FALSE)
-tab2.or <- oddsratio(tab2, log=FALSE)
-tab3.or <- oddsratio(tab3, log=FALSE)
-dfrm <- data.frame(centre=factor(1:3), or=c(tab1.or, tab2.or, tab3.or), 
-                   rbind(confint(tab1.or), confint(tab2.or), confint(tab3.or)))
-dfrm
-# -- %< -----
-prepanel.ci <- function(x, y, lx, ux, subscripts, ...) {
-  x <- as.numeric(x)
-  lx <- as.numeric(lx[subscripts])
-  ux <- as.numeric(ux[subscripts])
-  list(ylim = range(x, ux, lx, finite=TRUE))
-}
-panel.ci <- function(x, y, lx, ux, subscripts, pch=16, ...) {
-  x <- as.numeric(x)
-  y <- as.numeric(y)
-  lx <- as.numeric(lx[subscripts])
-  ux <- as.numeric(ux[subscripts])
-  panel.abline(h = 1, col = "black", lty = 2)
-  panel.abline(v = unique(x), col = "grey")
-  panel.arrows(x, lx, x, ux, col = 'black',
-               length = 0.05, unit = "native",
-               angle = 90, code = 3)
-  panel.xyplot(x, y, pch = pch, ...)
-}   
-# -- %< -----
-xyplot(or ~ centre, data=dfrm, pch=20, ylab="Odds-ratio (IC 95 %)", 
-       lx=dfrm$lwr, ux=dfrm$upr, prepanel=prepanel.ci, panel=panel.ci)
-@
-\cmd{xyplot}\cmd{oddsratio}\cmd{data.frame}
+Une représentation graphique des trois odds-ratio avec leurs intervalles de
+confiance à 95~\% s'obtient à l'aide de la commande 
+<<ex1-6mbis, fig=TRUE>>=
+library(vcd)
+plot(oddsratio(macrolid2, log=FALSE))
+@ 
+%% Le graphique suivant montre les trois odds-ratio et leurs intervalles de
+%% confiance à 95~\%.
+%% <<ex1-6m, fig=TRUE>>=
+%% tab1.or <- oddsratio(tab1, log=FALSE)
+%% tab2.or <- oddsratio(tab2, log=FALSE)
+%% tab3.or <- oddsratio(tab3, log=FALSE)
+%% dfrm <- data.frame(centre=factor(1:3), or=c(tab1.or, tab2.or, tab3.or), 
+%%                    rbind(confint(tab1.or), confint(tab2.or), confint(tab3.or)))
+%% dfrm
+%% # -- %< -----
+%% prepanel.ci <- function(x, y, lx, ux, subscripts, ...) {
+%%   x <- as.numeric(x)
+%%   lx <- as.numeric(lx[subscripts])
+%%   ux <- as.numeric(ux[subscripts])
+%%   list(ylim = range(x, ux, lx, finite=TRUE))
+%% }
+%% panel.ci <- function(x, y, lx, ux, subscripts, pch=16, ...) {
+%%   x <- as.numeric(x)
+%%   y <- as.numeric(y)
+%%   lx <- as.numeric(lx[subscripts])
+%%   ux <- as.numeric(ux[subscripts])
+%%   panel.abline(h = 1, col = "black", lty = 2)
+%%   panel.abline(v = unique(x), col = "grey")
+%%   panel.arrows(x, lx, x, ux, col = 'black',
+%%                length = 0.05, unit = "native",
+%%                angle = 90, code = 3)
+%%   panel.xyplot(x, y, pch = pch, ...)
+%% }   
+%% # -- %< -----
+%% xyplot(or ~ centre, data=dfrm, pch=20, ylab="Odds-ratio (IC 95 %)", 
+%%        lx=dfrm$lwr, ux=dfrm$upr, prepanel=prepanel.ci, panel=panel.ci)
+%% @
+%% \cmd{xyplot}\cmd{oddsratio}\cmd{data.frame}
 \end{sol}
 \end{exo}
 %
@@ -5189,8 +5214,8 @@ effectivement un facteur prédictif du risque de développer un infarctus.
   \item[A.] \verb|matrix(c(102,153,839,2058), nr=2, byrow=TRUE, dimnames=list(c("M-","M+"),c("E-","E+")))|
   \item[B.] \verb|matrix(c(102,153,839,2058), nr=2, byrow=TRUE, dimnames=list(c("M+","M-"),c("E+","E-")))|
   \item[C.] \verb|matrix(c(102,153,839,2058), nr=2, dimnames=list(c("M+","M-"),c("E+","E-")))|
-  \item[C.] \verb|matrix(c(102,153,839,2058), nr=2, dimnames=list(c("M-","M+"),c("E-","E+")))|
-  \item[D.] Je ne sais pas.
+  \item[D.] \verb|matrix(c(102,153,839,2058), nr=2, dimnames=list(c("M-","M+"),c("E-","E+")))|
+  \item[E.] Je ne sais pas.
   \end{description}
 \item[\bf 1.2] \marginpar{\phantom{text}1.2 $\square$} Supposons que le tableau de données
   ait été appelé \texttt{tab} sous \R. On souhaite calculer l'odds-ratio à
@@ -5199,8 +5224,8 @@ effectivement un facteur prédictif du risque de développer un infarctus.
   \begin{description}
   \item[A.] \verb|oddsratio(tab, log=FALSE)|
   \item[B.] \verb|oddsratio(tab)|
-  \item[C.] \verb|oddsratio(tab[c(2,1),c(2,1)], log=FALSE)|
-  \item[D.] \verb|oddsratio(tab[c(2,1),c(2,1)])|
+  \item[C.] \verb|oddsratio(tab[c(2,1),c(1,2)], log=FALSE)|
+  \item[D.] \verb|oddsratio(tab[c(2,1),c(1,2)])|
   \item[E.] Je ne sais pas.
   \end{description}
 \item[\bf 1.3] \marginpar{\phantom{text}1.3 $\square$} Pour calculer l'intervalle de
@@ -5209,8 +5234,7 @@ effectivement un facteur prédictif du risque de développer un infarctus.
   \begin{description}
   \item[A.] \verb|confint(tab.or)|
   \item[B.] \verb|summary(tab.or, conf.level=0.95)|
-  \item[C.] \verb|confint(tab.or, log=FALSE)|
-  \item[D.] Je ne sais pas.
+  \item[C.] Je ne sais pas.
   \end{description}  
 \item[\bf 1.4] \marginpar{\phantom{text}1.4 $\square$} Peut-on retrouver la valeur de
   l'odds-ratio à partir d'une autre commande ? Si oui, laquelle ?
@@ -5233,7 +5257,7 @@ effectivement un facteur prédictif du risque de développer un infarctus.
   \end{description}  
 \item[\bf 1.6] \marginpar{\phantom{text}1.6 $\square$} Que renvoit la commande suivante ? 
 \begin{verbatim}
-(tab[1,1]/sum(tab[1,])) / (tab[2,1]/sum(tab[2,]))
+(tab[1,1]/sum(tab[,1])) / (tab[1,2]/sum(tab[,2]))
 \end{verbatim}
   \begin{description}
   \item[A.] Le risque absolu chez les exposés.
@@ -5243,7 +5267,7 @@ effectivement un facteur prédictif du risque de développer un infarctus.
   \end{description}
 \item[\bf 1.7] \marginpar{\phantom{text}1.7 $\square$} Quelle commande du package
   \texttt{epiR} permet de fournir une estimation par intervalle (95~\%) de
-  la prévalence observée sur cet échantillon ?
+  la fraction de risque attribuable (au facteur d'exposition) ?
   \begin{description}
   \item[A.] \verb|epi.2by2|
   \item[B.] \verb|epi.tests|
@@ -5264,7 +5288,8 @@ logistique.
   de transformer le tableau de contingence sous forme d'un
   \texttt{data.frame} comportant trois colonnes décrivant le statut relatif
   à la maladie (M+/M-) et à l'exposition (E+/E-) et les effectifs
-  associés. La commande suivante est-elle correcte ?
+  associés. La commande suivante est-elle correcte ? (On supposera que le
+  package \texttt{reshape} a été chargé au préalable.)
 \begin{verbatim}
 tab <- melt(tab, varnames=c("maladie","exposition"))
 \end{verbatim}
@@ -5313,10 +5338,10 @@ tab <- melt(tab, varnames=c("maladie","exposition"))
   d'être un cas sachant que l'on a été exposé. Quelle commande permet de
   répondre à cette question ?
   \begin{description}
-  \item[A.] \verb|predict(m, data.frame(X2=1), type="link")|
-  \item[B.] \verb|predict(m, data.frame(X2="E+"), type="link")|
-  \item[C.] \verb|predict(m, data.frame(X2=1), type="response")|
-  \item[D.] \verb|predict(m, data.frame(X2="E+"), type="response")|
+  \item[A.] \verb|predict(m, data.frame(exposition=1), type="link")|
+  \item[B.] \verb|predict(m, data.frame(exposition="E+"), type="link")|
+  \item[C.] \verb|predict(m, data.frame(exposition=1), type="response")|
+  \item[D.] \verb|predict(m, data.frame(exposition="E+"), type="response")|
   \item[E.] Je ne sais pas.
   \end{description}  
 \end{description}
@@ -5839,7 +5864,8 @@ ces données sous \R :
   \end{description}
 \item[\bf 1.4] \marginpar{\phantom{text}1.4 $\square$} Pour afficher la courbe de survie
   du groupe des patients non-fumeurs, sans intervalles de confiance, quelle
-  commande peut-on utiliser ? On supposera que la table de mortalité a été
+  commande peut-on utiliser ? On supposera que la table de mortalité
+  calculée en 1.3 a été
   stockée dans une variable appelée \texttt{stab}.
   \begin{description}
   \item[A.] \verb|plot(stab)|
@@ -5987,7 +6013,7 @@ cell 0.359      1.43    0.440 0.815 0.420
   \begin{description}
   \item[A.] Les intervalles de confiance associés aux coefficients de
     régression. 
-  \item[B.] Les intervalles de confiance associés aux risques relatifs.
+  \item[B.] Les intervalles de confiance associés au rapport de riques instantanés.
   \item[C.] Je ne sais pas.
   \end{description}  
 \end{description}
@@ -6104,13 +6130,14 @@ ou par Courriel à : \url{cesam@upmc.fr}
   \begin{tabular}{ll}
     \textbf{Responsables :} & \\
     Christophe LALANNE & \url{christophe.lalanne@inserm.fr} \\
+    Yassin Mazroui     & \url{yassin.mazroui@upmc.fr} \\
     Pr Mounir MESBAH   & \url{mounir.mesbah@upmc.fr}
   \end{tabular}
 \end{center}
 \vskip3em
 \centerline{\Large \url{http://www.cesam.upmc.fr}}
 \vskip3em
-\centerline{\LARGE Année Universitaire 2012–2013}
+\centerline{\LARGE Année Universitaire 2013–2014}
 \vfill
 \begin{center}
 \begin{minipage}{.6\textwidth}
