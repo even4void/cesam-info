@@ -6043,13 +6043,14 @@ cell 0.359      1.43    0.440 0.815 0.420
   \begin{tabular}{ll}
     \textbf{Responsables :} & \\
     Christophe LALANNE & \url{christophe.lalanne@inserm.fr} \\
+    Yassin Mazroui     & \url{yassin.mazroui@upmc.fr} \\
     Pr Mounir MESBAH   & \url{mounir.mesbah@upmc.fr}
   \end{tabular}
 \end{center}
 \vskip3em
 \centerline{\Large \url{http://www.cesam.upmc.fr}}
 \vskip3em
-\centerline{\LARGE Année Universitaire 2012–2013}
+\centerline{\LARGE Année Universitaire 2013–2014}
 \vfill
 \begin{center}
 \begin{minipage}{.6\textwidth}
@@ -6088,12 +6089,12 @@ ou par Courriel à : \url{cesam@upmc.fr}
 %% \hline
   \multicolumn{4}{|c|}{Module Stata} \\
 \hline
-  Sem. 02/04 & Élements du langage et statistiques descriptives & Cours 8 &
+  Sem. 07/01 & Élements du langage et statistiques descriptives & Cours 8 &
   Corrigés pp.~\pageref{start:sol1stata}–\pageref{stop:sol1stata}\\
-  Sem. 09/04 & Mesures d'association et comparaison de deux variables &
+  Sem. 14/01 & Mesures d'association et comparaison de deux variables &
   Cours 9 & Corrigés pp.~\pageref{start:sol2stata}–\pageref{stop:sol2stata}\\
-  Sem. 16/04 & Régression linéaire et logistique & Cours 10 & Corrigés pp.~\pageref{start:sol3stata}–\pageref{stop:sol3stata}\\
-  Sem. 23/04 & Données de survie & Cours 11 & Corrigés pp.~\pageref{start:sol4stata}–\pageref{stop:sol4stata}\\
+  Sem. 21/01 & Régression linéaire et logistique & Cours 10 & Corrigés pp.~\pageref{start:sol3stata}–\pageref{stop:sol3stata}\\
+  Sem. 28/01 & Données de survie & Cours 11 & Corrigés pp.~\pageref{start:sol4stata}–\pageref{stop:sol4stata}\\
 \hline
 \end{tabular}
 \end{center}
@@ -6224,13 +6225,14 @@ ou par Courriel à : \url{cesam@upmc.fr}
   \begin{tabular}{ll}
     \textbf{Responsables :} & \\
     Christophe LALANNE & \url{christophe.lalanne@inserm.fr} \\
+    Yassin Mazroui     & \url{yassin.mazroui@upmc.fr} \\
     Pr Mounir MESBAH   & \url{mounir.mesbah@upmc.fr}
   \end{tabular}
 \end{center}
 \vskip3em
 \centerline{\Large \url{http://www.cesam.upmc.fr}}
 \vskip3em
-\centerline{\LARGE Année Universitaire 2012–2013}
+\centerline{\LARGE Année Universitaire 2013–2014}
 \vfill
 \begin{center}
 \begin{minipage}{.6\textwidth}
@@ -6282,13 +6284,14 @@ ou par Courriel à : \url{cesam@upmc.fr}
   \begin{tabular}{ll}
     \textbf{Responsables :} & \\
     Christophe LALANNE & \url{christophe.lalanne@inserm.fr} \\
+    Yassin Mazroui     & \url{yassin.mazroui@upmc.fr} \\
     Pr Mounir MESBAH   & \url{mounir.mesbah@upmc.fr}
   \end{tabular}
 \end{center}
 \vskip3em
 \centerline{\Large \url{http://www.cesam.upmc.fr}}
 \vskip3em
-\centerline{\LARGE Année Universitaire 2012–2013}
+\centerline{\LARGE Année Universitaire 2013–2014}
 \vfill
 \begin{center}
 \begin{minipage}{.6\textwidth}
@@ -6317,14 +6320,14 @@ ou par Courriel à : \url{cesam@upmc.fr}
 \hline
   \multicolumn{4}{|c|}{Introduction au logiciel SAS} \\
 \hline
-  Sem. 02/04 & Élements du langage et statistiques descriptives & Corrigés
+  Sem. 07/01 & Élements du langage et statistiques descriptives & Corrigés
   pp.~\pageref{start:sol8b}–\pageref{stop:sol8b} & Devoir
   \no 7\\
-  Sem. 09/04 & Mesures d'association et comparaison de deux variables &
+  Sem. 14/01 & Mesures d'association et comparaison de deux variables &
   Corrigés pp.~\pageref{start:sol9b}–\pageref{stop:sol9b} &
   Devoir \no 8\\
-  Sem. 16/04 & Régression linéaire et logistique & Corrigés pp.~\pageref{start:sol10b}–\pageref{stop:sol10b} & Devoir \no 9\\
-  Sem. 23/04 & Données de survie & Corrigés pp.~\pageref{start:sol11b}–\pageref{stop:sol11b} & Devoir \no 10\\
+  Sem. 21/01 & Régression linéaire et logistique & Corrigés pp.~\pageref{start:sol10b}–\pageref{stop:sol10b} & Devoir \no 9\\
+  Sem. 28/01 & Données de survie & Corrigés pp.~\pageref{start:sol11b}–\pageref{stop:sol11b} & Devoir \no 10\\
 \hline
 \end{tabular}
 \end{center}
@@ -6364,13 +6367,14 @@ ou par Courriel à : \url{cesam@upmc.fr}
   \begin{tabular}{ll}
     \textbf{Responsables :} & \\
     Christophe LALANNE & \url{christophe.lalanne@inserm.fr} \\
+    Yassin Mazroui     & \url{yassin.mazroui@upmc.fr} \\
     Pr Mounir MESBAH   & \url{mounir.mesbah@upmc.fr}
   \end{tabular}
 \end{center}
 \vskip3em
 \centerline{\Large \url{http://www.cesam.upmc.fr}}
 \vskip3em
-\centerline{\LARGE Année Universitaire 2012–2013}
+\centerline{\LARGE Année Universitaire 2013–2014}
 \vfill
 \begin{center}
 \begin{minipage}{.6\textwidth}
